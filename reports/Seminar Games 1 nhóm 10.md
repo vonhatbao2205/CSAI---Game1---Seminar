@@ -347,6 +347,8 @@ Phân tích theo `p` là phần nhóm phát triển từ trò ba hộp của [CS
 
 Expectimax tìm cách khai thác một mô hình đối thủ đã cho để đạt kỳ vọng cao nhất. Tính tối ưu được hiểu **theo mô hình ấy**. Phép lấy kỳ vọng cần xác suất không âm, tổng bằng `1`, và các giá trị utility có ý nghĩa về độ lớn để lấy trung bình.
 
+Ảnh hưởng của việc thay đổi độ lớn utility được minh họa bằng một [ví dụ ngắn ở phần bổ sung](#ví-dụ-biến-đổi-utility).
+
 Các ví dụ có lấy kỳ vọng trong bài dùng utility hữu hạn. Với Tic-Tac-Toe, thang `+1, 0, −1` cho:
 
 $$
@@ -356,6 +358,12 @@ $$
 Vì vậy, **utility kỳ vọng không đồng nhất với xác suất thắng**.
 
 Liên hệ với MDP: Game evaluation đánh giá cách chơi đã cho, còn Expectimax tìm cách chơi tốt nhất trước mô hình đối thủ đã biết. Đây là sự tương đồng về vai trò của các công thức với policy evaluation và value iteration. [CS221, trang 27–34](../docs/games1.pdf#page=27)
+
+**Vì sao có thể liên hệ Expectimax với MDP?** Khi policy đối thủ đã cố định và được biết, các phản ứng của họ tạo thành những chuyển tiếp xác suất từ góc nhìn agent. Nếu state giữ đủ thông tin, bài toán chọn hành động của agent có thể biểu diễn thành một MDP; đây là cơ sở cho liên hệ giữa Expectimax và **Bellman optimality — phương trình giá trị tối ưu**.
+
+Chẳng hạn, agent chọn hành động `a` để tới trạng thái `u` thuộc lượt đối thủ. Đối thủ chọn `a'` với xác suất `pi_opp(u, a')`, rồi đi tới `Succ(u, a')`. Từng phép `Succ` vẫn tất định; xác suất đến từ hành động của đối thủ. Khi gộp phản ứng ấy vào bước chuyển của môi trường, agent chọn hành động để tối đa hóa kỳ vọng của giá trị tiếp diễn.
+
+Liên hệ này dựa trên giả định **policy đối thủ cố định, đã biết và state đủ thông tin**. Phép biểu diễn MDP chi tiết là suy luận từ mô hình của khóa học; được giữ ở [phần MDP reduction của bản nghiên cứu](<Seminar Games 1 nhóm 10 - Bản nghiên cứu.md#mdp-reduction-cố-định-π_opp-đã-biết-trên-state-đủ-thông-tin>).
 
 ## 5. Minimax: chọn chiến lược có mức bảo đảm tốt nhất
 
@@ -544,6 +552,113 @@ Trong ví dụ ba hộp:
 
 Ba số `0, 5, 1` cần được đọc cùng giả định của từng bài toán. [CS221, trang 25–43](../docs/games1.pdf#page=25)
 
+#### Truyền giá trị từ lá lên gốc trên cây ba hộp
+
+Các lá giữ nguyên utility `−50, 50, 1, 3, −5, 15`. Trước hết tính giá trị các hộp từ lá; sau đó dùng giá trị các hộp để tính gốc. Bảng khung tính dưới đây giữ cùng thứ tự A, B, C cho cả ba phương pháp:
+
+| Khung tính | Giá trị (A, B, C) của Game evaluation và Expectimax | Giá trị (A, B, C) của Minimax |
+|---|---|---|
+| 0 — chỉ biết utility ở lá | (?, ?, ?) | (?, ?, ?) |
+| 1 — tính hộp A | (0, ?, ?) | (−50, ?, ?) |
+| 2 — tính hộp B | (0, 2, ?) | (−50, 1, ?) |
+| 3 — tính hộp C | (0, 2, 5) | (−50, 1, −5) |
+| 4 — truyền về gốc | Game evaluation: 0; Expectimax: 5 | Minimax: 1 |
+
+Ba hình sau là khung hoàn tất: tầng hộp màu xanh đã được tính, gốc màu cam thực hiện phép tổng hợp cuối cùng, cạnh đậm biểu diễn hành động agent theo policy hoặc chọn được.
+
+**Game evaluation — policy agent chọn A, đối thủ chọn đều**
+
+```mermaid
+flowchart TD
+    R(("Agent: kỳ vọng<br/>V = 0"))
+    A(("A: kỳ vọng = 0"))
+    B(("B: kỳ vọng = 2"))
+    C(("C: kỳ vọng = 5"))
+    A1["−50"]
+    A2["50"]
+    B1["1"]
+    B2["3"]
+    C1["−5"]
+    C2["15"]
+    R ==>|"A: xác suất 1"| A
+    R -->|"B: xác suất 0"| B
+    R -->|"C: xác suất 0"| C
+    A -->|"0,5"| A1
+    A -->|"0,5"| A2
+    B -->|"0,5"| B1
+    B -->|"0,5"| B2
+    C -->|"0,5"| C1
+    C -->|"0,5"| C2
+    classDef calculated fill:#e8f5e9,stroke:#2e7d32
+    classDef current fill:#fff3e0,stroke:#e65100,stroke-width:3px
+    class A,B,C calculated
+    class R current
+```
+
+Gốc lấy `1×0 + 0×2 + 0×5 = 0`. B và C được giữ trong hình để đối chiếu cùng bố cục; với policy chọn A, thuật toán có thể bỏ qua hai nhánh xác suất 0 ấy.
+
+**Expectimax — agent được chọn, đối thủ chọn đều**
+
+```mermaid
+flowchart TD
+    R["Agent: MAX<br/>V = 5"]
+    A(("A: kỳ vọng = 0"))
+    B(("B: kỳ vọng = 2"))
+    C(("C: kỳ vọng = 5"))
+    A1["−50"]
+    A2["50"]
+    B1["1"]
+    B2["3"]
+    C1["−5"]
+    C2["15"]
+    R -->|A| A
+    R -->|B| B
+    R ==>|C| C
+    A -->|"0,5"| A1
+    A -->|"0,5"| A2
+    B -->|"0,5"| B1
+    B -->|"0,5"| B2
+    C -->|"0,5"| C1
+    C -->|"0,5"| C2
+    classDef calculated fill:#e8f5e9,stroke:#2e7d32
+    classDef current fill:#fff3e0,stroke:#e65100,stroke-width:3px
+    class A,B,C calculated
+    class R current
+```
+
+Tầng đối thủ vẫn trả `0, 2, 5`; tại gốc, `max(0, 2, 5) = 5` nên agent chọn C.
+
+**Minimax — agent chuẩn bị cho đáp trả bất lợi nhất**
+
+```mermaid
+flowchart TD
+    R["Agent: MAX<br/>V = 1"]
+    A["A: MIN = −50"]
+    B["B: MIN = 1"]
+    C["C: MIN = −5"]
+    A1["−50"]
+    A2["50"]
+    B1["1"]
+    B2["3"]
+    C1["−5"]
+    C2["15"]
+    R -->|A| A
+    R ==>|B| B
+    R -->|C| C
+    A --> A1
+    A --> A2
+    B --> B1
+    B --> B2
+    C --> C1
+    C --> C2
+    classDef calculated fill:#e8f5e9,stroke:#2e7d32
+    classDef current fill:#fff3e0,stroke:#e65100,stroke-width:3px
+    class A,B,C calculated
+    class R current
+```
+
+Tầng đối thủ trả `−50, 1, −5`; tại gốc, `max(−50, 1, −5) = 1` nên agent chọn B. Cấu trúc cây và utility ở lá không đổi; loại nút và phép tổng hợp giá trị thay đổi theo câu hỏi đang giải. Các hình minh họa cùng phép tính trong [CS221, trang 25, 31 và 39](../docs/games1.pdf#page=25).
+
 ### 5.7. Bảng đối đầu và ba tính chất quan trọng
 
 Khi cố định một policy của agent và một policy của đối thủ, Game evaluation cho giá trị của cặp đó.
@@ -568,6 +683,23 @@ $$
 $$
 
 Minimax ưu tiên mức sàn; Expectimax ưu tiên kỳ vọng theo một mô hình cụ thể. Các tính chất không khẳng định một phương pháp luôn cho kết quả cao hơn phương pháp kia trong mọi cuộc đối đầu. [CS221, trang 47–56](../docs/games1.pdf#page=47)
+
+#### Vì sao Minimax bảo đảm được kết quả trước mọi đối thủ?
+
+Xét một đường chơi trên cây hữu hạn, trong đó agent tiếp tục theo policy Minimax ở mọi lượt:
+
+- **Ở lượt MAX:** agent chọn một con có giá trị bằng cực đại của các con, tức bằng giá trị Minimax tại nút hiện tại.
+- **Ở lượt MIN:** giá trị nút hiện tại là cực tiểu của các con. Vì thế, bất kỳ nước hợp lệ nào của đối thủ cũng đi tới một con có giá trị không thấp hơn nút hiện tại.
+
+Do đó, **giá trị Minimax không giảm dọc đường chơi**. Khi tới terminal, giá trị Minimax chính là utility của kết cục, nên:
+
+$$
+\boxed{Utility(\text{terminal})\ge V_{\mathrm{minmax}}(s_{\mathrm{start}}).}
+$$
+
+Bảo đảm này đúng cho từng diễn biến có thể xảy ra khi agent giữ policy, không chỉ đúng về kỳ vọng. Đối thủ không cần chơi tối ưu: họ có thể mắc lỗi hoặc thay đổi cách phản ứng mà vẫn không kéo kết quả xuống dưới mức sàn ấy.
+
+Vì vậy, Minimax tại gốc bằng 0 trong Tic-Tac-Toe có nghĩa agent bảo đảm **ít nhất hòa nếu tiếp tục chơi đúng**. Còn một nước sau đó rời khỏi policy có thể làm mất bảo đảm. Lập luận trực giác này triển khai tính chất cận dưới trong [CS221, trang 51–52](../docs/games1.pdf#page=51); các chứng minh đầy đủ được giữ trong [bản nghiên cứu](<Seminar Games 1 nhóm 10 - Bản nghiên cứu.md#54-bảng-đối-đầu-và-chứng-minh-xác-định-mức-bảo-đảm-chặt-nhất>).
 
 ### 5.8. Thế Q: một nước đe dọa chưa chắc là nước tốt
 
@@ -722,6 +854,8 @@ $$
 
 Ví dụ P làm rõ sự đánh đổi: một nước có thể có kỳ vọng cao trước mô hình đối thủ thường mắc sai lầm, đồng thời không giữ được mức bảo đảm trước đối thủ đáp trả chính xác.
 
+Khi đánh giá trọn policy thay vì một nước đầu, các kết quả được đối chiếu trong [bảng đối đầu trên thế P ở phần bổ sung](#bảng-đối-đầu-trên-thế-p).
+
 ### 5.10. Giới hạn tính toán và hướng tiếp nối
 
 Minimax đầy đủ phải tính giá trị các cây con để kết luận giá trị nút hiện tại. Với hệ số phân nhánh tối đa `b > 1` và độ sâu tối đa `m` ply, chi phí thời gian thường được viết:
@@ -755,6 +889,66 @@ Vấn đề tiếp theo là giới hạn độ sâu, ước lượng giá trị 
 - Minimax: xét đáp trả bất lợi nhất, chọn cách chơi có mức bảo đảm tốt nhất.
 
 Cả ba dùng cùng nguyên tắc tính từ terminal về gốc. Điểm khác biệt nằm ở việc tại mỗi nút, ta **theo một policy đã cho**, **tự chọn phương án tốt nhất**, hay **chuẩn bị cho lựa chọn bất lợi nhất của đối thủ**.
+
+## Phần bổ sung: ví dụ mở rộng và câu hỏi vận dụng
+
+### Ví dụ biến đổi utility
+
+Xét hai lựa chọn A và B; ở mỗi lựa chọn, hai kết cục có xác suất bằng nhau:
+
+- A có utility `0` hoặc `40`.
+- B có utility `20` hoặc `30`.
+
+Nếu thay mỗi utility `U` bằng `U²` trên miền không âm của ví dụ này, thứ tự các kết cục vẫn giữ nguyên nhưng kỳ vọng thay đổi:
+
+| Thang utility | Utility của A | Utility của B | Kỳ vọng A | Kỳ vọng B | Expectimax chọn |
+|---|---|---|---:|---:|---|
+| `U` | 0, 40 | 20, 30 | 20 | **25** | B |
+| `U²` | 0, 1.600 | 400, 900 | **800** | 650 | A |
+
+Minimax chọn B trên cả hai thang, vì giá trị thấp nhất của B vẫn cao hơn của A: ban đầu là `20 > 0`, sau biến đổi là `400 > 0`.
+
+**Minimax dựa vào thứ tự giá trị, còn Expectimax sử dụng cả độ lớn để lấy kỳ vọng.** Một phép biến đổi tăng nghiêm ngặt giữ thứ tự các kết cục có thể vẫn làm Expectimax đổi quyết định. Khi ấy ta đã thay cách đánh giá utility của những kết quả bất định, nên không thể xem mọi phép đổi thang là tương đương.
+
+Ví dụ được rút từ [phần phân tích utility của bản nghiên cứu](<Seminar Games 1 nhóm 10 - Bản nghiên cứu.md#vì-sao-được-lấy-trung-bình-cardinal-utility>).
+
+### Bảng đối đầu trên thế P
+
+Giữ quy ước của P: O đi trước, X là agent, utility thắng/hòa/thua là `+1/0/−1`. Cố định policy của từng bên rồi dùng Game evaluation để tính utility kỳ vọng:
+
+| Policy X | O theo Minimax | O chọn đều ở mỗi lượt |
+|---|---:|---:|
+| X theo Minimax | **0** | **3/5** |
+| X theo Expectimax được tính trước O chọn đều | **−1** | **13/15** |
+
+Trong bảng, khi có nhiều hành động cùng tốt nhất, policy tất định của mỗi bên chọn **ô có chỉ số nhỏ nhất tại mọi trạng thái thuộc lượt mình**. Quy tắc này xác định cụ thể các policy đang được đánh giá.
+
+Bảng đánh giá cách chơi từ đầu tới cuối, không chỉ nước đầu tiên. X theo Minimax giữ được ít nhất hòa trước mọi cách phản ứng; trước O chọn đều, policy này đạt kỳ vọng `3/5`. X theo Expectimax trước mô hình chọn đều đạt `13/15`, nhưng có thể bị O theo policy Minimax trong bảng đánh bại.
+
+Đổi cách phá hòa giữa các nước Minimax có thể làm kỳ vọng trước O chọn đều thay đổi, trong khi mức bảo đảm 0 vẫn giữ nguyên. Vì vậy, kết quả `3/5` gắn với quy tắc phá hòa vừa nêu. Các kết quả được kiểm bằng [code tham chiếu](<../research_notes/Seminar Games 1 nhóm 10/verify_examples.py>), và phân tích đầy đủ ở [phần thế P của bản nghiên cứu](<Seminar Games 1 nhóm 10 - Bản nghiên cứu.md#57-thế-p-khiến-hai-tập-nước-tốt-nhất-tách-hẳn-nhau>).
+
+### Câu hỏi kiểm tra nhanh
+
+| Mục | Câu hỏi |
+|---|---|
+| Overview | Vì sao một đường đi từ gốc tới lá thắng chưa đủ làm lời giải cho game? |
+| Modeling | Ở thế Q, những ô nào thuộc `Actions(s)`, và vì sao một ô trống chưa chắc là nước đi tốt? |
+| Game evaluation | Agent chọn đều A, B, C; đối thủ chọn đều hai số trong mỗi hộp. Utility kỳ vọng ở gốc là bao nhiêu? |
+| Expectimax | Trong mô hình ba hộp, đối thủ chọn số nhỏ với xác suất 0,9. Agent nên chọn hộp nào? |
+| Minimax | Gốc MAX có ba con MIN, lần lượt có các lá `(3,12,8)`, `(2,4,6)`, `(14,5,2)`. Giá trị gốc và nhánh được chọn là gì? |
+
+<details>
+<summary>Đáp án</summary>
+
+1. Một số cạnh do đối thủ chọn. Đường thắng chỉ là một diễn biến; agent cần policy biết đáp lại các phản ứng khác nhau.
+2. Các ô `0, 1, 2, 4`. Chúng đều hợp lệ, nhưng X2 có thể bị O ép thua; hợp lệ không đồng nghĩa tốt về chiến lược.
+3. Các hộp có kỳ vọng `0, 2, 5`, nên gốc là `(0 + 2 + 5)/3 = 7/3`.
+4. Chọn B: các kỳ vọng là `−40, 1,2, −3`, nên B lớn nhất.
+5. Ba nút MIN trả `3, 2, 2`; gốc trả `max(3,2,2) = 3`, chọn nhánh đầu.
+
+</details>
+
+Cây ở câu Minimax lấy từ [CS188 Lecture 7, trang 18](../docs/cs188-sp26-lec07.pdf#page=18); các câu còn lại dùng mô hình và ví dụ đã trình bày.
 
 ## Tài liệu tham khảo
 
