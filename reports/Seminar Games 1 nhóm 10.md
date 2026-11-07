@@ -430,36 +430,43 @@ Lá `−100` không quyết định giá trị A: khi tới nút MAX tương ứ
 
 Đây là cơ chế cốt lõi của Minimax: **đánh giá phản ứng của đối thủ đồng thời giữ đúng quyền quyết định của agent trong tương lai**. Ví dụ do nhóm xây dựng từ quy tắc truy hồi.
 
-### 5.4. Triển khai bằng đệ quy
+### 5.4. Đối chiếu pseudocode Expectimax và Minimax
 
-Giả mã dưới đây tính giá trị Minimax:
+Hai giả mã dưới đây tính giá trị trạng thái bằng cùng một cấu trúc tìm kiếm đệ quy:
 
-```python
-def minimax(s):
-    if IsEnd(s):
-        return Utility(s)
+```text
+Expectimax                                          Minimax
+def expectimax(s):                                  def minimax(s):
+    if IsEnd(s):                                        if IsEnd(s):
+        return Utility(s)                                   return Utility(s)
 
-    values = []
-    for a in Actions(s):
-        values.append(minimax(Succ(s, a)))
+    actions = Actions(s)                                actions = Actions(s)
+    values = []                                         values = []
+    for a in actions:                                   for a in actions:
+        values.append(expectimax(Succ(s, a)))               values.append(minimax(Succ(s, a)))
 
-    if Player(s) == agent:
-        return max(values)
-    return min(values)
+    if Player(s) == agent:                              if Player(s) == agent:
+        return max(values)                                  return max(values)
+    return sum(pi_opp(s, a) * v                         return min(values)
+               for a, v in zip(actions, values))
 ```
 
-Tại gốc thuộc lượt agent, lưu hành động gắn với giá trị lớn nhất để chọn nước đi. Hàm tính giá trị có thể được gọi lại tại mỗi trạng thái thực tế sau nước đáp trả của đối thủ.
+`actions` là danh sách các hành động hợp lệ; mỗi phần tử trong `values` là giá trị của trạng thái con ứng với hành động cùng vị trí. `pi_opp(s, a)` là xác suất đối thủ chọn hành động `a` tại `s`, theo policy đã biết.
+
+**Giống nhau:** kiểm tra terminal, duyệt các hành động hợp lệ, gọi đệ quy xuống trạng thái con và lấy `max` ở lượt agent. **Khác biệt chính nằm ở lượt đối thủ:** Expectimax tính `sum(pi_opp(s, a) * v)`, còn Minimax lấy `min(values)`. Vì vậy, Expectimax cần mô hình xác suất đối thủ; Minimax đánh giá theo đáp trả bất lợi nhất.
+
+Tại gốc thuộc lượt agent, cả hai đều chọn hành động gắn với giá trị con lớn nhất. Phép `max` trả về giá trị; muốn xuất nước đi phải lưu thêm hành động tương ứng. Hàm tính giá trị có thể được gọi lại tại mỗi trạng thái thực tế sau nước đáp trả của đối thủ.
 
 Hai hướng xử lý thông tin trong cùng thuật toán:
 
 | Hướng | Thao tác |
 |---|---|
 | Từ gốc xuống | Thử hành động hợp lệ và sinh trạng thái kế tiếp |
-| Từ lá lên | Nhận giá trị con rồi lấy `max` hoặc `min` để tính giá trị cha |
+| Từ lá lên | Nhận giá trị con rồi lấy `max`, `min` hoặc kỳ vọng theo loại nút để tính giá trị cha |
 
 Thử một nhánh trong quá trình tìm kiếm không có nghĩa agent đã quyết định chơi nhánh đó. Quyết định chỉ được xác định sau khi so sánh giá trị các lựa chọn.
 
-Cách triển khai này tương tự **DFS hậu tự — postorder**: một nút chỉ có giá trị hoàn chỉnh sau khi các con đã được tính. Việc truyền giá trị lên cha còn được gọi là **backward induction**; nó không phải tìm kiếm trạng thái ngược từ một đích. [CS188 Note 6, trang 5](../docs/cs188-fa23-note06.pdf#page=5), [CS188 Lecture 7, trang 16–17](../docs/cs188-sp26-lec07.pdf#page=16)
+Cách triển khai này tương tự **DFS hậu tự — postorder**: một nút chỉ có giá trị hoàn chỉnh sau khi các con đã được tính. Việc truyền giá trị lên cha còn được gọi là **backward induction**; nó không phải tìm kiếm trạng thái ngược từ một đích. [CS188 Note 6, trang 5](../docs/cs188-fa23-note06.pdf#page=5), [CS188 Lecture 7, trang 16–17](../docs/cs188-sp26-lec07.pdf#page=16), [CS188 Note 7, trang 1–2](../docs/cs188-fa23-note07.pdf#page=1)
 
 ### 5.5. Halving Game: lớp đấu với Minimax
 
