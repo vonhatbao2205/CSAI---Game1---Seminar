@@ -46,7 +46,7 @@ Nguồn phân công: ([X, dòng 18-34](<../docs/Danh sách nhóm CSAI.xlsx>)). R
 2. **Lời giải là policy, không phải đường đi:** đường gốc-lá chỉ là một outcome ([g1, PDF p.11](../docs/games1.pdf#page=11)); lời giải đúng kiểu là một kế hoạch có điều kiện cho mọi phản ứng của đối thủ.
 3. **Hai hướng xử lý thông tin:** Forward Expansion sinh successor từ state hiện tại; Backward Induction truyền giá trị từ terminal về gốc. Không đồng nhất Backward Induction với backward search từ đích ([N6, PDF p.5](../docs/cs188-fa23-note06.pdf#page=5); phần đối chiếu là [Tự suy]).
 4. **Câu hỏi quyết định phép toán:** Game evaluation cố định cả hai policy, Expectimax tối ưu trước policy đối thủ đã biết, Minimax tìm mức bảo đảm. Cùng một cây nhưng lần lượt là trung bình–trung bình, max–trung bình, max–min. Luật game không tự cung cấp `π_opp` như MDP cung cấp `T`.
-5. **MDP reduction:** cố định `π_opp` thì game thành MDP và recurrence Expectimax chính là Bellman optimality; Minimax không rút gọn như vậy được vì node min chọn theo giá trị ([g1, PDF p.41](../docs/games1.pdf#page=41)).
+5. **MDP reduction:** khi cố định `π_opp` đã biết trên một state đủ thông tin, bài toán của agent rút gọn thành MDP và recurrence Expectimax tương ứng Bellman optimality. Với Minimax, ta chưa được cho một `T` cố định biểu diễn đáp trả worst-case, nên không thay trực tiếp node min bằng kỳ vọng theo phép rút gọn này; đây không phải khẳng định cấm mọi cách biểu diễn liên quan đến MDP ([g1, PDF p.41](../docs/games1.pdf#page=41); phần giới hạn phát biểu là [Tự suy]).
 6. **Chuỗi bất đẳng thức:** `V(π_exptmax(7), π_min) ≤ V(π_max, π_min) ≤ V(π_max, π_7) ≤ V(π_exptmax(7), π_7)`, tức −5 ≤ 1 ≤ 2 ≤ 5 ([g1, PDF p.55](../docs/games1.pdf#page=55)).
 7. **Tồn tại khác tính được:** tic-tac-toe chạy xong trong khoảng một giây với 549946 node; cờ vua cỡ 35^100 ≈ 2,55·10^154 node, nên phép duyệt Minimax đầy đủ cần được phân biệt với việc triển khai cho game lớn.
 
@@ -75,10 +75,11 @@ Theo CS221, vì module được giao bám `games1.pdf`. Đây là đề xuất c
 | Utility | `Utility(s)`, luôn theo góc nhìn agent | U, `Utility(s, player)` | Zero-sum: utility của opp = −`Utility(s)` |
 | Thang utility | Số hữu hạn khi tính toán; +∞/0/−∞ chỉ khi mô tả chess theo ([g1, PDF p.15](../docs/games1.pdf#page=15)) hoặc code halving | −1/0/+1 | Tránh ∞−∞ |
 | Policy deterministic | `π_p(s)` | S→A | |
-| Policy stochastic | `π_p(s, a)` | `π_p(a∣s)` | Cùng nghĩa |
+| Policy stochastic | `π_p(s,a) ≥ 0`; `Σ_{a∈Actions(s)} π_p(s,a) = 1` | `π_p(a∣s)` | Ở state chưa kết thúc với `Player(s) = p`; đây là phân phối trên các hành động hợp lệ |
 | Policy cố định của đối thủ | `π_7` "(some opponent)" ([g1, PDF p.47](../docs/games1.pdf#page=47)) | `p(s'∣s)` ở N7 khi Succ xác định | **Không phải "player 7"**; T2 hiểu sai chỗ này |
 | Giá trị theo state | `V_eval(s)`, `V_exptmax(s)`, `V_minmax(s)` | `V(s)` | Đọc `V_minmax` là "minimax value" |
 | Giá trị của cặp policy | `V(π_agent, π_opp)`; viết `V(π_agent, π_opp; s)` khi cần chỉ rõ state | | Bỏ `s` nghĩa là tính từ `s_start` |
+| Giá trị trung gian trong MDP reduction | `Ṽ(z)` (công thức viết `\widetilde V(z)`) | | Bằng `Utility(z)` ở terminal, bằng `V*_MDP(z)` ở state MDP chưa kết thúc; xem mục 4.2 |
 | Policy trích ra | `π_max`, `π_min`, `π_exptmax(7)` | Trong code: `pi_max`, `pi_min`, `pi_exp` | |
 | Hệ số phân nhánh | `b` | | |
 | Độ sâu | **`m` = số ply, `m = 2d`**, với `d` = số lượt của mỗi người | `d` là CS221, `m` là CS188 | Luôn nói rõ "ply" |
@@ -164,7 +165,7 @@ Trên ví dụ ba hộp, chiều tiến liệt kê “chọn hộp nào, rồi n
 
 **Câu nối heuristic — phần kỹ thuật thuộc nhóm 11:** “Khi cây hợp lệ vẫn lớn, có thể ước lượng trạng thái hứa hẹn hơn không?” Chỉ nêu câu hỏi, không thiết kế `Eval(s)` hay triển khai cách tìm kiếm xấp xỉ ở đây ([g1, PDF p.67–75](../docs/games1.pdf#page=67)). Nếu dùng một độ đo ước lượng Δ, không mặc nhiên yêu cầu nó giảm sau mọi ply hoặc coi nó là khoảng cách thật tới chiến thắng. Một nước có thể trông xấu theo độ đo đơn giản mà vẫn đúng về chiến lược; ở lượt đối thủ, agent cũng không chọn được cạnh. Nhận xét này nói về **ước lượng**, không phủ nhận tính chất của giá trị Minimax chính xác sẽ chứng minh ở mục 5.4.
 
-**Game khác gì các bài toán đã học.** Game mô hình hóa tường minh các agent khác có utility không đồng thuận với ta. Policy tối ưu phụ thuộc cách họ chơi; cách chơi đó thường chưa biết và có thể đối kháng. ([g1, PDF p.4](../docs/games1.pdf#page=4)). Bảng cầu nối dưới đây là tổng hợp của nhóm nghiên cứu từ ([g1, PDF p.14](../docs/games1.pdf#page=14)), ([g1, PDF p.18](../docs/games1.pdf#page=18)), ([g1, PDF p.22](../docs/games1.pdf#page=22)) **[Tự suy]**; lớp đã học Search và MDP nên chỉ chiếu, không giảng lại.
+**Game khác gì các bài toán đã học.** Game mô hình hóa tường minh các agent khác có utility không đồng thuận với ta; cách họ chơi thường chưa biết và có thể đối kháng ([g1, PDF p.4](../docs/games1.pdf#page=4)). Để nói một policy tối ưu, cần nêu tiêu chí đối với đối thủ: tối ưu kỳ vọng trước một policy đã biết, hoặc tối ưu mức bảo đảm trước mọi đáp trả hợp lệ. Bảng cầu nối dưới đây là tổng hợp của nhóm nghiên cứu từ ([g1, PDF p.14](../docs/games1.pdf#page=14)), ([g1, PDF p.18](../docs/games1.pdf#page=18)), ([g1, PDF p.22](../docs/games1.pdf#page=22)) **[Tự suy]**; lớp đã học Search và MDP nên chỉ chiếu, không giảng lại.
 
 | | Search | MDP | Game (lớp đang xét) |
 |---|---|---|---|
@@ -173,9 +174,9 @@ Trên ví dụ ba hộp, chiều tiến liệt kê “chọn hộp nào, rồi n
 | Tín hiệu mục tiêu | Cost trên từng cạnh | Reward trên từng bước | Utility chỉ ở end state |
 | Bản chất của bất định | Không có | Ngẫu nhiên, không có ý đồ | Chiến lược: đối thủ có mục tiêu ngược ta |
 | Dạng lời giải | Chuỗi hành động | Policy | Policy cho từng player |
-| "Tối ưu" được định nghĩa bởi | Riêng đề bài | Riêng đề bài | Đề bài **cộng** giả định về đối thủ |
+| "Tối ưu" được định nghĩa bởi | Riêng đề bài | Riêng đề bài | Đề bài **cộng tiêu chí tối ưu**: best response trước policy đã biết hoặc maximin trước mọi đối thủ |
 
-**Điểm tinh tế nhất** **[Tự suy]**: game trong lớp này có `Succ(s,a)` tất định, nên bất định không nằm ở môi trường mà ở hành vi của tác nhân khác. Trong MDP, `V^π` có một đối số vì `T` nằm trong đề bài; trong game, chữ "π*" tự nó thiếu nghĩa, đúng ra phải nói "best response đối với `π_opp`".
+**Điểm tinh tế nhất** **[Tự suy]**: game trong lớp này có `Succ(s,a)` tất định, nên bất định không nằm ở môi trường mà ở hành vi của tác nhân khác. Trong MDP, mô hình `T` được cho cùng bài toán. Trong Game, ký hiệu `π*` chỉ có ý nghĩa rõ ràng khi đã xác định **tiêu chí tối ưu**: nếu biết policy đối thủ, ta tìm **best response bằng Expectimax**; nếu tối ưu kết quả được bảo đảm trước mọi đối thủ, ta tìm **maximin policy bằng Minimax**. Trường hợp thứ hai không cần biết trước một policy đối thủ cụ thể.
 
 **Từ plan sang strategy.** Search trả về một plan rồi chỉ việc thực thi, còn adversarial search trả về policy khuyến nghị nước đi cho từng cấu hình ([N6, PDF p.1–2](../docs/cs188-fa23-note06.pdf#page=1)). AIMA gọi đây là **contingent strategy**: nước đi ở state đầu, rồi nước đi ở các state sinh ra từ mọi phản ứng có thể của MIN ([AIMA, bản cũ][aimaold]). Về cấu trúc **[Tự suy]**: plan là một đường trong cây, lời giải đúng kiểu là cây con gồm một nhánh tại node của ta và tất cả các nhánh tại node đối thủ.
 
@@ -186,10 +187,12 @@ Trên ví dụ ba hộp, chiều tiến liệt kê “chọn hộp nào, rồi n
 | Ràng buộc | Gỡ bỏ khó khăn nào |
 |---|---|
 | Hai người và zero-sum | Mọi utility gộp thành một số, "tốt cho tôi" và "xấu cho bạn" là một |
-| Perfect information | State hiện tại là mọi thứ cần biết; không phải suy luận điều chưa thấy |
+| Perfect information | Người chơi quan sát đầy đủ diễn biến đã xảy ra; để dùng recurrence theo state, vẫn cần một biểu diễn trạng thái đủ thông tin |
 | Đi lần lượt | Mỗi state có đúng một người quyết định, nên đệ quy theo cây sạch sẽ |
 | Tất định | Không cần phân phối xác suất trong đề bài |
 | Hữu hạn (hay bị quên) | Bảo đảm tồn tại giá trị và pure strategy tối ưu (mục 5.4) |
+
+**Tách thông tin quan sát được khỏi cách biểu diễn state. [Tự suy]** Perfect information nói về việc người chơi biết lịch sử diễn biến liên quan đến quyết định, không có hành động quá khứ bị che giấu. **Sufficient/Markov state representation** nói về cách ta mã hóa đủ thông tin để xác định luật chuyển và diễn biến tương lai mà không cần phần lịch sử đã bỏ quên. Một người có thể đã quan sát đầy đủ, nhưng chương trình vẫn mã hóa state thiếu thông tin. Cờ vua là ví dụ: biết mọi nước đã đi không làm biểu diễn chỉ gồm bàn cờ và lượt tự có đủ quyền nhập thành, en passant hay lịch sử lặp thế; mục 2.2 sẽ đối chiếu cụ thể ([g1, PDF p.14–16](../docs/games1.pdf#page=14); [Shannon 1950, §2][shannon]).
 
 Vị trí trong taxonomy: chess, checkers, Go, Connect Four, tic-tac-toe thuộc lớp chuẩn ([Allis 1994][allis]); backgammon có chance, bridge có imperfect information ([AIMA, bản cũ][aimaold]); Kriegspiel tất định về luật nhưng imperfect information ([Shannon 1950][shannon]). Trục phân loại của CS188 ở ([L7, PDF p.6](../docs/cs188-sp26-lec07.pdf#page=6)). Simultaneous, Non-zero-sum, Expectiminimax: **nhóm 11**.
 
@@ -246,7 +249,7 @@ Roadmap ([g1, PDF p.7](../docs/games1.pdf#page=7)) liệt kê cả mục của n
 | Kiểm tra luật sớm có phải đang giải CSP không? | Không. Chỉ bảo đảm Actions(s) cho các hành động hợp lệ trước khi gọi Succ; kỹ thuật CSP thuộc nhóm 12–13 |
 | Có cần Δ giảm sau mỗi nước đi không? | Không với một độ đo ước lượng tùy chọn. Phải phân biệt đánh giá gần đúng với giá trị Minimax chính xác và tính đến lượt đối thủ |
 | Oẳn tù tì và poker có thuộc mô hình hôm nay không? | Không. Oẳn tù tì không đi lần lượt, poker không quan sát được đầy đủ ([g1, PDF p.14](../docs/games1.pdf#page=14)) |
-| Game có phải chỉ là MDP có thêm người không? | Nếu `π_opp` đã biết thì đúng, gộp nó vào `T` là ra MDP (mục 4.2). Game chỉ khác về bản chất khi `π_opp` không được cho trước và có thể phản ứng lại `π_agent` **[Tự suy]** |
+| Game có phải chỉ là MDP có thêm người không? | Trong mô hình hữu hạn này, nếu `π_opp` cố định, đã biết và state đủ thông tin thì rút gọn được thành MDP của agent (mục 4.2). Khi chưa có policy đó, phép thay lượt đối thủ bằng một `T` đã biết không còn là dữ kiện sẵn có **[Tự suy]** |
 | Sao không tính strategy tốt nhất bằng cách liệt kê? | Tic-tac-toe đã có ≈10^1245 pure strategy của X **[Đã chạy]**; phải dùng đệ quy trên cây |
 | Sao bắt đầu từ lớp hẹp này? | Vì ở đây có một con số duy nhất, giá trị tồn tại, pure strategy đủ tốt; "tối ưu" không còn nhập nhằng **[Tự suy]** |
 | Deep Blue có giải cờ vua không? | Không. Nó thắng Kasparov bằng game tree search quy mô lớn; đi hết 35^100 cần cỡ 10^138 năm **[Đã chạy]** |
@@ -256,7 +259,7 @@ Roadmap ([g1, PDF p.7](../docs/games1.pdf#page=7)) liệt kê cả mục của n
 
 ### 2.1 Nói gì trên lớp
 
-> "Khung của game giống Search và MDP, chỉ thêm hai dòng: `Player(s)`, tức ai quyết định ở đây, và `Utility(s)` chỉ có ở end state. Ăn quân không được điểm, chỉ thắng ván mới có."
+> “Game tiếp tục sử dụng state, actions và transition như những bài toán đã học. Điểm khác biệt là ta phải xác định **người đang điều khiển mỗi trạng thái** và mô hình hóa **lợi ích của các người chơi**. Trong mô hình zero-sum đang xét, utility được xác định tại các trạng thái kết thúc.”
 >
 > "Tôi sẽ dùng halving game để cho thấy một sai sót rất nhỏ trong mô hình làm đổi cả đáp án: state phải chứa lượt đi, và phải đọc đúng câu 'left with 0'."
 
@@ -306,16 +309,30 @@ Ví dụ Q có board `...O.XXOO` (O đi trước, đang tới lượt X): chỉ 
 
 **Hai đặc trưng làm game khó** ([g1, PDF p.17–18](../docs/games1.pdf#page=17)): "All the utility is at the end state" và "Different players in control at different states".
 
-**Zero-sum, phát biểu chặt.** "Zero-sum means that the utility of the agent is negative the utility of the opponent" ([g1, PDF p.14](../docs/games1.pdf#page=14)). Hệ quả **[Tự suy]**: với mọi end state t, t', agent thích t hơn t' khi và chỉ khi opp thích t' hơn t, nên thông tin nằm trọn trong một hàm và không có chỗ cho hợp tác. Hai bổ sung **[Tự suy]**:
+**Zero-sum, phát biểu chặt.** "Zero-sum means that the utility of the agent is negative the utility of the opponent" ([g1, PDF p.14](../docs/games1.pdf#page=14)). Hệ quả **[Tự suy]**: với mọi end state t, t', agent thích t hơn t' khi và chỉ khi opp thích t' hơn t, nên một hàm utility của agent đủ xác định utility của cả hai người. **Tổng utility luôn bằng 0:** khi chuyển giữa hai kết cục, mức tăng utility của một người bằng mức giảm utility của người còn lại; không có sự cải thiện utility đồng thời cho cả hai. Đây là quan hệ giữa các utility, còn hành vi cụ thể của mỗi người vẫn do policy quyết định. Hai bổ sung **[Tự suy]**:
 
-- *Constant-sum đưa về zero-sum:* nếu u₁ + u₂ = c thì đặt uᵢ' = uᵢ − c/2. Vì vậy cờ vua 1/½/0 và +1/0/−1 là cùng một game về chiến lược. Phép đổi thang này là suy luận đại số của nhóm nghiên cứu, không cần đồng nhất thuật ngữ constant-sum với định nghĩa zero-sum trên slide.
+- *Constant-sum đưa về zero-sum:* nếu u₁ + u₂ = c thì đặt uᵢ' = uᵢ − c/2. Riêng điểm cờ vua 1/½/0 có c = 1: phép trừ ½ mới cho thang ½/0/−½; để có thang +1/0/−1 phải nhân thêm 2, tức $\boxed{u_i'=2\left(u_i-\frac12\right)}$. Đây là phép biến đổi affine với hệ số tỷ lệ dương, giữ nguyên thứ tự ưu tiên và policy tối ưu theo tiêu chí đang xét. Phép đổi thang là suy luận đại số của nhóm nghiên cứu, không đồng nhất thuật ngữ constant-sum với định nghĩa zero-sum trên slide.
 - *Một số vô hướng cần cả hai điều kiện:* ba người có tổng bằng 0 thì biết U₁ vẫn chưa xác định U₂, U₃.
 
 **Vì sao utility chỉ ở end state.** "We could have used edge costs and rewards for games (in fact, that's strictly more general)... You don't get utility for capturing pieces in chess; you only get utility if you win the game. This ultra-delayed utility makes games hard." ([g1, PDF p.14](../docs/games1.pdf#page=14)). Chữ "strictly more general" chỉ đúng khi giữ nguyên không gian state **[Tự suy]**: reward đường đi luôn gấp được về end state bằng cách thêm điểm tích lũy vào state, và Pacman của CS188 chính là như vậy (bắt đầu 10 điểm, mất 1 mỗi bước, đi thẳng được 8 ([N6, PDF p.2–3](../docs/cs188-fa23-note06.pdf#page=2))). Không có γ và reward trung gian thì hàm mục tiêu cũng không phân biệt thắng sớm và thắng muộn (xem 5.9).
 
-**Policy** ([g1, PDF p.21–22](../docs/games1.pdf#page=21)): deterministic `π_p(s) ∈ Actions(s)`; stochastic `π_p(s, a) ∈ [0, 1]`. Có một π_p cho mỗi player, chỉ xác định khi `Player(s) = p`. Một câu duy nhất nối với MDP: "We can think of an MDP as a game between the agent and nature", với `π_nature((s, a), s') = T(s, a, s')` ([g1, PDF p.22](../docs/games1.pdf#page=22)).
+**Policy** ([g1, PDF p.21–22](../docs/games1.pdf#page=21)): deterministic `π_p(s) ∈ Actions(s)`; stochastic `π_p(s,a) = π_p(a∣s)` là phân phối xác suất trên `Actions(s)`. Với mỗi state **chưa kết thúc** có `Player(s) = p`, định nghĩa đầy đủ cần:
+
+$$
+\boxed{
+\pi_p(s,a)\ge 0,
+\qquad
+\sum_{a\in\operatorname{Actions}(s)}\pi_p(s,a)=1.
+}
+$$
+
+Điều kiện không âm áp dụng cho từng `a ∈ Actions(s)`. Điều kiện chuẩn hóa bổ sung rõ nghĩa “phân phối xác suất”; riêng `π_p(s,a) ∈ [0,1]` chưa đủ. Giới hạn trên 1 suy ra từ tính không âm và tổng bằng 1. Có một policy cho mỗi player, dùng ở state chưa kết thúc thuộc lượt player đó; tại terminal, thuật toán trả utility và không cần chọn hành động. Policy deterministic được viết dưới dạng stochastic bằng xác suất 1 cho hành động được chọn và 0 cho các hành động còn lại. Nhắc điều kiện ngay trên slide policy và khi dùng expectation node, không cần thêm slide riêng.
+
+Một câu nối với MDP: "We can think of an MDP as a game between the agent and nature", với `π_nature((s, a), s') = T(s, a, s')` ([g1, PDF p.22](../docs/games1.pdf#page=22)).
 
 **Chess: mô hình của slide là một đơn giản hóa cần gọi tên.** Ở đây chỉ mô hình hóa luật đi quân và kết cục trên bàn, bỏ qua đồng hồ thi đấu và thủ tục trọng tài. Slide cho State = (position of all pieces, whose turn it is) ([g1, PDF p.15](../docs/games1.pdf#page=15)). Cặp này **không đủ Markov** cho cờ vua thật: cùng bàn cờ, `Actions` khác nhau tùy quyền nhập thành và en passant, `IsEnd` khác nhau tùy số lần lặp và đồng hồ nước. Shannon đã liệt kê năm thành phần của "position" từ 1950 (vị trí quân, bên đi, vua và xe đã di chuyển chưa, nước vừa đi, số nước từ lần đi tốt hoặc ăn quân gần nhất), và nói rõ bỏ qua luật lặp "for simplicity" ([Shannon 1950][shannon]).
+
+Đây là vấn đề **state representation**, không phải thiếu perfect information: lịch sử có thể đã được quan sát đầy đủ nhưng biểu diễn state đang dùng lại không giữ phần thông tin cần thiết.
 
 | Thành phần | Mô hình của slide ([g1, PDF p.15](../docs/games1.pdf#page=15)) | Cần bổ sung để đúng luật **[Tự suy]** |
 |---|---|---|
@@ -490,6 +507,7 @@ Giá trị ±∞ ở đây là đúng theo code và không gây lỗi vì Minima
 | Sao không đặt utility cho việc ăn quân? | Đó là tín hiệu ước lượng, không phải mục tiêu ([g1, PDF p.14](../docs/games1.pdf#page=14)); phần ước lượng thuộc nhóm 11 |
 | Zero-sum có nghĩa là chỉ thắng hoặc thua? | Không. Có hòa, và có thang rộng: backgammon từ +192 đến −192 ([AIMA, bản cũ][aimaold]) |
 | Slide cờ vua có sai không? | Là đơn giản hóa: (position, turn) không đủ Markov. Shannon đã thấy từ 1950 |
+| Perfect information có tự bảo đảm state Markov không? | Không. Một bên là thông tin người chơi quan sát được, một bên là thông tin biểu diễn state giữ lại; state vẫn có thể bỏ sót quyền nhập thành hoặc lịch sử lặp |
 | `Player(s)` khác tập `Players` thế nào? | `Player(s)` là hàm trên state; không có nó thì không xác định được miền của π_p, và nó không buộc phải luân phiên **[Tự suy]** |
 | Sao chạy trên tree mà không trên graph? | Vì state space khổng lồ ([g1, PDF p.12](../docs/games1.pdf#page=12)) và state thường không "quên" được nhiều ([g1, PDF p.70](../docs/games1.pdf#page=70)). Ở game nhỏ, số state và số node khác nhau rõ rệt như bảng ở mục 2.3 |
 
@@ -516,6 +534,8 @@ V_eval(s) = Utility(s)                                        IsEnd(s)
           = Σ_{a∈Actions(s)} π_opp(s,a)   V_eval(Succ(s,a))   Player(s) = opp
 ```
 
+**Điều kiện của expectation node:** tại state chưa kết thúc, các trọng số `π_{Player(s)}(s,a)` phải không âm và có tổng bằng 1 trên `Actions(s)`, đúng định nghĩa ở mục 2.2. Vì vậy đây là kỳ vọng, tức tổ hợp lồi của các giá trị con. Điều kiện chuẩn hóa cũng là bước làm cho tổng xác suất các đường đi bằng 1 trong chứng minh path-sum bên dưới.
+
 Ví dụ trên slide viết `π_agent(s) = A` dạng deterministic trong khi recurrence dùng `π_agent(s, a)`; hiểu là xác suất 1, đúng như nhãn cạnh (1) (0) (0) ([g1, PDF p.25](../docs/games1.pdf#page=25)). Slide p.25 vẽ gốc bằng hình tròn vì cả agent cũng theo policy cố định; tam giác chỉ xuất hiện từ Expectimax.
 
 **Cẩn thận:** Game evaluation (`V_eval`) khác hẳn evaluation function `Eval(s)`. `V_eval` là giá trị chính xác của một cặp policy; `Eval(s)` thuộc **nhóm 11** ([g1, PDF p.75](../docs/games1.pdf#page=75)).
@@ -529,7 +549,7 @@ Ví dụ trên slide viết `π_agent(s) = A` dạng deterministic trong khi rec
 - **Cơ sở** (h = 0, `IsEnd(s)`): chỉ có đường rỗng, P = 1, leaf = s, nên vế phải là `Utility(s) = V_eval(s)`.
 - **Bước quy nạp:** Paths(s) phân hoạch theo hành động đầu tiên. Mỗi ω viết duy nhất dạng (s,a)·ω' với ω' ∈ Paths(Succ(s,a)), và P(ω) = π(s,a)·P(ω'). Do đó
   `Σ_ω P(ω)U(leaf ω) = Σ_a π(s,a) Σ_{ω'} P(ω')U(leaf ω') = Σ_a π(s,a) V_eval(Succ(s,a)) = V_eval(s)`.
-  Dấu bằng thứ hai dùng giả thiết quy nạp, dấu bằng thứ ba là recurrence. Thay U ≡ 1 cho `Σ_ω P(ω) = Σ_a π(s,a)·1 = 1`. ∎
+  Dấu bằng thứ hai dùng giả thiết quy nạp, dấu bằng thứ ba là recurrence. Thay U ≡ 1 cho `Σ_ω P(ω) = Σ_a π(s,a)·1 = 1`; dấu bằng cuối dùng đúng điều kiện chuẩn hóa policy. ∎
 
 Về bản chất đây là tower property của kỳ vọng; thuật toán dùng tính phân phối để không phải nhân lại tiền tố của từng đường đi. **[Đã chạy]** ([code và output Phụ lục C](#kiem-chung-cay-ngau-nhien)) trên 1797 cây ngẫu nhiên với xác suất hữu tỉ: tổng P(path) đúng bằng 1, và đệ quy đúng bằng path-sum.
 
@@ -759,6 +779,7 @@ Kiểm tra bằng path-sum: `π_agent = A` cho hai đường có xác suất 1·
 | Câu hỏi | Trả lời ngắn |
 |---|---|
 | Vì sao không có max? | Vì `π_agent` đã cho. Không có gì để chọn, chỉ lấy kỳ vọng |
+| Mỗi trọng số nằm trong [0,1] đã đủ chưa? | Chưa. Ở mỗi state chưa kết thúc phải có tổng trọng số trên Actions(s) bằng 1; đây là điều kiện để có kỳ vọng và để chứng minh path-sum |
 | Giá trị tại node giữa có nghĩa gì? | Expected utility từ node đó trở đi, nếu ván đã đi tới đó và các bên tiếp tục theo policy đã nêu |
 | Đây có phải evaluation function không? | Không. Đó là giá trị chính xác cho một cặp policy; chủ đề evaluation functions thuộc nhóm 11 |
 | Vì sao cần mục này khi có Expectimax? | Đây là công cụ tính mọi ô của bảng Face off: `V(π_agent, π_opp)` được tính qua game evaluation ([g1, PDF p.48](../docs/games1.pdf#page=48)) |
@@ -766,7 +787,7 @@ Kiểm tra bằng path-sum: `π_agent = A` cho hai đường có xác suất 1·
 | Thay đổi một xác suất thì sao? | V_eval đổi affine theo một phân phối cục bộ khi giữ mọi phân phối khác cố định; nếu cùng một tham số dùng ở nhiều node thì có thể thành đa thức bậc cao **[Tự suy]** |
 
 
-## 4. Expectimax: best response trước một đối thủ đã biết, và chính là một MDP
+## 4. Expectimax: best response trước đối thủ đã biết và phép rút gọn MDP
 
 ### 4.1 Nói gì trên lớp
 
@@ -786,6 +807,8 @@ V_exptmax(s) = Utility(s)                                          IsEnd(s)
              = Σ_{a∈Actions(s)} π_opp(s,a) V_exptmax(Succ(s,a))    Player(s) = opp
 ```
 
+**Nhắc điều kiện xác suất:** ở node opp chưa kết thúc, `π_opp(s,a) ≥ 0` và `Σ_{a∈Actions(s)} π_opp(s,a) = 1`. Vì vậy dòng cuối là kỳ vọng theo policy đã biết, không phải một tổng trọng số tùy ý. Khi so sánh với policy stochastic của agent trong chứng minh tối ưu, ta cũng dùng đúng hai điều kiện này để có “tổ hợp lồi không vượt quá max”.
+
 "This computation produces the expectimax value V_exptmax(s) for a state s, which is the maximum expected utility of any agent policy when playing with respect to a fixed and known opponent policy π_opp." ([g1, PDF p.32](../docs/games1.pdf#page=32)). Slide viết `π_exptmax(7)` cho best policy trước `π_7`; `V_exptmax` phụ thuộc `π_opp` một cách ngầm định ([g1, PDF p.47–48](../docs/games1.pdf#page=47)).
 
 **Trích policy** **[Tự suy]** (công thức không có nguyên văn cho Expectimax, là bản sao trực tiếp của ([g1, PDF p.43](../docs/games1.pdf#page=43))). Với `Player(s) = agent`: `π_exptmax(7)(s) ∈ arg max_{a∈Actions(s)} V_exptmax(Succ(s,a))`. Hòa thì chọn tùy ý. Không trích policy ở node opp vì `π_opp` là dữ kiện đầu vào.
@@ -802,39 +825,86 @@ V_exptmax(s) = Utility(s)                                          IsEnd(s)
 
 **"Fixed" nghĩa chính xác là gì** **[Tự suy]**: `π_opp` là hàm của state, không đổi theo `π_agent`. Vì thế định lý nói về best response, không phải cân bằng: khi đã biết agent chọn C, một đối thủ thích nghi có thể đổi sang −5 ([g1, PDF p.55](../docs/games1.pdf#page=55)).
 
-#### MDP reduction: cố định `π_opp` thì game thành MDP
+#### MDP reduction: cố định `π_opp` đã biết trên state đủ thông tin
 
-CS221 nêu chiều ngược lại: MDP là game giữa agent và nature ([g1, PDF p.22](../docs/games1.pdf#page=22)). Bảng rút gọn dưới đây là của nhóm nghiên cứu **[Tự suy]**, không nguồn nào viết tường minh. Định nghĩa toán tử "nhảy tới node kế tiếp của agent hoặc end": `D_u` là phân phối trên {agent states} ∪ {end states}, với `D_u = δ_u` nếu u là end hoặc `Player(u) = agent`, và `D_u = Σ_{a'} π_opp(u,a')·D_{Succ(u,a')}` nếu `Player(u) = opp`.
+CS221 nêu chiều ngược lại: MDP là game giữa agent và nature ([g1, PDF p.22](../docs/games1.pdf#page=22)). Bảng rút gọn dưới đây là của nhóm nghiên cứu **[Tự suy]**, không nguồn nào viết tường minh. Xét cây game hữu hạn, state đủ thông tin và policy đối thủ cố định, đã biết, thỏa điều kiện chuẩn hóa. Định nghĩa toán tử "nhảy tới node kế tiếp của agent hoặc end": `D_u` là phân phối trên {agent states} ∪ {end states}, với `D_u = δ_u` nếu u là end hoặc `Player(u) = agent`, và `D_u = Σ_{a'} π_opp(u,a')·D_{Succ(u,a')}` nếu `Player(u) = opp`.
 
 | Thành phần MDP | Định nghĩa từ game |
 |---|---|
-| States S | {s : Player(s) = agent} ∪ {end states}; state phải chứa lượt đi. Nếu opp đi trước, start state lấy từ D_{s_start}, hoặc dùng dạng không gộp bên dưới |
-| Start | s_start (nếu là nút agent) |
+| States S | {s : chưa kết thúc, Player(s) = agent} ∪ {end states}; state phải chứa đủ thông tin cần thiết |
+| Start | s_start nếu chưa kết thúc và agent có lượt; nếu opp đi trước, dùng dạng không gộp bên dưới để giữ reward khi kết thúc ở lượt đầu |
 | Actions(s) | Actions(s) của game, tại các nút agent |
-| T(s,a,s') | D_{Succ(s,a)}(s'). Khi luân phiên chặt: T(s,a,s') = Σ_{a': Succ(Succ(s,a),a')=s'} π_opp(Succ(s,a),a'). Nếu Succ(s,a) đã là end: T = 1 |
-| Reward R(s,a,s') | Utility(s') nếu IsEnd(s'), ngược lại 0 |
+| T(s,a,s') | D_{Succ(s,a)}(s'). Khi luân phiên chặt và Succ(s,a) chưa kết thúc: T(s,a,s') = Σ_{a': Succ(Succ(s,a),a')=s'} π_opp(Succ(s,a),a'). Nếu u = Succ(s,a) đã là end: T(s,a,s') = 𝟙[s' = u] |
+| Reward R(s,a,s') | Utility(s') nếu IsEnd(s'), ngược lại 0; trả utility một lần khi đi vào terminal, rồi dừng |
 | γ | 1 |
-| Terminal | V(end) = 0 theo quy ước MDP của CS221; Utility đã chuyển vào reward của bước vào end |
+| Terminal | V*_MDP(z) = 0 nếu IsEnd(z); đây là giá trị tiếp diễn sau khi utility đã trả qua reward của bước vào z |
 
 *Dạng không gộp, đơn giản hơn:* giữ node opp làm state với một hành động giả `pass`, `T(u, pass, v) = Σ_{a': Succ(u,a')=v} π_opp(u,a')`; phải cộng xác suất nếu nhiều action dẫn tới cùng successor. Reward vẫn là utility khi bước vào end state và 0 ở các bước còn lại.
 
-*Chứng minh tương đương* (luân phiên chặt; nếu `Succ(s,a)` đã là end thì `V_exptmax(u) = Utility(u) = R + 0` ngay). Đặt u = Succ(s,a), nhóm các a' cùng dẫn tới một s':
+**Hàm trung gian nối hai quy ước ở terminal. [Tự suy]** Trong Game, `V_exptmax(z) = Utility(z)` tại terminal. Trong MDP đã chuyển đổi, `V*_MDP(z) = 0` vì utility được trả qua reward khi đi vào z; tại z không còn reward tương lai. Trên tập state của MDP rút gọn (các state agent chưa kết thúc và các terminal), đặt:
 
-```
-V_exptmax(u) = Σ_{a'} π_opp(u,a') V_exptmax(Succ(u,a')) = Σ_{s'} T(s,a,s') V_exptmax(s')
-```
+$$
+\widetilde V(z)=
+\begin{cases}
+\operatorname{Utility}(z), & \operatorname{IsEnd}(z),\\[2mm]
+V^*_{\mathrm{MDP}}(z), & \text{nếu z chưa kết thúc}.
+\end{cases}
+$$
 
-Nên `V_exptmax(u) = Q*(s,a)`, với quy ước `V*_MDP(s')` cho s' không kết thúc và `R + V*_MDP(end) = Utility(end)`. Tại node agent:
+Với mọi chuyển tiếp từ state MDP chưa kết thúc, định nghĩa reward trong bảng cho đúng đẳng thức:
 
-```
-V_exptmax(s) = max_a Q*(s,a) = max_a Σ_{s'} T(s,a,s') [R(s,a,s') + 1·V*_MDP(s')]
-```
+$$
+R(s,a,s')+V^*_{\mathrm{MDP}}(s')=\widetilde V(s').
+$$
 
-**Đúng là Bellman optimality** ([CS188 Sp26 lec09 p.30][cs188l9]: "This is just what expectimax computed!"). Đồ thị acyclic nên nghiệm duy nhất, do đó `V*_MDP = V_exptmax` trên các node agent. Tương tự, cố định thêm `π_agent` thì `V_eval` thỏa Bellman expectation. ∎
+Nếu s' là terminal, vế trái là `Utility(s') + 0`; nếu s' chưa kết thúc, vế trái là `0 + V*_MDP(s')`. Vì γ = 1, Bellman optimality viết gọn thành:
 
-**Hình ảnh cần nhớ:** node tròn opp trong cây chính là q-state (s,a) trong MDP search tree lớp đã thấy.
+$$
+\boxed{
+\begin{aligned}
+Q^*(s,a)&=\sum_{s'}T(s,a,s')\widetilde V(s'),\\[2mm]
+V^*_{\mathrm{MDP}}(s)&=\max_{a\in\operatorname{Actions}(s)}Q^*(s,a).
+\end{aligned}
+}
+$$
 
-*Điều kiện ẩn* **[Tự suy]**: γ = 1 chỉ an toàn vì cây game hữu hạn ([định lý hội tụ cho phép đồ thị acyclic][cs221vi]); `π_opp` phải là hàm của s, nếu opp phụ thuộc lịch sử hoặc học dần thì state phải chứa thông tin đó; để có T phải tính được `π_opp`, có khi rất đắt ([lec08 p.14][cs188l8]).
+**Chứng minh tương đương bằng quy nạp từ terminal. [Tự suy]** Xét trường hợp hai bên luân phiên chặt. Tại terminal z, theo định nghĩa `Ṽ(z) = Utility(z) = V_exptmax(z)`. Giả sử `Ṽ(s') = V_exptmax(s')` đã đúng ở các state rút gọn phía dưới state agent s đang xét. Với hành động a, đặt `u = Succ(s,a)`.
+
+Nếu u chưa kết thúc thì đến lượt đối thủ; nhóm những hành động a' cùng dẫn tới một successor s' được:
+
+$$
+\begin{aligned}
+V_{\mathrm{exptmax}}(u)
+&=\sum_{a'\in\operatorname{Actions}(u)}
+  \pi_{\mathrm{opp}}(u,a')\,
+  V_{\mathrm{exptmax}}(\operatorname{Succ}(u,a'))\\
+&=\sum_{s'}T(s,a,s')V_{\mathrm{exptmax}}(s')\\
+&=\sum_{s'}T(s,a,s')\widetilde V(s')
+ =Q^*(s,a).
+\end{aligned}
+$$
+
+Dấu bằng thứ ba dùng giả thiết quy nạp. Nếu a kết thúc ván ngay tại u, thì `T(s,a,·)` là phân phối tập trung ở u, nên `Q*(s,a) = Ṽ(u) = Utility(u) = V_exptmax(u)`; không cần gọi policy đối thủ tại terminal. Vì vậy, ở mọi state agent **chưa kết thúc**:
+
+$$
+\begin{aligned}
+V_{\mathrm{exptmax}}(s)
+&=\max_{a\in\operatorname{Actions}(s)}
+  V_{\mathrm{exptmax}}(\operatorname{Succ}(s,a))
+\\
+&=\max_{a\in\operatorname{Actions}(s)}Q^*(s,a)
+=V^*_{\mathrm{MDP}}(s)
+=\widetilde V(s).
+\end{aligned}
+$$
+
+Cây hữu hạn nên quy nạp khép lại. **Kết luận:** `V*_MDP(s) = V_exptmax(s)` ở các state agent chưa kết thúc; `Ṽ(z) = V_exptmax(z)` trên toàn bộ tập state rút gọn, kể cả terminal. Không đồng nhất `V*_MDP(z) = 0` với `V_exptmax(z) = Utility(z)` tại terminal: khác biệt đó đã được bù đúng một lần bằng reward khi đi vào z. Đẳng thức `V_exptmax(u) = Q*(s,a)` cũng chỉ là đẳng thức **về giá trị**, không đồng nhất state u với cặp (s,a). Đây là Bellman optimality sau phép chuyển đổi ([CS188 Sp26 lec09 p.30][cs188l9]). Tương tự, cố định thêm `π_agent` và thay max bằng tổng theo policy đó thì `V_eval` tương ứng Bellman expectation. ∎
+
+**Liên tưởng trực quan sau khi cố định policy:** trong trường hợp hai bên lần lượt hành động, ta có thể xem tầng đối thủ tương tự một tầng chuyển trạng thái xác suất trong MDP từ góc nhìn agent. **Q-state** của MDP là cặp `(s,a)`, còn node đối thủ là state `u = Succ(s,a)` nơi đối phương có lượt; hai khái niệm có thể đóng vai trò tương ứng trong phép tính giá trị nhưng không đồng nhất theo định nghĩa ([CS188 Sp26 lec09, PDF p.17][cs188l9]).
+
+**Giới hạn khi đối chiếu Minimax. [Tự suy]** Phép rút gọn trên dùng một `π_opp` cố định, đã biết để xây dựng `T`. Trong Minimax, policy worst-case không được cấp như dữ kiện đó; nói chung lựa chọn tại node min phải được xác định từ giá trị các con. Vì vậy, không thay trực tiếp node min bằng kỳ vọng theo một `T` cố định được cho trước giống cách làm với Expectimax. Phát biểu này giới hạn **phép rút gọn đang dùng**, không phải một khẳng định rằng mọi cách biểu diễn Minimax liên quan đến MDP đều bất khả thi. Nếu đã cố định một policy đối thủ cụ thể, kể cả `π_min` đã xác định, ta vẫn có thể thực hiện reduction cho bài toán best response trước policy ấy.
+
+*Điều kiện của phép rút gọn* **[Tự suy]**: trong mô hình này, γ = 1 dùng được vì cây game hữu hạn ([định lý hội tụ cho phép đồ thị acyclic][cs221vi]); `π_opp` phải là hàm của s, nếu opp phụ thuộc lịch sử hoặc học dần thì state phải chứa thông tin đó; để có T phải tính được `π_opp`, có khi rất đắt ([lec08 p.14][cs188l8]). Nếu state đầu đã là terminal, Game trả `Utility(s_start)` ngay và không cần bài toán chọn policy trong MDP.
 
 **Một câu nối với MDP đã học:** Expectimax và Bellman optimality mô tả cùng giá trị sau phép rút gọn trên; ở đây ta tính bằng đệ quy cây từ state đang xét. Phép lặp bảng và chứng minh hội tụ của value iteration thuộc **nhóm 9**, không trình bày lại.
 
@@ -851,7 +921,7 @@ Hai công thức bằng nhau khi đặt `p(s'∣s) = Σ_{a: Succ(s,a)=s'} π_opp
 
 Hai bẫy khi trả lời **[Tự suy]**:
 
-- **"Minimax là trường hợp đặc biệt của Expectimax"** ([N7, PDF p.1](../docs/cs188-fa23-note07.pdf#page=1)) chỉ đúng *sau khi* đã biết giá trị. Xác suất 1 phụ thuộc giá trị các con, nên không phải `π_opp` cho trước. CS221 ghi "No analogy in MDPs" ([g1, PDF p.41](../docs/games1.pdf#page=41)). Hai phát biểu không mâu thuẫn; nên nói "cùng khung đệ quy, khác toán tử tại node đối thủ".
+- **"Minimax là trường hợp đặc biệt của Expectimax"** ([N7, PDF p.1](../docs/cs188-fa23-note07.pdf#page=1)) là liên hệ hình thức: đặt xác suất 1 vào một con đạt min thì phép lấy kỳ vọng cho cùng giá trị min. Trong bài toán Minimax, policy chọn con đó không mặc nhiên là dữ kiện đã biết; nó phải phù hợp với giá trị các con. Câu "No analogy in MDPs" của CS221 ([g1, PDF p.41](../docs/games1.pdf#page=41)) được hiểu ở phạm vi phép thay lượt đối thủ bằng `T` đã cho trước, không phải một định lý cấm mọi biểu diễn MDP. Khi trình bày nên nói "cùng khung đệ quy, khác toán tử tại node đối thủ".
 - **Dùng chance node cho niềm tin:** recurrence cần phân phối điều kiện đúng theo state đủ thông tin, không đòi độc lập vô điều kiện giữa các lượt. Nếu đối thủ có một "kiểu" cố định chưa biết, quan sát trước làm đổi niềm tin ở lượt sau; state phải chứa history/belief cần thiết, thay vì cứ dùng lại xác suất ban đầu.
 
 Khác Expectiminimax, đúng một dòng: Expectimax chỉ có node max và node trung bình; Expectiminimax giữ cả max, min và node chance riêng, **thuộc nhóm 11** ([g1, PDF p.63](../docs/games1.pdf#page=63)).
@@ -1193,7 +1263,9 @@ Thế cờ P ở mục 5.7 là phiên bản lớn của walkthrough này.
 | `V_exptmax = 5` là được 5 điểm? | Không. Kết quả thật là −5 hoặc 15; 5 là kỳ vọng |
 | Expectimax chính là value iteration? | Cùng phương trình, khác cách giải. Slide viết "recurrence for value iteration" ([g1, PDF p.33](../docs/games1.pdf#page=33)), còn phép lặp và bảng thì khác |
 | Vì sao γ = 1 mà không vấn đề gì? | Cây hữu hạn, mọi đường đều kết thúc ([CS221 VI p.15-16][cs221vi]) |
-| Vì sao Expectimax có analogy MDP mà Minimax thì không? | Node trung bình ứng với T biết trước, không phụ thuộc V. Node min chọn con theo giá trị nên không viết được T trước khi giải **[Tự suy]** |
+| Game cho utility ở terminal, sao MDP lại cho giá trị 0? | MDP đã trả utility qua reward khi đi vào terminal, nên phần tiếp diễn bằng 0. Hàm trung gian Ṽ giữ utility ở terminal để nối hai quy ước mà không cộng utility hai lần |
+| Vì sao phép MDP reduction trên không thay trực tiếp được node min? | Expectimax có `π_opp` đã biết để xây dựng `T`; Minimax chưa được cấp policy worst-case ấy. Đây là giới hạn của phép rút gọn với `T` cho trước, không phải cấm mọi biểu diễn MDP **[Tự suy]** |
+| Node đối thủ có phải Q-state không? | Không đồng nhất. Q-state là cặp (s,a); node đối thủ là state u. Sau khi cố định policy, tầng đối thủ có thể đóng vai trò tương tự bước chuyển xác suất của MDP |
 | Vì sao `V_exptmax(s) ≥ V_minmax(s)`? | `V_minmax = V(π_max, π_min) ≤ V(π_max, π_opp) ≤ V_exptmax`. Ví dụ 1 ≤ 2 ≤ 5. Bất đẳng thức giữa các giá trị tính toán đúng với mọi mô hình `π_opp`; muốn diễn giải `V_exptmax` thành hiệu quả thực tế thì mô hình phải đúng **[Tự suy]** |
 | Agent có nên ngẫu nhiên hóa không? | Không bao giờ lợi hơn: tổ hợp lồi ≤ max. Chuyện ngẫu nhiên hóa có lợi thuộc Simultaneous games, nhóm 11 |
 | Có cần zero-sum để chạy Expectimax? | Không. Recurrence chỉ dùng utility của agent **[Tự suy]** |
@@ -3083,7 +3155,7 @@ Bảng cho giá trị sau một nước đầu cố định, rồi X tiếp tụ
 | Thời gian | Phút | Người | Phần | Nội dung cần nói và chiếu | Điểm phải đạt trước khi chuyển |
 |---|---:|---|---|---|---|
 | 00:00–07:00 | 7 | 1 | Overview | Năm slide: State-Space Search (1 phút), đường đi/policy (1), bỏ phiếu ba hộp (2), Forward Expansion/Backward Induction (1), hai câu nối kiểm tra luật và heuristic/Δ (2) | Lớp phân biệt diễn biến hợp lệ với policy tối ưu; hiểu hai hướng xử lý thông tin và giới hạn của cầu nối heuristic/CSP |
-| 07:00–17:00 | 10 | 2 | Modeling | Giới hạn lớp game; sáu thành phần; policy; kiểm tra luật trong Actions(s); mô hình ba hộp và halving; đọc đúng luật số 0; state khác board; đánh số ô tic-tac-toe | Xác định được người đang có lượt, hành động hợp lệ, terminal và utility; ở đây chưa giải cây halving bằng Minimax |
+| 07:00–17:00 | 10 | 2 | Modeling | Giới hạn lớp game; sáu thành phần; policy và điều kiện chuẩn hóa; kiểm tra luật trong Actions(s); mô hình ba hộp và halving; đọc đúng luật số 0; state khác board; đánh số ô tic-tac-toe | Xác định được người đang có lượt, hành động hợp lệ, terminal và utility; ở đây chưa giải cây halving bằng Minimax |
 | 17:00–25:00 | 8 | 2 | Game evaluation | Recurrence; năm frame ba hộp; path-sum và chứng minh quy nạp; câu kiểm tra 7/3 | Cả hai policy cố định, kết quả ví dụ là 0; phân biệt phép đo với tối ưu hóa |
 | 25:00–37:00 | 12 | 1 | Expectimax | Đổi tổng tại agent thành max; năm frame cho 5; trích policy; chứng minh best response; MDP reduction; utility hữu hạn/cardinal; ngưỡng đổi lựa chọn theo mô hình | Nói rõ 5 là kỳ vọng trước policy đã biết và không phải mức bảo đảm |
 | 37:00–41:00 | 4 | 2 | Minimax: thuật toán | Recurrence, pseudocode và trích policy; năm frame ba hộp; nối animation với DFS postorder | Chọn B, giá trị 1; hiểu đi xuống là thử giả định, giá trị truyền lên mới tạo quyết định |
