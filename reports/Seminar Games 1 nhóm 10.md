@@ -233,6 +233,37 @@ $$
 
 Dù C có kỳ vọng cao hơn, Game evaluation vẫn trả `0`: nhiệm vụ hiện tại là đánh giá policy chọn A. [CS221, trang 25](../docs/games1.pdf#page=25)
 
+**Cây Game evaluation — kỳ vọng ở cả hai tầng.** Từ utility ở lá, tầng hộp trả `(A, B, C) = (0, 2, 5)`, rồi gốc lấy kỳ vọng theo policy agent chọn A. Trong hình, các hộp màu xanh đã được tính; gốc màu cam thực hiện phép tổng hợp cuối cùng, cạnh đậm là hành động theo policy.
+
+```mermaid
+flowchart TD
+    R(("Agent: kỳ vọng<br/>V = 0"))
+    A(("A: kỳ vọng = 0"))
+    B(("B: kỳ vọng = 2"))
+    C(("C: kỳ vọng = 5"))
+    A1["−50"]
+    A2["50"]
+    B1["1"]
+    B2["3"]
+    C1["−5"]
+    C2["15"]
+    R ==>|"A: xác suất 1"| A
+    R -->|"B: xác suất 0"| B
+    R -->|"C: xác suất 0"| C
+    A -->|"0,5"| A1
+    A -->|"0,5"| A2
+    B -->|"0,5"| B1
+    B -->|"0,5"| B2
+    C -->|"0,5"| C1
+    C -->|"0,5"| C2
+    classDef calculated fill:#e8f5e9,stroke:#2e7d32
+    classDef current fill:#fff3e0,stroke:#e65100,stroke-width:3px
+    class A,B,C calculated
+    class R current
+```
+
+Gốc lấy `1×0 + 0×2 + 0×5 = 0`. B và C được giữ để đối chiếu cùng bố cục ở các thuật toán tiếp theo; với policy chọn A, thuật toán có thể bỏ qua hai nhánh xác suất 0 ấy.
+
 Nếu agent cũng chọn đều cả ba hộp, giá trị trở thành:
 
 $$
@@ -298,6 +329,35 @@ $$
 Agent chọn **C**. Khác biệt với Game evaluation nằm ở quyền lựa chọn của agent: thay vì bắt buộc đi A, agent được so sánh cả ba hộp. [CS221, trang 31–34](../docs/games1.pdf#page=31)
 
 Giá trị `5` là kỳ vọng. Một ván chọn C thực tế nhận `−5` hoặc `15`, không nhận `5`.
+
+**Cây Expectimax — đổi gốc thành MAX.** Cây và các utility giữ nguyên; tầng đối thủ vẫn lấy kỳ vọng và trả `0, 2, 5`. Thay đổi ở gốc: agent được chọn con có giá trị lớn nhất, nên nhánh đậm chuyển sang C.
+
+```mermaid
+flowchart TD
+    R["Agent: MAX<br/>V = 5"]
+    A(("A: kỳ vọng = 0"))
+    B(("B: kỳ vọng = 2"))
+    C(("C: kỳ vọng = 5"))
+    A1["−50"]
+    A2["50"]
+    B1["1"]
+    B2["3"]
+    C1["−5"]
+    C2["15"]
+    R -->|A| A
+    R -->|B| B
+    R ==>|C| C
+    A -->|"0,5"| A1
+    A -->|"0,5"| A2
+    B -->|"0,5"| B1
+    B -->|"0,5"| B2
+    C -->|"0,5"| C1
+    C -->|"0,5"| C2
+    classDef calculated fill:#e8f5e9,stroke:#2e7d32
+    classDef current fill:#fff3e0,stroke:#e65100,stroke-width:3px
+    class A,B,C calculated
+    class R current
+```
 
 ### 4.4. Độ nhạy của Expectimax với mô hình đối thủ
 
@@ -410,6 +470,35 @@ V_{\mathrm{minmax}}(s_{\mathrm{start}})
 $$
 
 Agent chọn **B**. Dù đối thủ chọn `1` hay `3`, kết quả vẫn ít nhất là `1`. Hộp A có lá `50` nhưng không bảo đảm đạt được nó. [CS221, trang 39–40](../docs/games1.pdf#page=39)
+
+**Cây Minimax — đổi tầng đối thủ thành MIN.** Gốc vẫn là MAX như Expectimax, nhưng mỗi hộp lấy giá trị con nhỏ nhất thay cho kỳ vọng. Tầng hộp trả `−50, 1, −5`; gốc lấy `max(−50, 1, −5) = 1` và chọn B.
+
+```mermaid
+flowchart TD
+    R["Agent: MAX<br/>V = 1"]
+    A["A: MIN = −50"]
+    B["B: MIN = 1"]
+    C["C: MIN = −5"]
+    A1["−50"]
+    A2["50"]
+    B1["1"]
+    B2["3"]
+    C1["−5"]
+    C2["15"]
+    R -->|A| A
+    R ==>|B| B
+    R -->|C| C
+    A --> A1
+    A --> A2
+    B --> B1
+    B --> B2
+    C --> C1
+    C --> C2
+    classDef calculated fill:#e8f5e9,stroke:#2e7d32
+    classDef current fill:#fff3e0,stroke:#e65100,stroke-width:3px
+    class A,B,C calculated
+    class R current
+```
 
 ### 5.3. Cây nhiều tầng: xét đúng quyền lựa chọn ở từng lượt
 
@@ -536,128 +625,15 @@ Các kết quả được tính từ quy tắc Minimax bằng [code tham chiếu
 
 ### 5.6. So sánh ba phương pháp trên cùng cây
 
-| Phương pháp | Dữ kiện đã biết | Lượt agent | Lượt đối thủ | Kết quả cần tìm |
-|---|---|---|---|---|
-| Game evaluation | Policy cả hai bên | Kỳ vọng theo policy agent | Kỳ vọng theo policy đối thủ | Giá trị của cặp policy |
-| Expectimax | Policy đối thủ | `max` | Kỳ vọng theo policy đối thủ | Kỳ vọng tốt nhất và cách chơi tương ứng |
-| Minimax | Luật game và utility | `max` | `min` | Mức bảo đảm tốt nhất và cách chơi tương ứng |
+Cùng luật chơi và utility ở lá, câu hỏi cần giải quyết định phép toán tại nút. Trong hai dòng đầu, đối thủ chọn đều hai số ở mỗi hộp; riêng Game evaluation đã cố định policy agent chọn A.
 
-Cả ba đều dùng cùng trạng thái, hành động và utility. **Câu hỏi cần giải quyết định phép toán tại nút.**
+| Phương pháp | Policy đã biết | Gốc của agent | Tầng đối thủ | Giá trị gốc | Lựa chọn của agent |
+|---|---|---|---|---:|---|
+| Game evaluation | Cả hai bên | Kỳ vọng theo policy | Kỳ vọng theo policy | **0** | A — đã cho trước |
+| Expectimax | Đối thủ | `max` | Kỳ vọng theo policy | **5** | Chọn C |
+| Minimax | Không cần policy làm đầu vào | `max` | `min` | **1** | Chọn B |
 
-Trong ví dụ ba hộp:
-
-- Game evaluation: agent đã chọn A, đối thủ chọn đều → giá trị `0`.
-- Expectimax: agent được chọn, đối thủ chọn đều → chọn C, kỳ vọng `5`.
-- Minimax: agent được chọn, chuẩn bị cho đáp trả bất lợi nhất → chọn B, bảo đảm `1`.
-
-Ba số `0, 5, 1` cần được đọc cùng giả định của từng bài toán. [CS221, trang 25–43](../docs/games1.pdf#page=25)
-
-#### Truyền giá trị từ lá lên gốc trên cây ba hộp
-
-Các lá giữ nguyên utility `−50, 50, 1, 3, −5, 15`. Trước hết tính giá trị các hộp từ lá; sau đó dùng giá trị các hộp để tính gốc. Bảng khung tính dưới đây giữ cùng thứ tự A, B, C cho cả ba phương pháp:
-
-| Khung tính | Giá trị (A, B, C) của Game evaluation và Expectimax | Giá trị (A, B, C) của Minimax |
-|---|---|---|
-| 0 — chỉ biết utility ở lá | (?, ?, ?) | (?, ?, ?) |
-| 1 — tính hộp A | (0, ?, ?) | (−50, ?, ?) |
-| 2 — tính hộp B | (0, 2, ?) | (−50, 1, ?) |
-| 3 — tính hộp C | (0, 2, 5) | (−50, 1, −5) |
-| 4 — truyền về gốc | Game evaluation: 0; Expectimax: 5 | Minimax: 1 |
-
-Ba hình sau là khung hoàn tất: tầng hộp màu xanh đã được tính, gốc màu cam thực hiện phép tổng hợp cuối cùng, cạnh đậm biểu diễn hành động agent theo policy hoặc chọn được.
-
-**Game evaluation — policy agent chọn A, đối thủ chọn đều**
-
-```mermaid
-flowchart TD
-    R(("Agent: kỳ vọng<br/>V = 0"))
-    A(("A: kỳ vọng = 0"))
-    B(("B: kỳ vọng = 2"))
-    C(("C: kỳ vọng = 5"))
-    A1["−50"]
-    A2["50"]
-    B1["1"]
-    B2["3"]
-    C1["−5"]
-    C2["15"]
-    R ==>|"A: xác suất 1"| A
-    R -->|"B: xác suất 0"| B
-    R -->|"C: xác suất 0"| C
-    A -->|"0,5"| A1
-    A -->|"0,5"| A2
-    B -->|"0,5"| B1
-    B -->|"0,5"| B2
-    C -->|"0,5"| C1
-    C -->|"0,5"| C2
-    classDef calculated fill:#e8f5e9,stroke:#2e7d32
-    classDef current fill:#fff3e0,stroke:#e65100,stroke-width:3px
-    class A,B,C calculated
-    class R current
-```
-
-Gốc lấy `1×0 + 0×2 + 0×5 = 0`. B và C được giữ trong hình để đối chiếu cùng bố cục; với policy chọn A, thuật toán có thể bỏ qua hai nhánh xác suất 0 ấy.
-
-**Expectimax — agent được chọn, đối thủ chọn đều**
-
-```mermaid
-flowchart TD
-    R["Agent: MAX<br/>V = 5"]
-    A(("A: kỳ vọng = 0"))
-    B(("B: kỳ vọng = 2"))
-    C(("C: kỳ vọng = 5"))
-    A1["−50"]
-    A2["50"]
-    B1["1"]
-    B2["3"]
-    C1["−5"]
-    C2["15"]
-    R -->|A| A
-    R -->|B| B
-    R ==>|C| C
-    A -->|"0,5"| A1
-    A -->|"0,5"| A2
-    B -->|"0,5"| B1
-    B -->|"0,5"| B2
-    C -->|"0,5"| C1
-    C -->|"0,5"| C2
-    classDef calculated fill:#e8f5e9,stroke:#2e7d32
-    classDef current fill:#fff3e0,stroke:#e65100,stroke-width:3px
-    class A,B,C calculated
-    class R current
-```
-
-Tầng đối thủ vẫn trả `0, 2, 5`; tại gốc, `max(0, 2, 5) = 5` nên agent chọn C.
-
-**Minimax — agent chuẩn bị cho đáp trả bất lợi nhất**
-
-```mermaid
-flowchart TD
-    R["Agent: MAX<br/>V = 1"]
-    A["A: MIN = −50"]
-    B["B: MIN = 1"]
-    C["C: MIN = −5"]
-    A1["−50"]
-    A2["50"]
-    B1["1"]
-    B2["3"]
-    C1["−5"]
-    C2["15"]
-    R -->|A| A
-    R ==>|B| B
-    R -->|C| C
-    A --> A1
-    A --> A2
-    B --> B1
-    B --> B2
-    C --> C1
-    C --> C2
-    classDef calculated fill:#e8f5e9,stroke:#2e7d32
-    classDef current fill:#fff3e0,stroke:#e65100,stroke-width:3px
-    class A,B,C calculated
-    class R current
-```
-
-Tầng đối thủ trả `−50, 1, −5`; tại gốc, `max(−50, 1, −5) = 1` nên agent chọn B. Cấu trúc cây và utility ở lá không đổi; loại nút và phép tổng hợp giá trị thay đổi theo câu hỏi đang giải. Các hình minh họa cùng phép tính trong [CS221, trang 25, 31 và 39](../docs/games1.pdf#page=25).
+Game evaluation đánh giá một cặp policy; Expectimax tối đa hóa kỳ vọng trước policy đối thủ đã biết; Minimax tối ưu mức bảo đảm trước đáp trả bất lợi nhất. Ba giá trị `0, 5, 1` cần được đọc cùng giả định ấy. [CS221, trang 25–43](../docs/games1.pdf#page=25)
 
 ### 5.7. Bảng đối đầu và ba tính chất quan trọng
 
@@ -889,6 +865,8 @@ Vấn đề tiếp theo là giới hạn độ sâu, ước lượng giá trị 
 - Minimax: xét đáp trả bất lợi nhất, chọn cách chơi có mức bảo đảm tốt nhất.
 
 Cả ba dùng cùng nguyên tắc tính từ terminal về gốc. Điểm khác biệt nằm ở việc tại mỗi nút, ta **theo một policy đã cho**, **tự chọn phương án tốt nhất**, hay **chuẩn bị cho lựa chọn bất lợi nhất của đối thủ**.
+
+**Mạch giải bài toán AI** bắt đầu từ mô hình hóa trò chơi thành không gian trạng thái và sinh các hành động hợp lệ. Trên các diễn biến ấy, thuật toán truyền giá trị từ terminal về gốc để đánh giá và chọn chiến lược. Khi không gian tìm kiếm quá lớn, duyệt toàn bộ không còn khả thi; cần những kỹ thuật ước lượng giá trị và tối ưu hóa tìm kiếm. Đó là vấn đề nối sang evaluation functions, depth-limited search và alpha-beta pruning ở phần Games 2.
 
 ## Phần bổ sung: ví dụ mở rộng và câu hỏi vận dụng
 
