@@ -1,0 +1,20 @@
+{
+  "name": "games1-seminar-deck",
+  "private": true,
+  "type": "module",
+  "description": "Seminar Games 1 — nhóm 10. Deck web dựng từ template RMQ v2.",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "@fontsource/be-vietnam-pro": "5.2.5",
+    "@fontsource/jetbrains-mono": "5.2.5",
+    "@fontsource/press-start-2p": "5.2.5",
+    "@fontsource/source-serif-4": "5.2.5",
+    "@fontsource/vt323": "5.2.5",
+    "d3": "7.9.0",
+    "gsap": "3.12.5",
+    "katex": "0.16.22",
+    "three": "0.158.0"
+  }
+}

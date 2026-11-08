@@ -1,0 +1,118 @@
+<section class="s" data-act="7" data-title="So sánh ba phương pháp" data-time="55">
+  <div class="eyebrow"><b>Tổng kết</b></div>
+  <h2>So sánh ba phương pháp trên cùng một cây</h2>
+  <div class="body col" style="gap:40px">
+    <table class="t compare">
+      <tr><th></th><th class="c-eval">Game evaluation</th><th class="c-chance">Expectimax</th><th class="c-min">Minimax</th></tr>
+      <tr class="rise" data-at="0"><td class="rowh">Đã biết</td><td>policy của cả hai bên</td><td>policy của đối thủ</td><td>không cần policy nào</td></tr>
+      <tr class="rise" data-at="1"><td class="rowh">Node của agent</td><td>trung bình theo π</td><td>max</td><td>max</td></tr>
+      <tr class="rise" data-at="1"><td class="rowh">Node của đối thủ</td><td>trung bình theo μ</td><td>trung bình theo μ</td><td>min</td></tr>
+      <tr class="rise" data-at="2"><td class="rowh">Câu hỏi</td><td>Cặp policy này được bao nhiêu?</td><td>Trước μ, tối đa được bao nhiêu?</td><td>Bảo đảm được bao nhiêu?</td></tr>
+      <tr class="rise" data-at="2"><td class="rowh">Game ba hộp</td><td class="mono">0, agent đi A</td><td class="mono">5, chọn C</td><td class="mono">1, chọn B</td></tr>
+    </table>
+    <p class="statement rise" data-at="3" style="text-align:center">Cả ba đều tính value từ terminal state ngược về root.</p>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Ba phương pháp khác nhau ở thông tin đã biết về hai bên.</div>
+  <div class="say" data-step="1" data-mood="talk">Vì vậy phép tính tại node khác nhau: trung bình, max hoặc min.</div>
+  <div class="say" data-step="2" data-mood="think">Mỗi con số chỉ có nghĩa cùng với câu hỏi mà nó trả lời.</div>
+  <div class="say" data-step="3" data-mood="happy">Cả ba đều đi từ leaf lên root.</div>
+  <div class="notes"><p>Mô hình game xác định các diễn biến hợp lệ; giả định về đối thủ xác định cách đánh giá chúng. Tại mỗi node, ta hoặc theo một policy đã cho, hoặc chọn action tốt nhất, hoặc giả sử đối thủ chọn nước bất lợi nhất.</p></div>
+</section>
+
+<section class="s" data-act="7" data-title="Các bước giải" data-time="40">
+  <div class="eyebrow"><b>Tổng kết</b></div>
+  <h2>Các bước giải một bài toán game</h2>
+  <div class="body col" style="gap:34px">
+    <div class="flow">
+      <div class="fx rise" data-at="0"><b>Modeling</b><span>sáu thành phần, state đủ thông tin</span></div>
+      <div class="fa rise" data-at="1">→</div>
+      <div class="fx rise" data-at="1"><b>Game tree</b><span>sinh bằng Actions và Succ</span></div>
+      <div class="fa rise" data-at="2">→</div>
+      <div class="fx rise" data-at="2"><b>Tính value</b><span>từ terminal state về root</span></div>
+      <div class="fa rise" data-at="3">→</div>
+      <div class="fx rise" data-at="3"><b>Chọn action</b><span>argmax ở lượt agent</span></div>
+      <div class="fa rise" data-at="4">→</div>
+      <div class="fx rise" data-at="4"><b>Cây quá lớn</b><span>ước lượng và cắt nhánh</span></div>
+    </div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Bắt đầu bằng mô hình: state và luật chơi.</div>
+  <div class="say" data-step="2" data-mood="think">Value được tính từ terminal state về state hiện tại, theo giả định về đối thủ.</div>
+  <div class="say" data-step="4" data-mood="happy">Khi cây quá lớn, cần ước lượng value và cắt bớt nhánh.</div>
+  <div class="notes"><p>Khi không duyệt hết được cây, cần evaluation function, depth-limited search và alpha-beta pruning. Các nội dung này thuộc Games 2.</p></div>
+</section>
+
+<section class="s" data-act="7" data-title="Câu hỏi kiểm tra (1)" data-time="70">
+  <div class="eyebrow"><b>Tổng kết</b> · câu hỏi</div>
+  <h2>Câu hỏi kiểm tra (1/2)</h2>
+  <div class="body col" style="gap:8px;justify-content:flex-start;padding-top:40px">
+    <div class="qa">
+      <div class="qn">1</div><div class="qq">Vì sao một path từ root tới một leaf thắng chưa đủ làm lời giải cho game?</div>
+      <div class="qans rise" data-at="1">Một số edge do đối thủ chọn. Path đó chỉ là một diễn biến; agent cần policy để đáp lại mọi phản ứng.</div>
+      <div class="qn">2</div><div class="qq">Ở thế Q, những ô nào thuộc <span class="mono">Actions(s)</span>? Vì sao một ô trống chưa chắc là nước tốt?</div>
+      <div class="qans rise" data-at="2">Các ô 0, 1, 2, 4. Cả bốn đều hợp lệ, nhưng sau X2 thì O có thể ép X thua.</div>
+      <div class="qn">3</div><div class="qq">Agent chọn đều A, B, C; đối thủ chọn đều hai số trong mỗi hộp. Expected utility tại root là bao nhiêu?</div>
+      <div class="qans rise" data-at="3">Ba hộp có value 0, 2, 5, nên root bằng (0 + 2 + 5)/3 = 7/3.</div>
+    </div>
+  </div>
+  <div class="say" data-step="0" data-mood="think">Thử trả lời trước khi xem đáp án.</div>
+  <div class="say" data-step="1" data-mood="talk">Câu 1: lời giải là một policy.</div>
+  <div class="say" data-step="2" data-mood="talk">Câu 2: Actions chỉ kiểm tra luật.</div>
+  <div class="say" data-step="3" data-mood="happy">Câu 3 là Game evaluation với agent chọn đều.</div>
+  <div class="notes"><p>Có thể hỏi người nghe trước khi hiện đáp án.</p></div>
+</section>
+
+<section class="s" data-act="7" data-title="Câu hỏi kiểm tra (2)" data-time="70">
+  <div class="eyebrow"><b>Tổng kết</b> · câu hỏi</div>
+  <h2>Câu hỏi kiểm tra (2/2)</h2>
+  <div class="body" style="gap:50px">
+    <div class="grow">
+      <div class="qa">
+        <div class="qn">4</div><div class="qq">Trong game ba hộp, đối thủ chọn số nhỏ với xác suất 0,9. Agent nên chọn hộp nào?</div>
+        <div class="qans rise" data-at="1">Hộp B. Expected utility của A, B, C lần lượt là −40; 1,2; −3.</div>
+        <div class="qn">5</div><div class="qq">Root là MAX, có ba con MIN với các leaf (3, 12, 8), (2, 4, 6), (14, 5, 2). Root value và nhánh được chọn là gì?</div>
+        <div class="qans rise" data-at="2">Ba node MIN trả 3, 2, 2. Root bằng max(3, 2, 2) = 3, chọn nhánh đầu tiên.</div>
+      </div>
+    </div>
+    <div class="side stack" style="width:620px;align-items:center" data-w="quizTree"></div>
+  </div>
+  <div class="say" data-step="0" data-mood="think">Câu 4 về Expectimax, câu 5 về Minimax.</div>
+  <div class="say" data-step="1" data-mood="talk">Câu 4: thay p = 0,9 vào ba đường V_A, V_B, V_C.</div>
+  <div class="say" data-step="2" data-mood="happy">Câu 5: tính các node MIN trước, rồi lấy max ở root.</div>
+  <div class="notes"><p>Cây ở câu 5 lấy từ CS188 Lecture 7, trang 18. Các câu còn lại dùng mô hình và ví dụ đã trình bày.</p></div>
+</section>
+
+<section class="s" data-act="7" data-title="Tài liệu tham khảo" data-time="15" data-nonarr>
+  <div class="eyebrow"><b>Tổng kết</b></div>
+  <h2 style="font-size:48px">Tài liệu tham khảo</h2>
+  <div class="body" style="padding-top:20px;padding-bottom:40px;gap:56px;font-size:27px;line-height:1.45;color:var(--ink2);align-items:flex-start">
+    <div class="grow stack" style="gap:12px">
+      <div class="refh">Bài giảng</div>
+      <div>[1] Stanford CS221. <i>Games I</i>, bản lưu trữ Spring 2024, trang 1-56. <a href="https://stanford-cs221.github.io/spring2024-extra/modules/games/games1.pdf" target="_blank" rel="noopener">games1.pdf</a></div>
+      <div>[2] Stanford Online. <i>Games I</i>, CS221 Autumn 2025 (video). <a href="https://www.youtube.com/watch?v=SMOD_GiRzb8" target="_blank" rel="noopener">YouTube</a></div>
+      <div>[3] Stanford Online. <i>Game Playing 1</i>, CS221 Autumn 2019 (video). <a href="https://www.youtube.com/watch?v=3pU-Hrz_xy4" target="_blank" rel="noopener">YouTube</a></div>
+      <div>[4] UC Berkeley CS188. <i>Lecture 7: Games</i>, Spring 2026, trang 6-20. <a href="https://inst.eecs.berkeley.edu/~cs188/sp26/assets/lectures/cs188-sp26-lec07.pdf" target="_blank" rel="noopener">PDF</a></div>
+      <div>[5] UC Berkeley CS188. <i>Note 6</i> và <i>Note 7</i>, Fall 2023. <a href="https://inst.eecs.berkeley.edu/~cs188/fa23/assets/notes/cs188-fa23-note06.pdf" target="_blank" rel="noopener">Note 6</a> · <a href="https://inst.eecs.berkeley.edu/~cs188/fa23/assets/notes/cs188-fa23-note07.pdf" target="_blank" rel="noopener">Note 7</a></div>
+      <div>[6] UC Berkeley CS188. <i>State Spaces and Search Problems</i>. <a href="https://inst.eecs.berkeley.edu/~cs188/textbook/search/state.html" target="_blank" rel="noopener">textbook</a></div>
+    </div>
+    <div class="grow stack" style="gap:12px">
+      <div class="refh">Mã nguồn và kiểm chứng</div>
+      <div>[7] CS221. <span class="mono">game.py</span>, bản lưu trữ cs221.1196: Halving, lớp +1 đấu với máy Minimax −1. <a href="https://web.stanford.edu/class/archive/cs/cs221/cs221.1196/semilive/games1/game.py" target="_blank" rel="noopener">game.py</a></div>
+      <div>[8] Nhóm 10. <span class="mono">verify_examples.py</span>: game ba hộp, Halving, bảng face-off, value từng nước ở thế P và Q, số đếm Tic-Tac-Toe.</div>
+      <div class="refh" style="margin-top:12px">Công cụ</div>
+      <div>Video thuật toán dựng bằng <a href="https://github.com/3b1b/manim" target="_blank" rel="noopener">3b1b/manim</a> (ManimGL). Công thức dùng KaTeX, biểu đồ dùng D3, chuyển động dùng GSAP, cây 3D dùng Three.js. Font pixel: Press Start 2P và VT323 (OFL).</div>
+      <div>Nhân vật pixel do nhóm tự thiết kế. Khung slide dựa trên template seminar RMQ của nhóm.</div>
+    </div>
+  </div>
+  <div class="notes"><p>Slide này để tra cứu sau buổi, không cần đọc. Số trang dẫn theo bản PDF trong thư mục docs/.</p></div>
+</section>
+
+<section class="s" data-act="7" data-title="Cảm ơn" data-time="15" data-nonarr>
+  <div class="titlewrap" style="gap:40px">
+    <div class="grow">
+      <h1 style="font-size:88px">Cảm ơn thầy<br>và các bạn<br>đã theo dõi</h1>
+      <div class="sub">Mời đặt câu hỏi</div>
+    </div>
+    <div style="width:940px;flex:none" data-w="arenaSigns" data-o='{"l":"Q","r":"A","center":"HỎI<br>ĐÁP","cfs":80,"h":540,"unit":6,"cmin":300,"ls":"","rs":""}'></div>
+  </div>
+  <div class="notes"><p>Một số câu hỏi có thể gặp.</p><p>Expectimax có luôn tốt hơn Minimax không? Chỉ khi mô hình về đối thủ đúng; tính chất ③ chỉ so sánh trong cột π₇.</p><p>Minimax có cần đối thủ chơi tối ưu thì lower bound mới đúng không? Không cần, chỉ cần agent giữ π_max.</p><p>Vì sao value trong Halving là ±∞? Chỉ để phân biệt thắng và thua; thay bằng ±1 vẫn được.</p><p>Game tree và state-space graph khác nhau thế nào? Tree giữ lịch sử, còn graph gộp các state giống nhau.</p></div>
+</section>

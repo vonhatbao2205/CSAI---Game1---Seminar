@@ -1,0 +1,180 @@
+<section class="s" data-act="5" data-title="Minimax" data-time="50">
+  <div class="eyebrow"><b>Minimax</b></div>
+  <h2>Minimax chuẩn bị cho phản ứng bất lợi nhất của đối thủ</h2>
+  <div class="body" style="gap:50px">
+    <div class="grow minimax-arena" data-w="arenaSigns" data-o='{"l":"max","r":"min","center":"0 = U + (−U)","cfs":56,"ls":"tối đa utility của mình","rs":"tối đa utility của mình,<br>tức tối thiểu utility agent"}'></div>
+    <div class="side stack" style="width:600px;gap:26px">
+      <p class="lead">Mỗi action được đánh giá theo phản ứng bất lợi nhất. Agent chọn action có worst-case value cao nhất.</p>
+      <ul class="plain">
+        <li class="rise" data-at="1"><i class="glyph max"></i>Lượt agent: max</li>
+        <li class="rise" data-at="1"><i class="glyph min"></i>Lượt đối thủ: min</li>
+        <li class="rise" data-at="1"><i class="shape term" style="margin-right:12px;vertical-align:-3px"></i>Terminal state: utility theo agent</li>
+      </ul>
+      <p class="txt rise" data-at="2">Minimax không cần biết policy của đối thủ.</p>
+    </div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Trong game zero-sum, đối thủ tăng utility của mình nghĩa là giảm utility của agent.</div>
+  <div class="say" data-step="1" data-mood="think">Vì vậy ở lượt đối thủ, ta giả sử họ chọn nước làm agent thiệt nhất và lấy min.</div>
+  <div class="say" data-step="2" data-mood="happy">Minimax không cần ước lượng xác suất nào.</div>
+  <div class="notes"><p>CS221, trang 37-42. Tổng utility của hai bên bằng 0, nên đối thủ tối đa utility của mình cũng chính là tối thiểu utility của agent.</p></div>
+</section>
+
+<section class="s" data-act="5" data-title="Recurrence của Minimax" data-time="55">
+  <div class="eyebrow"><b>Minimax</b> · recurrence</div>
+  <h2>Recurrence của Minimax và policy tối ưu</h2>
+  <div class="body" style="gap:50px">
+    <div class="grow">
+      <div class="formula" style="font-size:33px">$$V_{\mathrm{minmax}}(s)=\begin{cases}Utility(s), & IsEnd(s)\\[1mm] \displaystyle\max_{a\in Actions(s)} V_{\mathrm{minmax}}(Succ(s,a)), & Player(s)=\text{agent}\\[3mm] \displaystyle\min_{a\in Actions(s)} V_{\mathrm{minmax}}(Succ(s,a)), & Player(s)=\text{opp}\end{cases}$$</div>
+    </div>
+    <div class="side stack" style="width:600px;gap:26px">
+      <div class="rise" data-at="1"><div class="formula" style="font-size:31px">$$\pi_{\max}(s)\in\arg\max_a V_{\mathrm{minmax}}(Succ(s,a))$$</div></div>
+      <div class="rise" data-at="1"><div class="formula" style="font-size:31px">$$\pi_{\min}(s)\in\arg\min_a V_{\mathrm{minmax}}(Succ(s,a))$$</div></div>
+      <p class="txt rise" data-at="2">Hai policy này áp dụng tại mọi state thuộc lượt mình, kể cả state nằm ngoài đường chơi dự kiến.</p>
+    </div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">So với Expectimax, chỉ dòng thứ ba thay đổi: trung bình có trọng số được thay bằng min.</div>
+  <div class="say" data-step="1" data-mood="talk">Lấy argmax ta được policy của agent, lấy argmin ta được policy của đối thủ.</div>
+  <div class="say" data-step="2" data-mood="think">Hai policy này xuất hiện lại trong bảng face-off.</div>
+  <div class="notes"><p>CS221, trang 41-44. Value tính từ leaf lên root. Ở lượt agent, chọn action dẫn tới con có value lớn nhất; ở lượt đối thủ, giả sử đối thủ chọn con có value nhỏ nhất.</p></div>
+</section>
+
+<section class="s video" data-act="5" data-title="Video: Minimax trên ba hộp" data-time="29">
+  <video src="media/M04_Minimax.mp4" poster="media/posters/M04_Minimax.jpg" preload="auto"></video>
+  <div class="notes"><p>Video manim: các node hộp đổi thành MIN, nên A, B, C có value −50, 1, −5. Root MAX lấy max(−50, 1, −5) = 1 và agent chọn B. Dù đối thủ chọn 1 hay 3, agent nhận ít nhất 1. Hộp A có leaf 50 nhưng agent không thể bảo đảm đi tới đó (CS221, trang 39-40).</p></div>
+</section>
+
+<section class="s" data-act="5" data-title="Ba phương pháp, một cây" data-time="60">
+  <div class="eyebrow"><b>Minimax</b> · so sánh</div>
+  <h2>Cùng một cây, phép tính tại node thay đổi theo câu hỏi</h2>
+  <div class="body">
+    <div data-w="compare3" style="width:100%"></div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Game evaluation: cả hai policy đã biết, mọi tầng lấy trung bình. Root bằng 0.</div>
+  <div class="say" data-step="1" data-mood="talk">Expectimax: root đổi thành max. Root bằng 5 và agent chọn C.</div>
+  <div class="say" data-step="2" data-mood="happy">Minimax: tầng đối thủ đổi thành min. Root bằng 1 và agent chọn B.</div>
+  <div class="notes"><p>Game evaluation đánh giá một cặp policy, Expectimax tối đa expected utility trước một policy đối thủ đã biết, còn Minimax tối đa worst-case value. Mỗi con số 0, 5, 1 chỉ có nghĩa cùng với giả định của nó (CS221, trang 25-43).</p></div>
+</section>
+
+<section class="s video" data-act="5" data-title="Video: cây nhiều tầng" data-time="37">
+  <video src="media/M05_DeepTree.mp4" poster="media/posters/M05_DeepTree.jpg" preload="auto"></video>
+  <div class="notes"><p>Video manim trên cây MAX, MIN, MAX. Hai node MAX trong A trả max(−100, 10) = 10 và max(8, 20) = 20; A trả min(10, 20) = 10; B trả min(5, 6) = 5; root trả max(10, 5) = 10 và chọn A.</p><p>Leaf −100 không quyết định value của A, vì tới node MAX đó agent sẽ chọn 10. Đối thủ chỉ được chọn ở lượt MIN. Ví dụ do nhóm dựng từ recurrence.</p></div>
+</section>
+
+<section class="s" data-act="5" data-title="Pseudocode" data-time="50">
+  <div class="eyebrow"><b>Minimax</b> · cài đặt</div>
+  <h2>Expectimax và Minimax khác cách xử lý lượt đối thủ</h2>
+  <div class="body col" style="gap:24px">
+    <div class="cols2" style="gap:28px">
+    <pre class="code" style="font-size:27px"><span class="m"># Expectimax</span>
+<span class="k">def</span> <span class="f">expectimax</span>(s):
+    <span class="k">if</span> IsEnd(s):
+        <span class="k">return</span> Utility(s)
+    actions = Actions(s)
+    values = [<span class="f">expectimax</span>(Succ(s, a))
+              <span class="k">for</span> a <span class="k">in</span> actions]
+    <span class="k">if</span> Player(s) == agent:
+        <span class="k">return</span> <span class="f">max</span>(values)
+<span class="diff">    <span class="k">return</span> <span class="f">sum</span>(pi_opp(s, a) * v
+               <span class="k">for</span> a, v <span class="k">in</span> zip(actions, values))</span></pre>
+    <pre class="code" style="font-size:27px"><span class="m"># Minimax</span>
+<span class="k">def</span> <span class="f">minimax</span>(s):
+    <span class="k">if</span> IsEnd(s):
+        <span class="k">return</span> Utility(s)
+    actions = Actions(s)
+    values = [<span class="f">minimax</span>(Succ(s, a))
+              <span class="k">for</span> a <span class="k">in</span> actions]
+    <span class="k">if</span> Player(s) == agent:
+        <span class="k">return</span> <span class="f">max</span>(values)
+<span class="diff2">    <span class="k">return</span> <span class="f">min</span>(values)</span>
+</pre>
+    </div>
+    <div class="cols2" style="gap:28px">
+      <p class="txt rise" data-at="1">Giống nhau: kiểm tra terminal state, duyệt action, gọi đệ quy và lấy <span class="c-max">max</span> ở lượt agent.</p>
+      <p class="txt rise" data-at="2">Khác nhau ở lượt đối thủ: Expectimax lấy <span class="c-chance">trung bình theo pi_opp</span>, Minimax lấy <span class="c-min">min</span>.</p>
+    </div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Hai hàm giống nhau gần như từng dòng.</div>
+  <div class="say" data-step="1" data-mood="talk">Cả hai dừng ở terminal state, gọi đệ quy xuống các con và lấy max ở lượt agent.</div>
+  <div class="say" data-step="2" data-mood="happy">Dòng cuối khác nhau: Expectimax cần xác suất của đối thủ, Minimax thì không.</div>
+  <div class="notes"><p>pi_opp(s, a) là xác suất đối thủ chọn a tại s theo policy đã biết. max chỉ trả về value; muốn biết nước đi phải lưu thêm action tương ứng. CS188 Note 6, trang 5; Lecture 7, trang 16-17; Note 7, trang 1-2.</p></div>
+</section>
+
+<section class="s" data-act="5" data-title="Chạy từng bước" data-time="75">
+  <div class="eyebrow"><b>Minimax</b> · postorder DFS</div>
+  <h2>Đi xuống để sinh state, đi lên để tính value</h2>
+  <div class="body" style="padding-top:20px">
+    <div data-w="stepper" style="width:100%"></div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Mỗi lần bấm Bước tiếp là một lời gọi value hoặc một lần trả kết quả.</div>
+  <div class="say" data-step="1" data-mood="think">Node chỉ có value khi mọi con đã trả về. Đây là postorder DFS, hay backward induction.</div>
+  <div class="say" data-step="2" data-mood="surprised">Đổi tầng đối thủ sang trung bình: cùng các leaf, Expectimax chọn C thay vì B.</div>
+  <div class="notes"><p>Chiều đi xuống thử các action hợp lệ và sinh state kế tiếp. Chiều đi lên nhận value của các con rồi lấy max, min hoặc trung bình. Việc thử một nhánh trong lúc search chưa có nghĩa agent sẽ chơi nhánh đó.</p><p>Backward induction là truyền value từ con lên parent, khác với search ngược từ goal. Nút "Đổi leaf ngẫu nhiên" tạo cây mới để người nghe đoán trước kết quả.</p></div>
+</section>
+
+<section class="s" data-act="5" data-title="Halving: luật chơi" data-time="50">
+  <div class="eyebrow"><b>Minimax</b> · Halving</div>
+  <h2>Halving: bên nhận số 0 thắng</h2>
+  <div class="body" style="gap:56px">
+    <div class="grow stack" style="gap:30px">
+      <ul class="plain">
+        <li>Bắt đầu từ số nguyên dương $N$. Lớp đi trước với $N=15$.</li>
+        <li>Mỗi lượt chọn <span class="mono">−</span> để trừ 1, hoặc <span class="mono">/</span> để thay $N$ bằng $\lfloor N/2\rfloor$.</li>
+        <li>Player nhận số 0 thắng, nên player vừa đưa số về 0 thua.</li>
+      </ul>
+      <p class="txt rise" data-at="1">State là (player, N), với player là bên đến lượt. Lớp là <span class="c-max">+1 (MAX)</span>, máy là <span class="c-min">−1 (MIN)</span>. Tại terminal state $(p,0)$, Utility $=p\cdot\infty$.</p>
+    </div>
+    <div class="side stack rise" data-at="2" style="width:620px;gap:18px">
+      <p class="col-title">Lớp đến lượt với N = 1</p>
+      <div class="formula" style="font-size:32px">$$(\mathrm{MAX},1)\xrightarrow{-1}(\mathrm{MIN},0)$$</div>
+      <table class="t big cells">
+        <tr><th>Terminal</th><th>Bên thắng</th><th>Utility</th></tr>
+        <tr><td class="mono">(+1, 0)</td><td>Lớp</td><td class="num win">+∞</td></tr>
+        <tr><td class="mono">(−1, 0)</td><td>Máy</td><td class="num loss">−∞</td></tr>
+      </table>
+      <p class="txt">Cả hai nước đều đưa máy tới 0, nên lớp thua.</p>
+    </div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Mỗi lượt trừ 1 hoặc chia đôi. Bên nhận được số 0 thì thắng.</div>
+  <div class="say" data-step="1" data-mood="think">Value luôn tính theo góc nhìn của lớp, kể cả khi máy đang chọn.</div>
+  <div class="say" data-step="2" data-mood="worried">Ở N = 1, nước nào cũng đưa số 0 cho máy, nên lớp thua.</div>
+  <div class="notes"><p>CS221, trang 19 và 45. Demo dùng game.py của CS221 (bản lưu trữ cs221.1196). Giá trị vô hạn chỉ dùng để phân biệt thắng và thua; thay bằng +1 và −1 thì các nước tối ưu không đổi.</p></div>
+</section>
+
+<section class="s video" data-act="5" data-title="Video: state thắng và state thua" data-time="49">
+  <video src="media/M06_Halving.mp4" poster="media/posters/M06_Halving.jpg" preload="auto"></video>
+  <div class="notes"><p>Video manim: W(n) = 1 nếu player đến lượt tại n có strategy thắng. W(0) = 1; với n &gt; 0, W(n) = max{1 − W(n − 1), 1 − W(⌊n/2⌋)}. Tính từ 0 tới 16, các state thua là 1, 4, 6, 10, 14, 16.</p><p>Vì vậy để máy nhận 14 thì lớp có strategy thắng, còn để máy nhận 7 thì máy có strategy thắng. Bảng được kiểm bằng verify_examples.py.</p></div>
+</section>
+
+<section class="s" data-act="5" data-title="Lớp đấu với Minimax" data-time="180" data-opt>
+  <div class="eyebrow"><b>Minimax</b> · hoạt động 3-4 phút</div>
+  <h2>Lớp đấu với máy dùng Minimax</h2>
+  <div class="body col" style="gap:12px">
+    <div data-w="halving"></div>
+  </div>
+  <div class="say" data-step="0" data-mood="happy">Cả lớp bỏ phiếu − hoặc ÷2 ở mỗi lượt. Máy in value theo góc nhìn của lớp.</div>
+  <div class="notes"><p>Chơi một ván. Sau mỗi nước của máy, đọc value: +∞ nghĩa là lớp vẫn có strategy thắng, −∞ nghĩa là máy có strategy thắng. Nếu hết giờ, dừng sau một lượt của máy và dùng value vừa in để kết luận.</p><p>Chuỗi dự phòng khi lớp chọn −, /, −, /: (+1,15) → (−1,14) → (+1,13) → (−1,6) → (+1,5) → (−1,4) → (+1,3) → (−1,1) → (+1,0), lớp thắng. Nút "Hiện thế thắng / thua" tô bảng W(n). Có thể thử N = 16: bên đi trước thua nếu bên kia chơi đúng.</p></div>
+</section>
+
+<section class="s" data-act="5" data-title="Một nước tối ưu chưa đủ" data-time="50">
+  <div class="eyebrow"><b>Minimax</b> · Halving</div>
+  <h2>Giữ policy Minimax tới cuối ván để bảo đảm thắng</h2>
+  <div class="body" style="gap:50px">
+    <div class="grow stack" style="gap:30px">
+      <table class="t big">
+        <tr><th>Lớp chọn ở 15</th><th>Máy nhận</th><th class="num">Value</th><th>Ý nghĩa</th></tr>
+        <tr class="pick"><td class="mono h">−</td><td class="mono">(−1, 14)</td><td class="num win">+∞</td><td>lớp có strategy thắng</td></tr>
+        <tr><td class="mono h">/</td><td class="mono">(−1, 7)</td><td class="num loss">−∞</td><td>máy có strategy thắng</td></tr>
+      </table>
+      <p class="txt rise" data-at="1">Sau 15 → 14 → 13, lớp phải chọn / để về 6. Nếu chọn − để về 12, lớp mất strategy thắng và máy có thể thắng.</p>
+    </div>
+    <div class="side stack rise" data-at="2" style="width:620px;gap:16px">
+      <p class="col-title">Các state thua của bên đến lượt</p>
+      <div class="wstrip big" data-w="wstrip"></div>
+      <p class="txt">Mọi số lẻ từ 3 trở lên đều thắng. Số 2 và 8 cũng thắng, còn 1 thì thua. Tại 14 và 16, nước nào cũng đưa đối phương vào state thắng.</p>
+    </div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Ở 15, chỉ nước trừ 1 giữ được strategy thắng.</div>
+  <div class="say" data-step="1" data-mood="worried">Lớp chỉ chắc thắng nếu tiếp tục chơi đúng ở mọi lượt sau.</div>
+  <div class="say" data-step="2" data-mood="think">Minimax biết một state thắng hay thua ngay khi ván chưa kết thúc.</div>
+  <div class="notes"><p>Với N = 14, hai action đưa đối phương tới 13 hoặc 7, đều là state thắng của bên nhận lượt. Với N = 16, hai action đưa tới 15 hoặc 8, cũng đều thắng. Vì vậy 14 và 16 là state thua của bên đến lượt khi hai bên chơi tối ưu.</p><p>Kết quả tính bằng phần Halving trong verify_examples.py.</p></div>
+</section>

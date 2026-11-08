@@ -1,0 +1,54 @@
+<section class="s" data-act="0" data-title="Games 1" data-time="30" data-nonarr>
+  <div class="titlewrap" style="gap:40px;padding-bottom:60px">
+    <div class="grow">
+      <div class="kicker">Seminar · Cơ sở Trí tuệ Nhân tạo</div>
+      <h1>Games <span class="accent">1</span></h1>
+      <div class="sub">Modeling, Game evaluation,<br>Expectimax và Minimax</div>
+      <div class="who">
+        <div class="members">
+          <span>Võ Nhất Bảo</span><span class="mono">24120166</span>
+          <span>Phạm Lê Huy Hoàng</span><span class="mono">24120182</span>
+        </div>
+        <div class="course">Nhóm 10 · Lớp 24TN · Khoa Công nghệ Thông tin<br>Trường Đại học Khoa học Tự nhiên, ĐHQG-HCM · 09/11/2026</div>
+      </div>
+    </div>
+    <div data-w="tree3d" data-o='{"depth":5,"size":800}'>
+      <div class="hero-legend"><span><i style="background:#2b8a3e"></i>X thắng</span><span><i style="background:#9aa3ad"></i>hòa</span><span><i style="background:#d6336c"></i>O thắng</span></div>
+    </div>
+  </div>
+  <div class="notes"><p>Giới thiệu nhóm 10 và chủ đề Games 1, gồm năm phần: Overview, Modeling, Game evaluation, Expectimax và Minimax.</p><p>Hình bên phải là game tree của Tic-Tac-Toe từ bàn trống, năm ply đầu (18.730 node). Màu của mỗi node là Minimax value theo X: xanh lá là X thắng, xám là hòa, hồng là O thắng khi hai bên chơi tối ưu. Kéo chuột để xoay cây.</p><p>Phím tắt: → đi tiếp, A tự chạy, O tổng quan, N ghi chú, T bản rút gọn, F toàn màn hình.</p></div>
+</section>
+
+<section class="s" data-act="0" data-title="Câu hỏi của buổi trình bày" data-time="45">
+  <div class="eyebrow"><b>Mở đầu</b></div>
+  <h2>Agent chọn action thế nào khi các lượt sau thuộc về đối thủ?</h2>
+  <div class="body col" style="gap:20px">
+    <div data-w="arenaIntro"></div>
+  </div>
+  <div class="say" data-step="0" data-mood="happy">Agent là robot bên trái. Đối thủ đội mũ len, đứng bên phải.</div>
+  <div class="say" data-step="1" data-mood="think">Agent chỉ chọn ở lượt của mình, nhưng kết quả còn phụ thuộc các lượt sau.</div>
+  <div class="say" data-step="2" data-mood="talk">Các lượt đó do đối thủ chọn, nên agent phải tính trước cách đối thủ phản ứng.</div>
+  <div class="notes"><p>Câu hỏi của cả buổi: tại một state, agent nên chọn action nào khi một phần diễn biến tiếp theo do đối thủ quyết định.</p><p>Quy ước màu dùng trong slide và video: xanh dương cho agent (MAX), hồng cho đối thủ (MIN), tím cho chance node, xanh ngọc cho Game evaluation, cam cho node đang tính, xanh lá cho action được chọn.</p></div>
+</section>
+
+<section class="s" data-act="0" data-title="Lộ trình" data-time="40">
+  <div class="eyebrow"><b>Mở đầu</b> · lộ trình</div>
+  <h2>Năm phần của buổi trình bày</h2>
+  <div class="body col">
+    <div class="road" style="grid-template-columns:repeat(5,1fr)">
+      <div class="road-step rise" data-at="0" style="--i:0"><span class="road-n">1</span><b>Overview</b><span class="road-d">Search khi có đối thủ: từ plan sang policy</span></div>
+      <div class="road-step rise" data-at="1" style="--i:1"><span class="road-n">2</span><b>Modeling</b><span class="road-d">Sáu thành phần, game tree, policy và value</span></div>
+      <div class="road-step rise" data-at="2" style="--i:2"><span class="road-n">3</span><b>Game evaluation</b><span class="road-d">Biết hai policy, tính expected utility</span></div>
+      <div class="road-step rise" data-at="3" style="--i:3"><span class="road-n">4</span><b>Expectimax</b><span class="road-d">Biết policy đối thủ, tối đa expected utility</span></div>
+      <div class="road-step rise" data-at="4" style="--i:4"><span class="road-n">5</span><b>Minimax</b><span class="road-d">Chưa biết policy đối thủ, tối ưu worst-case value</span></div>
+    </div>
+    <p class="lead rise" data-at="5" style="text-align:center;margin-top:30px">Ví dụ chính là game ba hộp. Tic-Tac-Toe và Halving dùng để minh họa thêm.</p>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Phần đầu giải thích vì sao có đối thủ thì cần policy thay cho plan.</div>
+  <div class="say" data-step="1" data-mood="talk">Phần hai mô tả một game bằng sáu thành phần.</div>
+  <div class="say" data-step="2" data-mood="talk">Phần ba tính value của một cặp policy đã biết.</div>
+  <div class="say" data-step="3" data-mood="talk">Phần bốn tìm policy tốt nhất khi biết đối thủ chơi theo xác suất nào.</div>
+  <div class="say" data-step="4" data-mood="talk">Phần năm tìm policy tốt nhất cho worst case.</div>
+  <div class="say" data-step="5" data-mood="happy">Game ba hộp đi suốt buổi; Tic-Tac-Toe và Halving minh họa thêm.</div>
+  <div class="notes"><p>Mạch nội dung theo Stanford CS221 Games I (games1.pdf, trang 1-56). Ví dụ và cách cài đặt bổ sung từ UC Berkeley CS188.</p><p>Evaluation function, depth-limited search, alpha-beta pruning và Expectiminimax thuộc Games 2 của nhóm 11.</p></div>
+</section>

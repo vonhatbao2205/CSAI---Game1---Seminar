@@ -1,0 +1,149 @@
+<section class="s" data-act="4" data-title="Expectimax" data-time="50">
+  <div class="eyebrow"><b>Expectimax</b></div>
+  <h2>Expectimax tối ưu policy của agent khi biết μ</h2>
+  <div class="body" style="gap:56px">
+    <div class="grow stack" style="gap:30px">
+      <div class="formula big">$$V^{*,\mu}(s)=\max_{\pi}\,V^{\pi,\mu}(s)$$</div>
+      <p class="lead">Đối thủ chơi theo μ. Agent cần chọn action có expected utility cao nhất.</p>
+      <p class="txt rise" data-at="2">μ không cần là phân phối đều. Một deterministic policy cũng dùng được, với xác suất 0 hoặc 1.</p>
+    </div>
+    <div class="side stack rise" data-at="1" style="width:660px;gap:20px">
+      <table class="t big algorithm-compare">
+        <tr><th>Lượt</th><th>Game evaluation</th><th>Expectimax</th></tr>
+        <tr><td class="h c-max">Agent</td><td>trung bình theo π</td><td class="h c-max">max</td></tr>
+        <tr><td class="h c-min">Đối thủ</td><td>trung bình theo μ</td><td>trung bình theo μ</td></tr>
+        <tr><td class="h">Terminal</td><td>utility</td><td>utility</td></tr>
+      </table>
+      <p class="txt" style="text-align:center">Chỉ lượt của agent thay đổi.</p>
+    </div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Agent vẫn biết đối thủ chơi theo xác suất nào, nhưng giờ được tự chọn action.</div>
+  <div class="say" data-step="1" data-mood="think">Lượt agent đổi từ trung bình theo π sang max; lượt đối thủ giữ trung bình theo μ.</div>
+  <div class="say" data-step="2" data-mood="talk">μ có thể là bất kỳ phân phối xác suất nào đã biết.</div>
+  <div class="notes"><p>CS221, trang 31-34. Theo ký hiệu ở phần Modeling, Expectimax tính V^{*,μ}(s) = max_π V^{π,μ}(s): giữ μ cố định và tối ưu π.</p></div>
+</section>
+
+<section class="s" data-act="4" data-title="Recurrence của Expectimax" data-time="55">
+  <div class="eyebrow"><b>Expectimax</b> · recurrence</div>
+  <h2>Recurrence của Expectimax và ba loại node</h2>
+  <div class="body" style="gap:50px">
+    <div class="grow">
+      <div class="formula" style="font-size:34px">$$V^{*,\mu}(s)=\begin{cases}Utility(s), & IsEnd(s)\\[1mm] \displaystyle\max_{a\in Actions(s)} V^{*,\mu}(Succ(s,a)), & Player(s)=\text{agent}\\[3mm] \displaystyle\sum_{a}\mu(a\mid s)\,V^{*,\mu}(Succ(s,a)), & Player(s)=\text{opp}\end{cases}$$</div>
+    </div>
+    <div class="side stack" style="width:600px;gap:24px">
+      <table class="t">
+        <tr><th>Node</th><th>Phép tính</th></tr>
+        <tr class="rise" data-at="1"><td class="h"><i class="shape max"></i>MAX</td><td>lấy value lớn nhất trong các con</td></tr>
+        <tr class="rise" data-at="1"><td class="h"><i class="shape chance"></i>Chance</td><td>trung bình có trọng số theo μ</td></tr>
+        <tr class="rise" data-at="1"><td class="h"><i class="shape term"></i>Terminal</td><td>trả về utility</td></tr>
+      </table>
+      <p class="txt rise" data-at="2">Xác suất tại chance node đến từ mô hình về đối thủ. Đối thủ thật không cần tung đồng xu.</p>
+    </div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Terminal state trả utility, lượt agent lấy max, lượt đối thủ lấy trung bình theo μ.</div>
+  <div class="say" data-step="1" data-mood="talk">Tam giác hướng lên là MAX, hình tròn là chance node, hình vuông là terminal state.</div>
+  <div class="say" data-step="2" data-mood="think">Trong game có xúc xắc, chance node còn biểu diễn yếu tố ngẫu nhiên của môi trường.</div>
+  <div class="notes"><p>CS188 Note 7, trang 1-2. Trong Games 1, xác suất đến từ mô hình về cách đối thủ chọn nước; Succ(s, a) vẫn deterministic sau khi action đã chọn. Cần phân biệt xác suất do mô hình đối thủ với xác suất do môi trường. Game ba hộp chỉ có loại thứ nhất.</p></div>
+</section>
+
+<section class="s video" data-act="4" data-title="Video: Expectimax trên ba hộp" data-time="28">
+  <video src="media/M02_Expectimax.mp4" poster="media/posters/M02_Expectimax.jpg" preload="auto"></video>
+  <div class="notes"><p>Video manim: đối thủ vẫn chọn đều nên ba hộp giữ value 0, 2, 5. Root đổi thành node MAX: max(0, 2, 5) = 5, agent chọn C. Value 5 là expected utility; một ván chọn C chỉ cho −5 hoặc 15 (CS221, trang 31-34).</p></div>
+</section>
+
+<section class="s" data-act="4" data-title="Value và action" data-time="45">
+  <div class="eyebrow"><b>Expectimax</b> · chọn action</div>
+  <h2>max trả value, argmax cho biết action cần chọn</h2>
+  <div class="body" style="gap:60px">
+    <div class="grow stack" style="gap:30px">
+      <div class="formula" style="text-align:left">$$\pi_{\mathrm{exp},\mu}(s)\in\arg\max_{a\in Actions(s)} V^{*,\mu}(Succ(s,a))$$</div>
+      <ul class="plain">
+        <li class="rise" data-at="0">max trả về value tốt nhất. Để chơi, cần lưu thêm action đạt value đó.</li>
+        <li class="rise" data-at="1">Nếu nhiều action cùng tốt nhất, chọn action nào cũng được.</li>
+        <li class="rise" data-at="2">Ở mỗi lượt sau, agent tiếp tục chọn theo argmax.</li>
+      </ul>
+    </div>
+    <div class="side stack rise" data-at="3" style="width:540px;gap:16px">
+      <p class="col-title">Ba hộp, đối thủ chọn đều</p>
+      <p class="txt">max(0, 2, 5) = 5; action đạt value này là chọn C.</p>
+      <p class="txt">Một ván chọn C chỉ cho <span class="c-loss">−5</span> hoặc <span class="c-win">15</span>. Số 5 là expected utility.</p>
+    </div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Hàm value trả về một con số. Để chơi, agent cần action tạo ra con số đó.</div>
+  <div class="say" data-step="1" data-mood="think">Nếu hai hộp cùng tốt nhất, chọn hộp nào cũng được.</div>
+  <div class="say" data-step="2" data-mood="talk">Ở mỗi lượt sau, agent lại chọn theo argmax.</div>
+  <div class="say" data-step="3" data-mood="worried">Expectimax cho 5 ở mức trung bình; một ván riêng lẻ chỉ ra −5 hoặc 15.</div>
+  <div class="notes"><p>Tại mỗi state thuộc lượt agent, policy được lấy bằng argmax. Hàm value có thể gọi lại tại state thực tế sau mỗi nước của đối thủ.</p></div>
+</section>
+
+<section class="s video" data-act="4" data-title="Video: một tham số, ba lựa chọn" data-time="38">
+  <video src="media/M03_Sensitivity.mp4" poster="media/posters/M03_Sensitivity.jpg" preload="auto"></video>
+  <div class="notes"><p>Video manim: p là xác suất đối thủ chọn số nhỏ, dùng chung cho ba hộp. V_A = 50 − 100p, V_B = 3 − 2p, V_C = 15 − 20p. Đường cao nhất cho lựa chọn tốt nhất: A khi p &lt; 7/16, C khi 7/16 &lt; p &lt; 2/3, B khi p &gt; 2/3.</p><p>Hai ngưỡng: V_A = V_C khi 35 = 80p, tức p = 7/16; V_C = V_B khi 12 = 18p, tức p = 2/3. A và B cắt nhau tại p = 47/98, nhưng khi đó V_C = 265/49 lớn hơn nên lựa chọn không đổi.</p></div>
+</section>
+
+<section class="s" data-act="4" data-title="Độ nhạy theo mô hình đối thủ" data-time="60">
+  <div class="eyebrow"><b>Expectimax</b> · độ nhạy</div>
+  <h2>Đổi mô hình đối thủ, Expectimax chuyển từ A sang C rồi B</h2>
+  <div class="body">
+    <div data-w="sensitivity" style="width:100%"></div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Mỗi đường thẳng là expected utility của một hộp theo p. Kéo thanh trượt để đổi p.</div>
+  <div class="say" data-step="1" data-mood="think">Expectimax luôn chọn đường cao nhất: A, rồi C, rồi B.</div>
+  <div class="say" data-step="2" data-mood="talk">Lựa chọn đổi tại p = 7/16 và p = 2/3.</div>
+  <div class="say" data-step="3" data-mood="surprised">A và B cắt nhau tại 47/98, nhưng khi đó C cao hơn cả hai nên lựa chọn không đổi.</div>
+  <div class="notes"><p>Bắt đầu từ p = 0,5, chỉ cần giảm p xuống dưới 0,4375 là lựa chọn đổi từ C sang A. Hộp A nhạy với p hơn vì hai số trong hộp cách xa nhau.</p><p>Tại p = 7/16, A và C cùng bằng 25/4, lớn hơn B là 17/8. Tại p = 2/3, B và C cùng bằng 5/3, lớn hơn A là −50/3. Phân tích theo p do nhóm phát triển từ game ba hộp (CS221, trang 5-6) và công thức Expectimax (trang 33-34).</p></div>
+</section>
+
+<section class="s" data-act="4" data-title="Mô hình sai thì sao" data-time="55">
+  <div class="eyebrow"><b>Expectimax</b> · mô hình và thực tế</div>
+  <h2>Expectimax chỉ tối ưu theo mô hình về đối thủ</h2>
+  <div class="body">
+    <div data-w="regret" style="width:100%"></div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Agent tin đối thủ chọn đều, p = 0,5, nên chọn C và dự kiến được 5.</div>
+  <div class="say" data-step="1" data-mood="worried">Đối thủ thật chọn số nhỏ 90% số lần: C chỉ còn −3, trong khi B được 1,2.</div>
+  <div class="say" data-step="2" data-mood="think">Nếu đối thủ luôn chọn số nhỏ, C cho −5 còn B vẫn cho 1. Minimax bắt đầu từ đây.</div>
+  <div class="notes"><p>Expectimax tối ưu theo mô hình được đưa vào; mô hình có thể không khớp đối thủ thật. Khi p = 1, mỗi chance node chỉ còn số nhỏ nhất và lựa chọn trùng với Minimax. Khi p = 0,9, Expectimax cũng chọn B.</p><p>Phần thiệt do mô hình sai là hiệu giữa lựa chọn tốt nhất khi biết p thật và lựa chọn theo mô hình, cả hai đều tính với p thật.</p></div>
+</section>
+
+<section class="s" data-act="4" data-title="Expectimax cần gì" data-time="50">
+  <div class="eyebrow"><b>Expectimax</b> · điều kiện</div>
+  <h2>Điều kiện để dùng Expectimax</h2>
+  <div class="body col" style="gap:56px">
+    <div class="cols3 aligned-columns" style="column-gap:80px">
+      <div class="rise" data-at="0"><p class="col-title">Xác suất hợp lệ</p><p class="txt">Tại mỗi node của đối thủ, xác suất không âm và có tổng bằng 1.</p></div>
+      <div class="rise" data-at="1"><p class="col-title">Utility có nghĩa về độ lớn</p><p class="txt">Phép trung bình dùng cả khoảng cách giữa các utility, nên đổi thang đo có thể đổi lựa chọn.</p></div>
+      <div class="rise" data-at="2"><p class="col-title">Expected utility và tỉ lệ thắng</p><div class="stack" style="gap:16px"><p class="txt">Với utility +1, 0, −1:</p><div class="formula" style="font-size:31px;text-align:left">$$\mathbb E[U]=P(\text{thắng})-P(\text{thua})$$</div></div></div>
+    </div>
+    <p class="lead rise" data-at="3" style="text-align:center">Expectimax bảo đảm tối ưu expected utility khi mô hình đối thủ đúng.</p>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Mô hình đối thủ phải là một phân phối xác suất hợp lệ.</div>
+  <div class="say" data-step="1" data-mood="think">Đổi thang utility có thể đổi lựa chọn, dù thứ tự các kết quả giữ nguyên.</div>
+  <div class="say" data-step="2" data-mood="worried">Expected utility bằng xác suất thắng trừ xác suất thua, nên nó khác tỉ lệ thắng.</div>
+  <div class="say" data-step="3" data-mood="talk">Lựa chọn tối ưu luôn gắn với một mô hình cụ thể về đối thủ.</div>
+  <div class="notes"><p>Các ví dụ trong bài dùng utility hữu hạn. Ví dụ đổi thang: A cho 0 hoặc 40, B cho 20 hoặc 30, mỗi kết quả xác suất ½. Với U, Expectimax chọn B (25 so với 20); với U², Expectimax chọn A (800 so với 650). Minimax chọn B ở cả hai thang. Phép biến đổi aU + b với a &gt; 0 giữ nguyên lựa chọn.</p></div>
+</section>
+
+<section class="s" data-act="4" data-title="Liên hệ MDP" data-time="55" data-opt>
+  <div class="eyebrow"><b>Expectimax</b> · MDP</div>
+  <h2>Với μ cố định, có thể gộp hai lượt thành một transition</h2>
+  <div class="body col" style="gap:34px">
+    <div class="flow rise" data-at="0" style="width:1300px;margin:0 auto">
+      <div class="fx"><b class="c-max">s</b><span>lượt agent</span></div>
+      <div class="fa act"><span>a</span>→</div>
+      <div class="fx"><b class="c-chance">u = Succ(s, a)</b><span>lượt đối thủ, theo μ</span></div>
+      <div class="fa act"><span>b</span>→</div>
+      <div class="fx"><b class="c-max">s′</b><span>lượt agent tiếp theo</span></div>
+    </div>
+    <div class="cols2">
+      <div class="rise" data-at="1"><div class="formula" style="font-size:32px">$$P_\mu(s'\mid s,a)=\sum_{b}\mu(b\mid u)\,\mathbf 1[Succ(u,b)=s']$$</div></div>
+      <div class="rise" data-at="2"><div class="formula" style="font-size:32px">$$V^{*,\mu}(s)=\max_a\sum_{s'}P_\mu(s'\mid s,a)\,V^{*,\mu}(s')$$</div></div>
+    </div>
+    <p class="txt rise" data-at="3" style="text-align:center">Điều kiện: μ cố định và đã biết, state đủ thông tin. Expectimax dùng mô hình có sẵn để planning; reinforcement learning học từ tương tác khi chưa biết đầy đủ mô hình.</p>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Từ lượt agent, qua một nước của đối thủ, lại tới lượt agent.</div>
+  <div class="say" data-step="1" data-mood="think">Vì μ cố định, nước của đối thủ trở thành xác suất transition.</div>
+  <div class="say" data-step="2" data-mood="happy">Phương trình thu được là Expectimax viết dưới dạng MDP.</div>
+  <div class="say" data-step="3" data-mood="talk">Cách gộp này chỉ đúng khi đối thủ giữ nguyên policy.</div>
+  <div class="notes"><p>Nếu nhiều action b cùng dẫn tới một s′, xác suất của chúng được cộng lại. Nếu u đã là terminal state ngay sau nước của agent, bỏ lượt đối thủ và đặt P_μ(u | s, a) = 1. Reward trung gian bằng 0, không chiết khấu, utility ở terminal state.</p><p>Ví dụ chọn C trong game ba hộp: P_μ(C₋₅ | s₀, C) = P_μ(C₁₅ | s₀, C) = 1/2, tổng ứng với C là 5. Công thức gộp lượt do nhóm triển khai từ CS221, trang 22 và 27-34.</p></div>
+</section>

@@ -1,0 +1,85 @@
+<section class="s" data-act="3" data-title="Game evaluation" data-time="50">
+  <div class="eyebrow"><b>Game evaluation</b></div>
+  <h2>Game evaluation tính value của hai policy cố định</h2>
+  <div class="body" style="gap:48px">
+    <div class="grow" data-w="arenaSigns" data-o='{"l":"π","r":"μ","center":"V = ?","ls":"policy cho trước","rs":"policy cho trước"}'></div>
+    <div class="side stack" style="width:640px;gap:30px">
+      <div class="formula">$$V^{\pi,\mu}(s)=\mathbb E\left[U(s_T)\mid s,\pi,\mu\right]$$</div>
+      <ul class="plain">
+        <li class="rise" data-at="1">Agent chơi theo π, đối thủ chơi theo μ trong suốt phép đánh giá.</li>
+        <li class="rise" data-at="2">Expected utility là trung bình utility, có trọng số theo xác suất.</li>
+        <li class="rise" data-at="2">Một ván cụ thể có thể cho kết quả khác expected utility.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Agent chơi theo π, đối thủ chơi theo μ, và cả hai đã cố định.</div>
+  <div class="say" data-step="1" data-mood="think">Evaluation ở đây nghĩa là đo. Thuật toán chưa tìm policy mới.</div>
+  <div class="say" data-step="2" data-mood="talk">Kết quả là trung bình theo xác suất; một ván thật có thể ra số khác.</div>
+  <div class="notes"><p>CS221, trang 25-28. Game evaluation tính V^{π,μ}(s) cho một cặp policy đã cố định.</p></div>
+</section>
+
+<section class="s" data-act="3" data-title="Recurrence của Game evaluation" data-time="60">
+  <div class="eyebrow"><b>Game evaluation</b> · recurrence</div>
+  <h2>Tại mỗi node, lấy trung bình value theo policy</h2>
+  <div class="body" style="gap:50px">
+    <div class="grow stack" style="gap:30px">
+      <div class="formula" style="font-size:36px">$$V^{\pi,\mu}(s)=\begin{cases}Utility(s), & IsEnd(s)\\[1mm] \displaystyle\sum_{a}\pi(a\mid s)\,V^{\pi,\mu}(Succ(s,a)), & Player(s)=\text{agent}\\[3mm] \displaystyle\sum_{a}\mu(a\mid s)\,V^{\pi,\mu}(Succ(s,a)), & Player(s)=\text{opp}\end{cases}$$</div>
+      <p class="lead rise" data-at="2" style="text-align:center">Recurrence này không có max hay min vì cả hai policy đã cố định.</p>
+    </div>
+    <div class="side stack rise" data-at="1" style="width:540px;align-items:center;gap:14px">
+      <div data-w="weighted"></div>
+      <div class="formula" style="font-size:36px">$$q\,v_1+(1-q)\,v_2$$</div>
+      <p class="txt" style="text-align:center">Dùng value của subtree thay cho utility, vì một action chưa chắc kết thúc ván.</p>
+    </div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Tại terminal state, value bằng utility. Tại node khác, lấy trung bình value các con.</div>
+  <div class="say" data-step="1" data-mood="think">Hai con có value v₁, v₂ và xác suất q, 1 − q thì value là q·v₁ + (1 − q)·v₂.</div>
+  <div class="say" data-step="2" data-mood="happy">Lượt agent và lượt đối thủ tính giống nhau, chỉ khác bảng xác suất.</div>
+  <div class="notes"><p>CS221, trang 27-28. Mỗi action xảy ra với xác suất cho trước, nên value của node là trung bình value của các nhánh. Chỉ tại terminal state mới dùng utility trực tiếp.</p></div>
+</section>
+
+<section class="s video" data-act="3" data-title="Video: Game evaluation trên ba hộp" data-time="36">
+  <video src="media/M01_GameEval.mp4" poster="media/posters/M01_GameEval.jpg" preload="auto"></video>
+  <div class="notes"><p>Video manim: từ utility ở leaf, mỗi hộp lấy trung bình và được 0, 2, 5. Root lấy trung bình theo policy agent chọn A: 1·0 + 0·2 + 0·5 = 0. Sau đó policy agent đổi sang chọn đều ba hộp: (0 + 2 + 5)/3 = 7/3.</p><p>C có value cao hơn, nhưng Game evaluation vẫn trả 0 vì đang đánh giá policy chọn A. Đổi policy thì value đổi; phép đánh giá không tự tìm policy mới (CS221, trang 25).</p></div>
+</section>
+
+<section class="s" data-act="3" data-title="Thử đổi policy" data-time="60">
+  <div class="eyebrow"><b>Game evaluation</b> · tương tác</div>
+  <h2>Đổi policy thì value ở root đổi theo</h2>
+  <div class="body">
+    <div data-w="evalPlay" style="width:100%"></div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Agent luôn chọn A, đối thủ chọn đều, nên root bằng 0. Độ dày edge thể hiện xác suất.</div>
+  <div class="say" data-step="1" data-mood="think">Agent chọn đều ba hộp thì root bằng (0 + 2 + 5)/3 = 7/3. Kéo thanh trượt để đổi μ.</div>
+  <div class="notes"><p>Thanh trượt q là xác suất đối thủ chọn số nhỏ, dùng chung cho cả ba hộp: V(A) = 50 − 100q, V(B) = 3 − 2q, V(C) = 15 − 20q. Mọi node đều tính bằng tổng có trọng số.</p></div>
+</section>
+
+<section class="s" data-act="3" data-title="Recurrence và simulation" data-time="60">
+  <div class="eyebrow"><b>Game evaluation</b> · simulation</div>
+  <h2>Tính chính xác bằng recurrence hoặc ước lượng bằng simulation</h2>
+  <div class="body col" style="gap:14px">
+    <div data-w="montecarlo"></div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Simulation cho hai policy chơi nhiều ván rồi lấy trung bình utility.</div>
+  <div class="say" data-step="1" data-mood="think">Mỗi ván chọn A chỉ ra −50 hoặc 50, nên trung bình của vài ván dao động mạnh.</div>
+  <div class="say" data-step="2" data-mood="happy">Trung bình mẫu dao động quanh 0 và hội tụ về 0 khi số ván tăng.</div>
+  <div class="notes"><p>Trung bình mẫu V̂ₙ = (1/n) Σ U(s_T⁽ⁱ⁾). Recurrence trên cây hữu hạn cho expected utility chính xác; simulation lấy mẫu action theo hai policy, chơi tới terminal state rồi lấy trung bình. Với số ván hữu hạn, trung bình mẫu có thể khác 0.</p><p>Giảng viên CS221 so sánh rollout với recurrence trong Games I 2025, đoạn 13:26 đến 19:51.</p></div>
+</section>
+
+<section class="s" data-act="3" data-title="Game evaluation dùng để làm gì" data-time="45" data-opt>
+  <div class="eyebrow"><b>Game evaluation</b> · ứng dụng</div>
+  <h2>Game evaluation dùng vào việc gì?</h2>
+  <div class="body col" style="gap:60px">
+    <div class="cols3" style="column-gap:80px">
+      <div class="rise" data-at="0"><p class="col-title">So sánh policy</p><p class="txt">Giữ policy của agent và đổi đối thủ, hoặc giữ đối thủ và đổi policy của agent.</p></div>
+      <div class="rise" data-at="1"><p class="col-title">Policy evaluation</p><p class="txt">Trong MDP, tính value của một policy cho trước gọi là policy evaluation.</p></div>
+      <div class="rise" data-at="2"><p class="col-title">Evaluation function</p><p class="txt">Là hàm ước lượng value khi chưa search tới terminal state. Phần này thuộc Games 2.</p></div>
+    </div>
+    <p class="lead rise" data-at="3" style="text-align:center">Bảng face-off ở phần Minimax được tính bằng Game evaluation.</p>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Muốn biết một policy tốt đến đâu trước từng đối thủ, ta dùng Game evaluation.</div>
+  <div class="say" data-step="1" data-mood="talk">Trong MDP, bước này có tên là policy evaluation.</div>
+  <div class="say" data-step="2" data-mood="worried">Evaluation function là một khái niệm khác: hàm ước lượng value, thuộc Games 2.</div>
+  <div class="say" data-step="3" data-mood="happy">Bảng face-off ở phần sau dùng lại phép tính này.</div>
+  <div class="notes"><p>CS221, trang 27 và 47-48; evaluation function ở trang 75.</p></div>
+</section>

@@ -1,0 +1,211 @@
+<section class="s" data-act="6" data-title="Bốn policy" data-time="55">
+  <div class="eyebrow"><b>Face-off</b> · bốn policy</div>
+  <h2>Bốn policy được cố định rồi đấu chéo với nhau</h2>
+  <div class="body col" style="gap:34px">
+    <table class="t big">
+      <tr><th style="width:170px">Policy</th><th style="width:170px">Player</th><th>Cách xác định</th><th>Trong game ba hộp</th></tr>
+      <tr class="rise pick-max" data-at="0"><td class="h c-max">$\pi_{\max}$</td><td>Agent</td><td>argmax của Minimax value</td><td>chọn B, vì max(−50, 1, −5) = 1</td></tr>
+      <tr class="rise pick-min" data-at="0"><td class="h c-min">$\pi_{\min}$</td><td>Đối thủ</td><td>argmin của Minimax value</td><td>chọn số nhỏ ở mọi hộp</td></tr>
+      <tr class="rise pick-chance" data-at="1"><td class="h c-chance">$\pi_7$</td><td>Đối thủ</td><td>policy cho trước</td><td>chọn mỗi số với xác suất ½</td></tr>
+      <tr class="rise pick-chance" data-at="1"><td class="h c-chance">$\pi_E$</td><td>Agent</td><td>Expectimax với μ = π₇</td><td>chọn C, vì max(0, 2, 5) = 5</td></tr>
+    </table>
+    <p class="txt rise" data-at="2" style="text-align:center">π₇ là tên của policy đối thủ chọn đều. π<sub>E</sub> được tối ưu riêng cho policy này.</p>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Từ Minimax có hai policy: π_max cho agent và π_min cho đối thủ.</div>
+  <div class="say" data-step="1" data-mood="talk">Thêm đối thủ π₇ chọn đều, và policy Expectimax π_E tối ưu cho đúng π₇.</div>
+  <div class="say" data-step="2" data-mood="think">Bốn policy này đấu chéo trong một bảng hai hàng, hai cột.</div>
+  <div class="notes"><p>CS221, trang 43-48. Trong phát biểu tổng quát, π₇ là một policy bất kỳ đã cố định; trong game ba hộp ta lấy policy chọn đều. Các policy Minimax được xác định tại mọi state.</p></div>
+</section>
+
+<section class="s" data-act="6" data-title="Bảng face-off" data-time="80">
+  <div class="eyebrow"><b>Face-off</b> · bảng face-off</div>
+  <h2>Mỗi ô trong bảng face-off là một lần Game evaluation</h2>
+  <div class="body">
+    <div data-w="faceoff" style="width:100%"></div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Hàng là policy của agent, cột là policy của đối thủ. Value tính theo góc nhìn agent.</div>
+  <div class="say" data-step="1" data-mood="talk">Ô đầu: agent chọn B, đối thủ chọn số nhỏ, kết quả 1 bằng Minimax value.</div>
+  <div class="say" data-step="2" data-mood="talk">Agent vẫn chọn B, đối thủ chuyển sang chọn đều: trung bình của 1 và 3 là 2.</div>
+  <div class="say" data-step="3" data-mood="worried">π_E vẫn chọn C vì policy của hàng không đổi. Gặp π_min, C chỉ cho −5.</div>
+  <div class="say" data-step="4" data-mood="happy">Ô cuối: π_E gặp đúng π₇ nên được 5. Bấm vào ô bất kỳ để xem lại.</div>
+  <div class="notes"><p>V(α, β) = Σ_h α(h | s_start)·[β(− | h)·u_{h,−} + β(+ | h)·u_{h,+}], với đối số thứ nhất là policy của agent và đối số thứ hai là policy của đối thủ.</p><p>Ô (π_E, π_min) bằng −5. Số 5 chỉ đúng khi đối thủ là π₇. Cách đọc bảng theo CS221, trang 47-56; giảng giải trong Games I 2025 (35:54 đến 46:13) và Game Playing 1 năm 2019 (38:46 đến 50:26).</p></div>
+</section>
+
+<section class="s" data-act="6" data-title="Đấu thử 14 ván" data-time="45" data-opt>
+  <div class="eyebrow"><b>Face-off</b> · simulation</div>
+  <h2>Chơi thử bốn cặp policy và theo dõi trung bình mẫu</h2>
+  <div class="body col" style="gap:14px">
+    <div data-w="duel"></div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Mỗi hàng là một cặp policy, mỗi chấm là một ván.</div>
+  <div class="say" data-step="1" data-mood="happy">Hai hàng gặp π_min luôn ra cùng một số. Hai hàng gặp π₇ dao động quanh 2 và 5.</div>
+  <div class="notes"><p>Bảng face-off chứa expected utility. Simulation cho trung bình mẫu, nên với ít ván kết quả còn dao động.</p></div>
+</section>
+
+<section class="s" data-act="6" data-title="Ba tính chất" data-time="75">
+  <div class="eyebrow"><b>Face-off</b> · ba tính chất</div>
+  <h2>Ba tính chất đọc từ bảng face-off</h2>
+  <div class="body col" style="gap:50px">
+    <div class="cols3 aligned-columns" style="column-gap:70px">
+      <div class="rise" data-at="0">
+        <p class="col-title">① Tối ưu trước π<sub>min</sub></p>
+        <div class="formula" style="font-size:29px">$$V(\pi_{\max},\pi_{\min})\ge V(\pi,\pi_{\min})\ \ \forall\pi$$</div>
+        <p class="txt">Cột π<sub>min</sub>: −5 ≤ 1.</p>
+      </div>
+      <div class="rise" data-at="1">
+        <p class="col-title">② Lower bound trước mọi đối thủ</p>
+        <div class="formula" style="font-size:29px">$$V(\pi_{\max},\pi_{\min})\le V(\pi_{\max},\mu)\ \ \forall\mu$$</div>
+        <p class="txt">Hàng π<sub>max</sub>: 1 ≤ 2.</p>
+      </div>
+      <div class="rise" data-at="2">
+        <p class="col-title">③ Tối ưu trước π<sub>7</sub></p>
+        <div class="formula" style="font-size:29px">$$V(\pi_{\max},\pi_7)\le V(\pi_E,\pi_7)$$</div>
+        <p class="txt">Cột π<sub>7</sub>: 2 ≤ 5.</p>
+      </div>
+    </div>
+    <p class="txt rise" data-at="3" style="text-align:center">Tính chất ② đúng cả khi đối thủ chơi không tối ưu, miễn agent giữ π<sub>max</sub>. Ở tính chất ③ có thể xảy ra dấu bằng.</p>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Giữ đối thủ là π_min thì không policy nào của agent vượt π_max.</div>
+  <div class="say" data-step="1" data-mood="happy">Giữ agent là π_max thì không đối thủ nào kéo kết quả xuống dưới 1.</div>
+  <div class="say" data-step="2" data-mood="talk">Giữ đối thủ là π₇ thì policy tối ưu cho π₇ không thể kém π_max.</div>
+  <div class="say" data-step="3" data-mood="think">Mỗi tính chất cố định một bên và chỉ thay bên còn lại.</div>
+  <div class="notes"><p>CS221, trang 49-54. Với tính chất ②, nếu μ chọn 1 với xác suất q thì V(π_max, μ) = q·1 + (1 − q)·3 = 3 − 2q ≥ 1. Tính chất ③ đúng theo định nghĩa V(π_E, π₇) = max_π V(π, π₇). Khi đối thủ thật đổi policy, tính chất ③ không còn áp dụng cho cặp policy mới.</p></div>
+</section>
+
+<section class="s" data-act="6" data-title="Chuỗi bốn value" data-time="40">
+  <div class="eyebrow"><b>Face-off</b> · ghép ba tính chất</div>
+  <h2>Ghép ba tính chất được $-5\le 1\le 2\le 5$</h2>
+  <div class="body col" style="gap:30px">
+    <div class="formula">$$V(\pi_E,\pi_{\min})\ \le\ V(\pi_{\max},\pi_{\min})\ \le\ V(\pi_{\max},\pi_7)\ \le\ V(\pi_E,\pi_7)$$</div>
+    <svg width="1600" height="300" viewBox="0 0 1600 300" style="display:block;margin:0 auto" class="chain">
+      <line x1="80" y1="200" x2="1520" y2="200" style="stroke:var(--faint);stroke-width:4"/>
+      <g class="rise" data-at="0"><circle cx="160" cy="200" r="16" style="fill:var(--loss)"/><text x="160" y="258" text-anchor="middle" style="font:600 36px var(--mono);fill:var(--loss)">−5</text><text x="160" y="160" text-anchor="middle" style="font:26px var(--sans);fill:var(--ink2)">π_E · π_min</text></g>
+      <g class="rise" data-at="0"><circle cx="760" cy="200" r="16" style="fill:var(--max)"/><text x="760" y="258" text-anchor="middle" style="font:600 36px var(--mono);fill:var(--max)">1</text><text x="760" y="160" text-anchor="middle" style="font:26px var(--sans);fill:var(--ink2)">π_max · π_min</text></g>
+      <g class="rise" data-at="1"><circle cx="960" cy="200" r="16" style="fill:var(--max)"/><text x="960" y="258" text-anchor="middle" style="font:600 36px var(--mono);fill:var(--max)">2</text><text x="960" y="160" text-anchor="middle" style="font:26px var(--sans);fill:var(--ink2)">π_max · π₇</text></g>
+      <g class="rise" data-at="2"><circle cx="1360" cy="200" r="16" style="fill:var(--chance)"/><text x="1360" y="258" text-anchor="middle" style="font:600 36px var(--mono);fill:var(--chance)">5</text><text x="1360" y="160" text-anchor="middle" style="font:26px var(--sans);fill:var(--ink2)">π_E · π₇</text></g>
+      <g class="rise" data-at="0"><path d="M175 140 Q460 30 745 140" style="fill:none;stroke:var(--max);stroke-width:4"/><text x="460" y="62" text-anchor="middle" style="font:600 27px var(--sans);fill:var(--max)">① đổi agent</text></g>
+      <g class="rise" data-at="1"><path d="M775 140 Q860 70 945 140" style="fill:none;stroke:var(--min);stroke-width:4"/><text x="860" y="78" text-anchor="middle" style="font:600 27px var(--sans);fill:var(--min)">② đổi đối thủ</text></g>
+      <g class="rise" data-at="2"><path d="M975 140 Q1160 40 1345 140" style="fill:none;stroke:var(--chance);stroke-width:4"/><text x="1160" y="68" text-anchor="middle" style="font:600 27px var(--sans);fill:var(--chance)">③ đổi agent</text></g>
+    </svg>
+    <p class="lead rise" data-at="3" style="text-align:center">Chuỗi này so sánh bốn cặp policy cụ thể. Nó không xếp hạng Expectimax và Minimax cho mọi game.</p>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Tính chất ① nối −5 với 1.</div>
+  <div class="say" data-step="1" data-mood="talk">Tính chất ② nối 1 với 2.</div>
+  <div class="say" data-step="2" data-mood="talk">Tính chất ③ nối 2 với 5.</div>
+  <div class="say" data-step="3" data-mood="think">Mỗi dấu ≤ cố định một bên và đổi bên kia, theo điều kiện của tính chất tương ứng.</div>
+  <div class="notes"><p>CS221, trang 55-56. Thay đúng bốn cặp policy vào chuỗi mới được −5 ≤ 1 ≤ 2 ≤ 5.</p></div>
+</section>
+
+<section class="s" data-act="6" data-title="Vì sao Minimax có lower bound" data-time="65">
+  <div class="eyebrow"><b>Face-off</b> · lower bound</div>
+  <h2>Giữ policy Minimax, value không giảm dọc đường chơi</h2>
+  <div class="body">
+    <div data-w="guarantee" style="width:100%"></div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Ở lượt MAX, agent đi tới con có value bằng node hiện tại. Ở lượt MIN, mọi con đều không nhỏ hơn.</div>
+  <div class="say" data-step="1" data-mood="happy">Đối thủ chọn ngẫu nhiên thì value chỉ giữ nguyên hoặc tăng. Kết quả luôn ít nhất bằng 3.</div>
+  <div class="say" data-step="2" data-mood="worried">Agent đi sai một nước thì value có thể giảm và lower bound không còn.</div>
+  <div class="notes"><p>Tại terminal state, Minimax value bằng utility, nên Utility(terminal) ≥ V_minmax(s_start). Bất đẳng thức này đúng với từng ván khi agent giữ policy, không chỉ đúng ở mức trung bình, và không cần đối thủ chơi tối ưu.</p><p>Vì vậy Minimax value bằng 0 ở root của Tic-Tac-Toe nghĩa là agent bảo đảm ít nhất hòa nếu tiếp tục chơi đúng (CS221, trang 51-52).</p></div>
+</section>
+
+<section class="s" data-act="6" data-title="Thế Q" data-time="45">
+  <div class="eyebrow"><b>Face-off</b> · thế Q</div>
+  <h2>Thế Q: hai nước đe dọa, hai kết quả khác nhau</h2>
+  <div class="body" style="gap:70px">
+    <div class="stack" style="align-items:center;gap:14px;flex:none">
+      <div class="board lg" data-board="...O.XXOO" data-idx data-marks='{"1":{"board":"..XO.XXOO","hl":"2:new,4:good"},"2":{"board":"...OXXXOO","hl":"4:new,2:good"},"3":{"board":"...O.XXOO","hl":"2:good,4:good"}}'></div>
+      <p class="boardcap">O đi trước, X là agent và đang đến lượt</p>
+    </div>
+    <div class="grow stack" style="gap:30px">
+      <p class="lead">Action hợp lệ: X0, X1, X2, X4. Utility theo X: thắng +1, hòa 0, thua −1.</p>
+      <p class="txt rise" data-at="1">X2 đe dọa thắng ở ô 4, trên đường chéo 2-4-6.</p>
+      <p class="txt rise" data-at="2">X4 đe dọa thắng ở ô 2, trên cùng đường chéo.</p>
+      <p class="txt rise" data-at="3">Cả hai nước đều buộc O phải chặn. Cần xem nước chặn của O tạo ra gì.</p>
+    </div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Trong ví dụ này O đi trước, X là agent và đang đến lượt.</div>
+  <div class="say" data-step="1" data-mood="talk">X2 tạo đe dọa, buộc O chặn ở ô 4.</div>
+  <div class="say" data-step="2" data-mood="talk">X4 cũng tạo đe dọa, buộc O chặn ở ô 2.</div>
+  <div class="say" data-step="3" data-mood="think">Nhìn một bước thì hai nước như nhau. Cần nhìn thêm một bước nữa.</div>
+  <div class="notes"><p>Vì O đi trước nên thế Q không phát sinh từ ví dụ X đi trước ở phần Modeling.</p></div>
+</section>
+
+<section class="s video" data-act="6" data-title="Video: fork ở thế Q" data-time="39">
+  <video src="media/M07_ForkQ.mp4" poster="media/posters/M07_ForkQ.jpg" preload="auto"></video>
+  <div class="notes"><p>Video manim: sau X2, O chặn ở ô 4 và tạo hai đe dọa cùng lúc, ở ô 0 trên đường chéo 0-4-8 và ở ô 1 trên cột 1-4-7. Đây là một fork. X chỉ chặn được một, nên X2 có Minimax value −1.</p><p>Sau X4, O chặn ở ô 2. O2 không tạo fork, và X giữ được hòa với X0, O1. Minimax value của X4 là 0.</p></div>
+</section>
+
+<section class="s" data-act="6" data-title="Value các nước ở thế Q" data-time="55">
+  <div class="eyebrow"><b>Face-off</b> · thế Q</div>
+  <h2>Ở thế Q, Minimax loại X2 và Expectimax chọn X4</h2>
+  <div class="body">
+    <div data-w="tttValues" style="width:100%" data-o='{"board":"...O.XXOO","cap":"Thế Q, X đến lượt","notes":{"mm":"max(0, 0, −1, 0) = 0. X0, X1 và X4 đều giữ được hòa, còn X2 có thể thua. Khi đồng hạng, chương trình chọn ô có chỉ số nhỏ nhất là X0.","ex":"Sau X4, O có 3 nước: O0 và O1 để X thắng ngay, O2 dẫn tới hòa, nên value là (1 + 1 + 0)/3 = 2/3. Sau X2, value là (1 + 1 − 1)/3 = 1/3."}}'></div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Mỗi ô hiện Minimax value của nước đó. X2 có value −1 dù tạo được đe dọa.</div>
+  <div class="say" data-step="1" data-mood="think">Khi O chọn đều, Expectimax chọn X4 với value 2/3. Ở thế Q, hai thuật toán cùng chọn X4.</div>
+  <div class="notes"><p>Backup tại node O ngay sau nước X: X0 với O1, O2, O4 cho 0, 0, 0; X1 với O0, O2, O4 cho 0, 0, 0; X2 với O0, O1, O4 cho 1, 1, −1; X4 với O0, O1, O2 cho 1, 1, 0. Ở cây nhỏ này, value của các con trùng nhau dưới hai cách chơi; với cây lớn hơn phải tính riêng.</p><p>Thế P ở slide sau cho thấy hai thuật toán chọn khác nhau. Các value được nhóm tính bằng verify_examples.py.</p></div>
+</section>
+
+<section class="s" data-act="6" data-title="Thế P" data-time="60" data-opt>
+  <div class="eyebrow"><b>Face-off</b> · thế P</div>
+  <h2>Ở thế P, Minimax và Expectimax chọn những nước khác nhau</h2>
+  <div class="body">
+    <div data-w="tttValues" style="width:100%" data-o='{"board":"...O.X.O.","cap":"Thế P, O đi trước, X đến lượt","notes":{"mm":"Minimax chọn X0 hoặc X6. Hai nước này giữ ít nhất hòa nếu X tiếp tục chơi đúng.","ex":"Khi O chọn đều, Expectimax chọn X2 hoặc X8 với value 13/15. Cả hai nước này đều có đường bị O ép thua."}}'></div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Có sáu action hợp lệ. Theo Minimax, chỉ X0 và X6 giữ được hòa.</div>
+  <div class="say" data-step="1" data-mood="surprised">Expectimax lại chọn X2 và X8 với value 13/15, đúng những nước Minimax cho là thua.</div>
+  <div class="notes"><p>Từ thế P, sau X6 rồi O8 sẽ được thế Q. Cột Minimax giả sử các lượt sau X theo Minimax và O đáp trả bất lợi nhất. Cột Expectimax giả sử X tối ưu expected utility và O chọn đều ở mỗi lượt. Value do code của nhóm tính trên toàn bộ subtree.</p><p>Backup Expectimax sau X2: năm phản ứng O0, O1, O4, O6, O8 cho 1, 1, 1, 1, 1/3, trung bình 13/15.</p></div>
+</section>
+
+<section class="s" data-act="6" data-title="Đường phản bác X2" data-time="45" data-opt>
+  <div class="eyebrow"><b>Face-off</b> · thế P</div>
+  <h2>X2 có expected utility cao nhưng có một đường phản bác</h2>
+  <div class="body col" style="gap:34px">
+    <div class="seq" style="justify-content:center">
+      <div class="st"><div class="mv">P</div><div class="board sm" data-board="...O.X.O."></div></div><div class="arrow">→</div>
+      <div class="st rise" data-at="0"><div class="mv c-max">X2</div><div class="board sm" data-board="..XO.X.O." data-hl="2:new,8:good"></div></div><div class="arrow rise" data-at="1">→</div>
+      <div class="st rise" data-at="1"><div class="mv c-min">O8</div><div class="board sm" data-board="..XO.X.OO" data-hl="8:new,6:threat"></div></div><div class="arrow rise" data-at="2">→</div>
+      <div class="st rise" data-at="2"><div class="mv c-max">X6</div><div class="board sm" data-board="..XO.XXOO" data-hl="6:new"></div></div><div class="arrow rise" data-at="3">→</div>
+      <div class="st rise" data-at="3"><div class="mv c-min">O4</div><div class="board sm" data-board="..XOOXXOO" data-hl="4:new,0:threat,1:threat"></div></div>
+    </div>
+    <div class="cols2" style="column-gap:80px">
+      <p class="txt rise" data-at="1">Bốn trong năm phản ứng của O để X thắng ngay ở ô 8. Chỉ O8 chặn được, nên với O chọn đều, X thắng ngay với xác suất 4/5.</p>
+      <p class="txt rise" data-at="3">Sau O8, X buộc chặn ô 6. O4 tạo fork ở ô 0 và ô 1. Minimax tính tới khả năng O chọn đúng đường này.</p>
+    </div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">X2 đe dọa thắng ở ô 8.</div>
+  <div class="say" data-step="1" data-mood="think">Chỉ một trong năm phản ứng chặn được, đó là O8.</div>
+  <div class="say" data-step="2" data-mood="worried">Sau O8, O đe dọa hàng dưới nên X phải chặn ở ô 6.</div>
+  <div class="say" data-step="3" data-mood="surprised">O4 tạo hai đe dọa cùng lúc và X chỉ chặn được một. Minimax phải tính tới đường này.</div>
+  <div class="notes"><p>O không nhất thiết đi đường này, nhưng chỉ cần tồn tại một đáp trả ép thua là Minimax value của X2 bằng −1.</p><p>Hình dừng ở thế đã có fork, sau X6 rồi O4. Sau O8, nước X tối ưu expected utility (X4 hoặc X6) cho (1 + 1 − 1)/3 = 1/3.</p></div>
+</section>
+
+<section class="s" data-act="6" data-title="Expected utility và xác suất thắng" data-time="40" data-opt>
+  <div class="eyebrow"><b>Face-off</b> · thế P</div>
+  <h2>X2 có expected utility 13/15 và xác suất thắng 14/15</h2>
+  <div class="body" style="gap:60px">
+    <div class="grow stack" style="gap:26px">
+      <div class="formula">$$P(\text{thắng})=\tfrac45\cdot 1+\tfrac15\cdot\tfrac23=\tfrac{14}{15}$$</div>
+      <div class="formula">$$P(\text{thua})=\tfrac15\cdot\tfrac13=\tfrac1{15},\quad P(\text{hòa})=0$$</div>
+      <div class="formula">$$\mathbb E[U]=\tfrac{14}{15}(+1)+\tfrac1{15}(-1)=\tfrac{13}{15}$$</div>
+    </div>
+    <div class="side stack rise" data-at="1" style="width:560px;gap:16px">
+      <p class="col-title">Hệ quả</p>
+      <p class="txt">X2 cho expected utility cao khi đối thủ hay đi sai, nhưng không giữ được hòa trước một đối thủ đáp trả chính xác.</p>
+    </div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Theo xác suất toàn phần, X2 thắng với xác suất 14/15 và thua với xác suất 1/15.</div>
+  <div class="say" data-step="1" data-mood="think">Expected utility là 13/15. X2 đổi worst-case value lấy expected utility cao hơn.</div>
+  <div class="notes"><p>Trong năm phản ứng đầu của O, bốn phản ứng cho X thắng ngay. Phản ứng O8 có xác suất 1/5; sau đó nước X tối ưu expected utility thắng với xác suất 2/3 và thua với xác suất 1/3.</p><p>Bảng face-off trên thế P (phá hòa theo ô nhỏ nhất): X theo Minimax được 0 trước O theo Minimax và 3/5 trước O chọn đều; X theo Expectimax được −1 và 13/15. Chuỗi tương ứng là −1 ≤ 0 ≤ 3/5 ≤ 13/15.</p></div>
+</section>
+
+<section class="s" data-act="6" data-title="Giới hạn tính toán" data-time="55">
+  <div class="eyebrow"><b>Face-off</b> · độ phức tạp</div>
+  <h2>Minimax duyệt toàn bộ cây mất thời gian $O(b^m)$</h2>
+  <div class="body">
+    <div data-w="complexity" style="width:100%"></div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">b là branching factor, m là số ply. Mỗi ply là một action của một player.</div>
+  <div class="say" data-step="1" data-mood="surprised">Với cờ vua, b khoảng 35 và m khoảng 100, nên cây có cỡ 10 mũ 154 node.</div>
+  <div class="notes"><p>Với hai player đi luân phiên, nếu d là số cặp lượt thì m = 2d, nên CS221 viết O(b^{2d}). DFS không cần lưu cả cây: bộ nhớ là O(bm) nếu sinh sẵn các con ở mỗi tầng, hoặc O(m) nếu sinh từng con. CS188 Lecture 7, trang 20; Note 6, trang 5; CS221, trang 69-70.</p><p>b^m là cận trên cho cây đều. Tic-Tac-Toe thực tế có 549.946 node vì ván dừng sớm khi có người thắng và b giảm dần. Con số của cờ vua là ước lượng cho cây đều. Tốc độ giả định là 10⁹ node mỗi giây.</p></div>
+</section>

@@ -1,0 +1,16 @@
+{
+  "name": "games1-presenter-video",
+  "private": true,
+  "type": "module",
+  "description": "Video tập dượt phần 1 (slide 1–25): lớp học, slide, bảng trắng và người trình bày hoạt hình.",
+  "scripts": {
+    "build": "bash build.sh"
+  },
+  "dependencies": {
+    "@fontsource/be-vietnam-pro": "5.2.5",
+    "@fontsource/itim": "^5.2.5",
+    "@fontsource/pangolin": "^5.2.5",
+    "@fontsource/patrick-hand": "5.2.5",
+    "@fontsource/sriracha": "^5.2.5"
+  }
+}

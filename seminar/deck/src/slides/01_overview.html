@@ -1,0 +1,87 @@
+<section class="s" data-act="1" data-title="Single-agent search" data-time="60">
+  <div class="eyebrow"><b>Overview</b> · single-agent search</div>
+  <h2>Single-agent search tối ưu tổng cost từ start tới goal</h2>
+  <div class="body" style="gap:40px">
+    <div class="grow" data-w="planGraph"></div>
+    <div class="side stack" style="width:560px;gap:18px">
+      <div class="formula">$$\mathcal P=(S,\,s_0,\,A,\,T,\,G,\,c)$$</div>
+      <table class="t defs">
+        <tr><td>$S$</td><td>tập state</td></tr>
+        <tr><td>$s_0$</td><td>start state</td></tr>
+        <tr><td>$A(s),\ T(s,a)$</td><td>action hợp lệ và state kế tiếp</td></tr>
+        <tr><td>$G$</td><td>tập goal state</td></tr>
+        <tr><td>$c(s,a)$</td><td>cost của một bước</td></tr>
+      </table>
+      <div class="rise" data-at="2"><div class="formula" style="font-size:34px">$$\rho^*\in\arg\min_{\rho}\sum_{t} c(s_t,a_t)$$</div></div>
+    </div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Mô hình cho biết start, goal, các action hợp lệ, transition và cost từng bước.</div>
+  <div class="say" data-step="1" data-mood="think">Path ít edge nhất chỉ có 2 bước, nhưng tốn 9 + 9 = 18.</div>
+  <div class="say" data-step="2" data-mood="happy">Path 3 bước chỉ tốn 3. Agent tự chọn mọi bước, nên tìm xong path là đi được ngay.</div>
+  <div class="notes"><p>Một lời giải hợp lệ là path ρ = (s₀, a₀, s₁, …, s_k) đi theo transition và có s_k ∈ G. Path tối ưu là ρ* ∈ argmin C(ρ), với C(ρ) là tổng cost các bước. Path ít bước nhất chưa chắc là path rẻ nhất.</p><p>Nguồn: CS188, State Spaces and Search Problems.</p></div>
+</section>
+
+<section class="s" data-act="1" data-title="Plan và policy" data-time="60">
+  <div class="eyebrow"><b>Overview</b> · adversarial search</div>
+  <h2>Khi có đối thủ, agent cần một policy thay cho plan</h2>
+  <div class="body" style="gap:30px">
+    <div class="grow" data-w="planBreak"></div>
+    <div class="side stack" style="width:470px;gap:30px">
+      <div><p class="col-title c-max">Plan</p><p class="txt">Một chuỗi nước cố định: X0, O4, X2. Plan không nói X làm gì khi O chọn ô khác.</p></div>
+      <div class="rise" data-at="2"><p class="col-title a">Policy</p><p class="txt">Quy tắc chọn action tại mọi state mà agent có thể gặp trong ván.</p></div>
+    </div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Agent lập plan X0, O4, X2. Nhưng O4 là nước của đối thủ.</div>
+  <div class="say" data-step="1" data-mood="worried">Nếu O chọn ô 1 hoặc ô 8, plan không còn dùng được.</div>
+  <div class="say" data-step="2" data-mood="happy">Policy có sẵn một nước đáp cho mỗi phản ứng của O. Đây là adversarial search.</div>
+  <div class="notes"><p>Trong single-agent search, agent tìm một chuỗi action rồi thực hiện. Trong game, agent chỉ chọn ở lượt của mình; các lượt còn lại do đối thủ chọn. Một chuỗi nước dẫn tới thắng chỉ là một trong nhiều diễn biến có thể xảy ra.</p><p>Chất lượng của một policy phụ thuộc cả cách agent chơi lẫn cách đối thủ phản ứng (CS188 Note 6, trang 1-2). Các nước đáp trên hình chỉ để minh họa rằng mỗi nhánh đều có một nước đáp; chúng chưa chắc tối ưu.</p></div>
+</section>
+
+<section class="s" data-act="1" data-title="Game ba hộp" data-time="70">
+  <div class="eyebrow"><b>Overview</b> · ví dụ chính</div>
+  <h2>Game ba hộp: agent chọn hộp, đối thủ chọn số</h2>
+  <div class="body col" style="gap:16px">
+    <div data-w="boxGame"></div>
+    <p class="cap" style="text-align:center">Hộp A chứa −50 và 50, hộp B chứa 1 và 3, hộp C chứa −5 và 15. Số đối thủ chọn là utility của agent.</p>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Agent chọn một hộp, đối thủ chọn một trong hai số trong hộp. Số đó là utility của agent.</div>
+  <div class="say" data-step="1" data-mood="worried">Agent chọn A, đối thủ chọn số nhỏ, nên agent nhận −50.</div>
+  <div class="say" data-step="2" data-mood="think">Agent chọn B, đối thủ vẫn chọn số nhỏ, nên agent nhận 1.</div>
+  <div class="say" data-step="3" data-mood="surprised">Nếu đối thủ chọn số lớn, hộp A cho 50. Hộp tốt nhất phụ thuộc vào đối thủ.</div>
+  <div class="notes"><p>Ví dụ ba hộp lấy từ CS221, trang 5-6. Có thể mời người nghe chọn hộp và đổi cách chọn của đối thủ bằng các nút bên dưới. Đồng xu góc trái là tổng utility của agent; vì zero-sum nên góc phải là số đối.</p></div>
+</section>
+
+<section class="s" data-act="1" data-title="Ba giả định về đối thủ" data-time="70">
+  <div class="eyebrow"><b>Overview</b> · ví dụ chính</div>
+  <h2>Hộp tốt nhất phụ thuộc vào cách đối thủ chọn số</h2>
+  <div class="body">
+    <div data-w="boxModels" style="width:100%"></div>
+  </div>
+  <div class="say" data-step="0" data-mood="think">Sáu kết quả không đổi. Value của hộp còn phụ thuộc cách đối thủ chọn số.</div>
+  <div class="say" data-step="1" data-mood="talk">Nếu đối thủ chọn số lớn, hộp A có value 50 và là lựa chọn tốt nhất.</div>
+  <div class="say" data-step="2" data-mood="talk">Nếu đối thủ chọn mỗi số với xác suất ½, value là 0, 2, 5 và agent chọn C.</div>
+  <div class="say" data-step="3" data-mood="surprised">Nếu đối thủ chọn số nhỏ, value là −50, 1, −5 và agent chọn B.</div>
+  <div class="notes"><p>Leaf 50 ở hộp A chưa đủ để kết luận A tốt, vì agent không quyết định việc đi tới leaf đó (CS221, trang 5-6).</p><p>Ba dòng của bảng ứng với ba câu hỏi mà Game evaluation, Expectimax và Minimax trả lời ở các phần sau.</p></div>
+</section>
+
+<section class="s" data-act="1" data-title="Game khác search ở đâu" data-time="45">
+  <div class="eyebrow"><b>Overview</b> · game và search</div>
+  <h2>Hai điểm khác giữa game và single-agent search</h2>
+  <div class="body col" style="gap:64px">
+    <div class="cols2" style="column-gap:110px">
+      <div class="rise" data-at="0">
+        <p class="col-title">Utility nằm ở terminal state</p>
+        <p class="txt">Trong mô hình này, utility được chấm khi ván kết thúc. Một nước có lợi trước mắt vẫn có thể dẫn tới thua.</p>
+      </div>
+      <div class="rise" data-at="1">
+        <p class="col-title">Mỗi node thuộc về một player</p>
+        <p class="txt">Ở node của đối thủ, agent không được chọn. Cách tính value tại node tùy vào player có lượt.</p>
+      </div>
+    </div>
+    <div class="legend rise" data-at="2" style="justify-content:center;gap:56px"><span><i class="shape max"></i>agent chọn (MAX)</span><span><i class="shape min"></i>đối thủ chọn (MIN)</span><span><i class="shape chance"></i>chance node</span><span><i class="shape term"></i>terminal state</span></div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Utility nằm ở cuối ván. Muốn tính value ở state hiện tại, cần xét các terminal state có thể tới.</div>
+  <div class="say" data-step="1" data-mood="talk">Mỗi node có một player chọn action, và cách tính value tùy vào player đó.</div>
+  <div class="say" data-step="2" data-mood="happy">Bốn hình dạng node này dùng cho mọi cây trong buổi.</div>
+  <div class="notes"><p>CS221, trang 17-18. Tam giác hướng lên là node MAX của agent, tam giác hướng xuống là node MIN của đối thủ, hình tròn là chance node, hình vuông là terminal state mang utility.</p></div>
+</section>
