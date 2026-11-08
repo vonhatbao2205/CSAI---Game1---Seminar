@@ -18,11 +18,32 @@ Các điểm cốt lõi:
 
 Trong tài liệu này, số trang dẫn nguồn luôn là **trang PDF tính từ 1**. Riêng `games1.pdf`, số in ở chân slide bằng số trang PDF trừ 1.
 
+Khi trình bày trực tiếp, dùng trò ba hộp để giải đủ ba phương pháp và bảng đối đầu; dùng thế Q cho một ví dụ phản bác ngắn. Halving là hoạt động demo tùy thời lượng; thế P, bảng đối đầu P và biến đổi utility là phần mở rộng để đọc hoặc vấn đáp. Bản báo cáo vẫn giữ phép tính chi tiết để người đọc tự theo dõi.
+
 ## 1. Overview: tìm kiếm khi có đối thủ
 
 ### 1.1. Từ tìm một kế hoạch đến tìm một chiến lược
 
-Trong bài toán tìm kiếm tất định thông thường, agent có thể tìm một chuỗi hành động rồi thực hiện nó để đi tới mục tiêu. Trong trò chơi, agent chỉ quyết định nước đi ở lượt của mình; đối thủ quyết định ở những lượt còn lại.
+**Giải bài toán bằng tìm kiếm trong không gian trạng thái.** Trước khi chọn thuật toán, ta cần biểu diễn tình huống hiện tại bằng một state, xác định các hành động hợp lệ và cách mỗi hành động tạo ra state tiếp theo. Với bài toán tìm kiếm tất định một tác nhân, một cách mô tả là:
+
+$$
+\mathcal P=(S,s_0,A,T,G,c),
+$$
+
+trong đó $S$ là tập trạng thái, $s_0$ là trạng thái đầu, $A(s)$ là tập hành động hợp lệ, $T(s,a)$ là trạng thái kế tiếp, $G\subseteq S$ là tập trạng thái đích và $c(s,a)$ là chi phí một bước.
+
+Một **nghiệm hợp lệ** là đường đi $\rho=(s_0,a_0,s_1,\ldots,a_{k-1},s_k)$ tuân theo phép chuyển và có $s_k\in G$. Nếu cần tối ưu chi phí, ta tìm:
+
+$$
+C(\rho)=\sum_{t=0}^{k-1}c(s_t,a_t),\qquad
+\rho^*\in\arg\min_{\rho\in\mathcal P_{\mathrm{goal}}}C(\rho),
+$$
+
+với $\mathcal P_{\mathrm{goal}}$ là tập các đường đi hợp lệ từ $s_0$ tới đích. **Tìm được một nghiệm và tìm được nghiệm tối ưu là hai yêu cầu khác nhau.** Đường ít cạnh nhất cũng chưa chắc có chi phí nhỏ nhất: hai bước có chi phí $9+9$ đắt hơn ba bước có chi phí $1+1+1$.
+
+Ở đây, search là quá trình khám phá các phương án trong mô hình; tiêu chí tối ưu xác định phương án nào tốt nhất. Không phải mọi bài toán AI đều cần quy về đường đi ngắn nhất. [CS188 — State Spaces and Search Problems](https://inst.eecs.berkeley.edu/~cs188/textbook/search/state.html)
+
+**Điều gì thay đổi khi có đối thủ?** Trong bài toán tìm kiếm tất định trên, agent có thể tìm một chuỗi hành động rồi thực hiện nó để đi tới mục tiêu. Trong trò chơi, agent chỉ quyết định nước đi ở lượt của mình; đối thủ quyết định ở những lượt còn lại.
 
 Vì vậy, một chuỗi nước đi dẫn tới chiến thắng chỉ là **một diễn biến có thể xảy ra**. Đối thủ có thể chọn một phản ứng khác và làm chuỗi đó không còn thực hiện được.
 
@@ -96,9 +117,21 @@ Zero-sum không có nghĩa trò chơi chỉ có thắng hoặc thua. Có thể c
 
 So với mô hình tìm kiếm đã học, `Player(s)` xác định **ai điều khiển bước chuyển tiếp theo**, còn `Utility(s)` cho phép so sánh các kết cục. Đến được terminal chưa đồng nghĩa đạt mục tiêu: thua cũng là một trạng thái kết thúc. [CS221, trang 13–18](../docs/games1.pdf#page=13)
 
+| Search tất định một tác nhân | Mô hình game đang xét | Ý nghĩa khi chuyển sang game |
+|---|---|---|
+| $s_0$ | `s_start` | Vẫn cần điểm xuất phát |
+| $A(s)$ và $T(s,a)$ | `Actions(s)` và `Succ(s,a)` | Vẫn sinh các bước chuyển hợp lệ |
+| Kiểm tra $s\in G$ | `IsEnd(s)` | Kiểm tra kết thúc; kết thúc có thể là thắng, hòa hoặc thua |
+| Tối thiểu tổng chi phí $C(\rho)$ | Tối đa terminal utility theo cách đối thủ phản ứng | Tiêu chí đánh giá chuyển từ chi phí đường đi sang chất lượng kết cục |
+| Agent quyết định mọi bước | `Player(s)` chỉ người có lượt | Agent phải tính cả các bước do người khác quyết định |
+
+Sự đối chiếu này dùng mô hình Search một tác nhân ở mục 1.1. Với game, chỉ biết các bước hợp lệ vẫn chưa đủ để chọn nước: cần thêm cách đánh giá những phản ứng có thể xảy ra của đối thủ.
+
 ### 2.3. Ví dụ mô hình hóa Tic-Tac-Toe
 
 Với luật thông thường X đi trước, chọn X làm agent:
+
+**Quy ước này chỉ dùng cho ví dụ mô hình hóa từ bàn trống và các số đếm tương ứng. Hai thế P/Q ở phần sau dùng O đi trước**, nên không được xem P/Q là các bàn phát sinh từ ví dụ X đi trước này.
 
 | Thành phần | Biểu diễn |
 |---|---|
@@ -178,13 +211,48 @@ Ví dụ: tại một hộp có hai số, đối thủ chọn mỗi số với x
 
 Policy được dùng tại các trạng thái chưa kết thúc thuộc lượt người chơi tương ứng. Một policy là cách chơi cho nhiều tình huống, không chỉ là một nước đi ở gốc. [CS221, trang 21–22](../docs/games1.pdf#page=21)
 
+Ví dụ, một policy Tic-Tac-Toe phải chỉ cách X phản ứng sau các nước O khác nhau. Một đường đi $X0\to O4\to X2$ chỉ ghi lại **một lịch sử chơi**; nó không cho biết X làm gì nếu O chọn ô 1 thay cho ô 4. Vì vậy, kết quả cần tìm trong game là policy. Khi triển khai, có thể tính lại nước đi từ state thực tế ở mỗi lượt, thay vì lưu sẵn toàn bộ bảng policy.
+
+### 2.6. Utility khác value: cùng một state đang được đánh giá theo cách nào?
+
+Đặt $U(s)=Utility(s)$ tại terminal. **Terminal utility** chấm một kết cục đã xác định; **state value** đánh giá utility của các kết cục có thể phát sinh từ state hiện tại, theo cách hai bên tiếp tục chơi.
+
+Từ đây, dùng $\pi$ cho policy agent và $\mu$ cho policy đối thủ. Ký hiệu xác suất có điều kiện $\pi(a\mid s)$, $\mu(a\mid s)$ lần lượt tương đương $\pi_{\mathrm{agent}}(s,a)$, $\pi_{\mathrm{opp}}(s,a)$ trong PDF. Với utility hữu hạn và $s_T$ là trạng thái terminal đạt được:
+
+| Ký hiệu | Định nghĩa | Câu hỏi đang trả lời |
+|---|---|---|
+| $U(s)$, với $IsEnd(s)$ | Utility của kết cục $s$ | Kết cục này tốt đến đâu đối với agent? |
+| $V^{\pi,\mu}(s)$ | $\mathbb E[U(s_T)\mid s,\pi,\mu]$ | Nếu giữ nguyên hai policy, utility kỳ vọng là bao nhiêu? |
+| $V^{*,\mu}(s)$ | $\max_\pi V^{\pi,\mu}(s)$ | Trước policy đối thủ $\mu$ cố định, agent đạt kỳ vọng tốt nhất là bao nhiêu? |
+| $V_{\mathrm{mm}}(s)$ | $\max_\pi\min_\mu V^{\pi,\mu}(s)$ | Agent bảo đảm được mức nào trước phản ứng bất lợi nhất? |
+
+Trong mô hình hữu hạn, quan sát đầy đủ đang xét, hai giá trị tối ưu ở trên được tính bằng truy hồi Expectimax và Minimax. Để đối chiếu trực tiếp với PDF, bài cũng dùng các tên:
+
+$$
+V_{\mathrm{eval}}(s)=V^{\pi,\mu}(s),\qquad
+V_{\mathrm{exptmax}}(s)=V^{*,\mu}(s),\qquad
+V_{\mathrm{minmax}}(s)=V_{\mathrm{mm}}(s).
+$$
+
+Hai ký hiệu đầu chỉ viết gọn sự phụ thuộc vào policy; khi đổi policy phải tính lại value.
+
+Chẳng hạn, tại **cùng trạng thái đầu trò ba hộp**:
+
+| Cách đánh giá | Policy/giả định | Value tại gốc |
+|---|---|---:|
+| Game evaluation | Agent đã chọn A, đối thủ chọn đều | $\tfrac12(-50)+\tfrac12(50)=0$ |
+| Expectimax | Đối thủ chọn đều, agent được tối ưu | $\max(0,2,5)=5$ |
+| Minimax | Agent tối ưu trước phản ứng bất lợi nhất | $\max(-50,1,-5)=1$ |
+
+Các số ở lá $-50,50,1,3,-5,15$ không thay đổi. Ba value $0,5,1$ khác nhau vì **câu hỏi và cách chơi tiếp diễn khác nhau**; các phần tiếp theo sẽ triển khai từng phép tính. Phân biệt này dựa trên định nghĩa game value của [CS221, trang 25–34](../docs/games1.pdf#page=25) và phần terminal/state value của [CS188 Note 6, trang 2–3](../docs/cs188-fa23-note06.pdf#page=2).
+
 ## 3. Game evaluation: đánh giá khi cả hai policy đã biết
 
 ### 3.1. Câu hỏi cần giải
 
 Cho trước policy của agent và policy của đối thủ, **utility kỳ vọng của agent là bao nhiêu?**
 
-Game evaluation đo chất lượng của một cặp policy đã cố định. Agent chưa được thay cách chơi để chọn phương án tốt hơn.
+Game evaluation tính $V^{\pi,\mu}(s)$ của **một cặp policy đã cố định**. Agent chưa được thay cách chơi để chọn phương án tốt hơn. Chữ “evaluation” ở đây là đo kết quả của cách chơi đã cho; chưa có bước tìm policy mới.
 
 Kỳ vọng là trung bình có trọng số theo xác suất các kết quả. Nó không nhất thiết là kết quả nhận được trong một ván cụ thể. [CS221, trang 25–28](../docs/games1.pdf#page=25)
 
@@ -193,21 +261,23 @@ Kỳ vọng là trung bình có trọng số theo xác suất các kết quả. 
 Tại terminal, giá trị bằng utility. Tại trạng thái chưa kết thúc, lấy trung bình có trọng số của giá trị các trạng thái con, theo policy của người đang có lượt.
 
 $$
-V_{\mathrm{eval}}(s)=
+V_{\mathrm{eval}}(s)=V^{\pi,\mu}(s)=
 \begin{cases}
 Utility(s), & IsEnd(s),\\[2mm]
 \displaystyle\sum_{a\in Actions(s)}
-\pi_{\mathrm{agent}}(s,a)\,
-V_{\mathrm{eval}}(Succ(s,a)),
+\pi(a\mid s)\,
+V^{\pi,\mu}(Succ(s,a)),
 & Player(s)=\mathrm{agent},\\[3mm]
 \displaystyle\sum_{a\in Actions(s)}
-\pi_{\mathrm{opp}}(s,a)\,
-V_{\mathrm{eval}}(Succ(s,a)),
+\mu(a\mid s)\,
+V^{\pi,\mu}(Succ(s,a)),
 & Player(s)=\mathrm{opp}.
 \end{cases}
 $$
 
 **Vì sao dùng tổng có trọng số?** Mỗi hành động xảy ra theo xác suất đã cho. Giá trị tại nút là trung bình các kết quả tiếp diễn tương ứng. Cách giải thích giống nhau ở cả lượt agent lẫn lượt đối thủ; chỉ policy dùng làm trọng số thay đổi.
+
+Ví dụ tại một node có hai con mang value $v_1,v_2$, nếu policy chọn chúng với xác suất $q,1-q$ thì value của node là $qv_1+(1-q)v_2$. Phải dùng **value của cây con**, bởi một hành động chưa chắc kết thúc game ngay; chỉ ở terminal mới thay value bằng utility trực tiếp.
 
 Công thức không có `max` hay `min`, vì cả hai cách chơi đều đã được cố định. [CS221, trang 27–28](../docs/games1.pdf#page=27)
 
@@ -275,6 +345,14 @@ Thay policy thì giá trị của cặp policy thay đổi; bản thân phép đ
 
 ### 3.4. Vai trò của Game evaluation
 
+**Tính chính xác và mô phỏng là hai cách đo cùng một cặp policy.** Truy hồi trên cây hữu hạn tính kỳ vọng bằng cách tổng hợp các nhánh. Mô phỏng thì lấy mẫu hành động theo hai policy, chơi tới terminal và lấy trung bình:
+
+$$
+\widehat V_n=\frac1n\sum_{i=1}^{n}U(s_T^{(i)}).
+$$
+
+Trong ví dụ agent chọn A, mỗi ván mô phỏng nhận $-50$ hoặc $50$, nên trung bình của một mẫu hữu hạn có thể khác $0$; giá trị kỳ vọng tính đúng theo mô hình vẫn là $0$. Đây là điểm giảng viên làm rõ khi so sánh rollout với phép truy hồi trong [Games I 2025, 13:26–19:51](https://www.youtube.com/watch?v=SMOD_GiRzb8&t=806s).
+
 Game evaluation giúp trả lời các câu hỏi như: cùng một cách chơi của agent, kết quả thay đổi thế nào khi gặp những đối thủ khác nhau? Hoặc trước một đối thủ cố định, hai policy agent đạt kết quả khác nhau ra sao?
 
 Nó có vai trò tương tự **policy evaluation trong MDP**: biết cách hành động rồi tính giá trị. Game evaluation cũng là công cụ để đọc bảng đối đầu ở phần Minimax. [CS221, trang 27 và 47–48](../docs/games1.pdf#page=27)
@@ -290,6 +368,8 @@ Vẫn biết policy đối thủ $\pi_{\mathrm{opp}}$, nhưng agent được quy
 Câu hỏi trở thành: **trước đúng policy đối thủ này, agent nên chọn hành động nào để đạt utility kỳ vọng cao nhất?**
 
 Tại lượt agent, thay phép lấy trung bình theo policy đã cho bằng phép `max`. Tại lượt đối thủ, giữ phép lấy kỳ vọng theo $\pi_{\mathrm{opp}}$. [CS221, trang 31–34](../docs/games1.pdf#page=31)
+
+Nói bằng ký hiệu ở mục 2.6, ta đang tìm $V^{*,\mu}(s)=\max_\pi V^{\pi,\mu}(s)$: **giữ $\mu$ cố định và tối ưu $\pi$**. Không có yêu cầu $\mu$ phải chọn đều; policy tất định cũng là trường hợp đặc biệt với các xác suất bằng 0 hoặc 1.
 
 ### 4.2. Công thức và ý nghĩa các loại nút
 
@@ -315,7 +395,18 @@ $$
 
 Trong tài liệu CS188, nút lấy kỳ vọng được gọi là **chance node**. Ở phần Games 1 này, xác suất đến từ mô hình về cách đối thủ chọn nước; `Succ(s,a)` vẫn tất định khi hành động đã được chọn. [CS188 Note 7, trang 1–2](../docs/cs188-fa23-note07.pdf#page=1)
 
+Phép lấy kỳ vọng mô tả **mô hình phản ứng** của đối thủ; nó không bắt buộc đối thủ ngoài thực tế phải tung đồng xu. Với game có xúc xắc, chance node còn có thể mô tả ngẫu nhiên của môi trường. Hai nguồn xác suất này cần được phân biệt; ví dụ ba hộp chỉ dùng nguồn thứ nhất.
+
 **Giá trị và hành động là hai đầu ra liên quan nhưng khác nhau.** Phép `max` cho giá trị tốt nhất; hành động cần chọn là hành động dẫn tới giá trị đó. Khi nhiều hành động cùng tốt nhất, có thể chọn một trong số chúng.
+
+Tại mỗi state thuộc lượt agent, trích policy bằng:
+
+$$
+\pi_{\mathrm{exp},\mu}(s)\in
+\arg\max_{a\in Actions(s)}V^{*,\mu}(Succ(s,a)).
+$$
+
+Vì $\arg\max$ có thể có nhiều phần tử, dấu $\in$ nghĩa là chọn một hành động trong tập đồng hạng. Tối ưu trước $\mu$ yêu cầu tiếp tục chọn như vậy ở các lượt sau.
 
 ### 4.3. Áp dụng vào ba hộp
 
@@ -386,7 +477,24 @@ $$
 
 Thuật toán giữ nguyên phép `max` tại gốc và phép lấy kỳ vọng tại lượt đối thủ. Chỉ mô hình xác suất thay đổi mà lựa chọn đã lần lượt chuyển **A → C → B**.
 
-Các ngưỡng đổi lựa chọn, tính từ ba biểu thức trên:
+**Các ngưỡng đổi lựa chọn đến từ đâu?** Giải điểm giao rồi kiểm tra hộp còn lại:
+
+$$
+\begin{aligned}
+V_A=V_C
+&\iff 50-100p=15-20p
+\iff 35=80p
+\iff p=\frac7{16},\\
+V_C=V_B
+&\iff 15-20p=3-2p
+\iff 12=18p
+\iff p=\frac23.
+\end{aligned}
+$$
+
+Tại $p=7/16$, A và C cùng bằng $25/4$, lớn hơn B là $17/8$. Tại $p=2/3$, B và C cùng bằng $5/3$, lớn hơn A là $-50/3$.
+
+A và B còn giao tại $50-100p=3-2p$, tức $p=47/98$. Nhưng khi đó $V_A=V_B=100/49$, trong khi $V_C=265/49$ cao hơn cả hai, nên đây **không phải ngưỡng đổi hộp tối ưu**. So sánh đủ ba hàm trên miền $0\le p\le1$ cho:
 
 - `p < 7/16`: chọn A.
 - `7/16 < p < 2/3`: chọn C.
@@ -419,11 +527,38 @@ Vì vậy, **utility kỳ vọng không đồng nhất với xác suất thắng
 
 Liên hệ với MDP: Game evaluation đánh giá cách chơi đã cho, còn Expectimax tìm cách chơi tốt nhất trước mô hình đối thủ đã biết. Đây là sự tương đồng về vai trò của các công thức với policy evaluation và value iteration. [CS221, trang 27–34](../docs/games1.pdf#page=27)
 
-**Vì sao có thể liên hệ Expectimax với MDP?** Khi policy đối thủ đã cố định và được biết, các phản ứng của họ tạo thành những chuyển tiếp xác suất từ góc nhìn agent. Nếu state giữ đủ thông tin, bài toán chọn hành động của agent có thể biểu diễn thành một MDP; đây là cơ sở cho liên hệ giữa Expectimax và **Bellman optimality — phương trình giá trị tối ưu**.
+#### Từ hai lượt trong game đến một transition của MDP
 
-Chẳng hạn, agent chọn hành động `a` để tới trạng thái `u` thuộc lượt đối thủ. Đối thủ chọn `a'` với xác suất `pi_opp(u, a')`, rồi đi tới `Succ(u, a')`. Từng phép `Succ` vẫn tất định; xác suất đến từ hành động của đối thủ. Khi gộp phản ứng ấy vào bước chuyển của môi trường, agent chọn hành động để tối đa hóa kỳ vọng của giá trị tiếp diễn.
+Giả sử hai người đi luân phiên và đối thủ dùng policy $\mu$ cố định, đã biết. Từ state $s$ thuộc lượt agent, một vòng có dạng:
 
-Liên hệ này dựa trên giả định **policy đối thủ cố định, đã biết và state đủ thông tin**. Phép biểu diễn MDP chi tiết là suy luận từ mô hình của khóa học; được giữ ở [phần MDP reduction của bản nghiên cứu](<Seminar Games 1 nhóm 10 - Bản nghiên cứu.md#mdp-reduction-cố-định-π_opp-đã-biết-trên-state-đủ-thông-tin>).
+$$
+s\xrightarrow[\mathrm{agent}]{a}u
+\xrightarrow[\mathrm{opp}]{b}s',\qquad u=Succ(s,a).
+$$
+
+Sau khi agent chọn $a$, xác suất tới $s'$ là tổng xác suất của các nước đối thủ $b$ dẫn tới đúng $s'$:
+
+$$
+P_\mu(s'\mid s,a)
+=\sum_{b\in Actions(u)}\mu(b\mid u)\,
+\mathbf1[Succ(u,b)=s'].
+$$
+
+Ở đây, $\mathbf1[\cdot]$ bằng 1 khi điều kiện đúng và bằng 0 khi sai. Nếu nhiều hành động $b$ cùng dẫn tới một $s'$, xác suất của chúng được cộng lại. Do $\sum_b\mu(b\mid u)=1$, tổng xác suất trên các $s'$ cũng bằng 1. Nếu $u$ đã là terminal ngay sau nước agent, bỏ lượt đối thủ và đặt $P_\mu(u\mid s,a)=1$.
+
+Với reward trung gian bằng 0, không chiết khấu và utility ở terminal, phương trình tại các state thuộc lượt agent là:
+
+$$
+V^{*,\mu}(s)=\max_{a\in Actions(s)}
+\sum_{s'}P_\mu(s'\mid s,a)V^{*,\mu}(s'),
+\qquad V^{*,\mu}(s_T)=U(s_T).
+$$
+
+Ví dụ chọn C trong trò ba hộp, $P_\mu(C_{-5}\mid s_0,C)=1/2$ và $P_\mu(C_{15}\mid s_0,C)=1/2$. Tổng ứng với hành động C là $\tfrac12(-5)+\tfrac12(15)=5$; so với A và B, phép $\max$ lại chọn C. Đây chính là phép tính Expectimax viết bằng transition của MDP.
+
+Liên hệ này cần **policy đối thủ cố định, đã biết và state đủ thông tin để xác định phản ứng tiếp theo**. Nếu game có reward giữa đường, phải giữ cả reward của những bước đã gộp; không được bỏ chúng. Expectimax ở đây là **planning với mô hình đã biết**. Reinforcement learning còn có bài toán học từ tương tác/dữ liệu, nên hai khái niệm không đồng nhất.
+
+Công thức gộp lượt là phần triển khai từ liên hệ trong [CS221, trang 22 và 27–34](../docs/games1.pdf#page=22); phân tích tổng quát được giữ ở [phần MDP reduction của bản nghiên cứu](<Seminar Games 1 nhóm 10 - Bản nghiên cứu.md#mdp-reduction-cố-định-π_opp-đã-biết-trên-state-đủ-thông-tin>).
 
 ## 5. Minimax: chọn chiến lược có mức bảo đảm tốt nhất
 
@@ -455,6 +590,21 @@ V_{\mathrm{minmax}}(Succ(s,a)),
 $$
 
 Tính giá trị từ lá lên gốc. Tại lượt agent, chọn hành động dẫn tới con có giá trị lớn nhất; tại lượt đối thủ, mô hình hóa việc chọn con có giá trị nhỏ nhất. [CS221, trang 41–44](../docs/games1.pdf#page=41)
+
+Từ value, ta trích được **hai policy Minimax**:
+
+$$
+\begin{aligned}
+\pi_{\max}(s)&\in\arg\max_{a\in Actions(s)}
+V_{\mathrm{minmax}}(Succ(s,a)),
+&&Player(s)=\mathrm{agent},\\
+\pi_{\min}(s)&\in\arg\min_{a\in Actions(s)}
+V_{\mathrm{minmax}}(Succ(s,a)),
+&&Player(s)=\mathrm{opp}.
+\end{aligned}
+$$
+
+Hai policy phải chọn theo các quy tắc này tại **mọi state thuộc lượt mình**, kể cả state không nằm trên đường chơi dự kiến ban đầu. Đây là cơ sở để đánh giá các cuộc đối đầu ở mục 5.7.
 
 Với ba hộp:
 
@@ -575,7 +725,14 @@ Halving Game cho phép người nghe trực tiếp thử một chiến lược t
 - Hai bên luân phiên chọn `-` để trừ 1 hoặc `/` để thay số hiện tại bằng $\lfloor N/2\rfloor$.
 - **Người được để lại với số 0 thắng.** Người vừa thực hiện nước đưa số về 0 thua.
 
-Ví dụ, khi đến lượt với `N = 1`, cả hai hành động đều đưa đối phương tới 0, nên người đang đi thua. [CS221, trang 19 và 45](../docs/games1.pdf#page=19)
+Ví dụ, khi đến lượt với `N = 1`, cả hai hành động đều đưa đối phương tới 0:
+
+$$
+(\mathrm{MAX},1)\xrightarrow{-1}(\mathrm{MIN},0),\qquad
+U(\mathrm{MIN},0)=-1
+$$
+
+trên thang utility hữu hạn theo MAX. MIN là người nhận lượt ở 0 nên MIN thắng; MAX vừa đưa số về 0 lại thua. [CS221, trang 19 và 45](../docs/games1.pdf#page=19)
 
 State là `(player, N)`, trong đó `player` chỉ người **đến lượt**. Trong demo, **lớp là +1 (MAX), máy là −1 (MIN)**; mỗi hành động đổi lượt. Tại terminal `(player, 0)`, mã nguồn trả `Utility = player * inf`:
 
@@ -585,6 +742,35 @@ State là `(player, N)`, trong đó `player` chỉ người **đến lượt**. 
 | `(−1, 0)` | Máy | `-inf` |
 
 Các giá trị vô hạn ở đây chỉ dùng để so sánh thắng/thua trong Minimax. Có thể thay chúng bằng `+1` và `−1` mà vẫn giữ các nước tối ưu của trò chơi này. Demo dùng [`game.py` của CS221, bản lưu trữ cs221.1196](https://web.stanford.edu/class/archive/cs/cs221/cs221.1196/semilive/games1/game.py).
+
+#### Tính thế thắng/thua trước khi đọc bảng N = 15
+
+Đặt $W(n)=1$ nếu **người đang nhận lượt** tại số $n$ có thể bảo đảm thắng, và $W(n)=0$ nếu người đó thua khi đối phương chơi đúng. Đây là nhãn tương đối theo người có lượt, khác với utility luôn tính theo lớp +1.
+
+Người nhận lượt ở 0 thắng nên $W(0)=1$. Với $n>0$, một nước tốt phải để đối phương nhận một thế thua:
+
+$$
+W(n)=\max\left\{1-W(n-1),\;1-W(\lfloor n/2\rfloor)\right\}.
+$$
+
+Nếu có ít nhất một successor mang nhãn 0 thì chọn successor ấy để thắng; nếu cả hai successor mang nhãn 1 thì không tránh được thua trước đối thủ chơi đúng. Tính lần lượt từ 0 tới 16 cho:
+
+| $n$ | $W(n)$ — người đang nhận lượt | Cách đọc kết quả |
+|---|---:|---|
+| 0 | 1 | Thắng theo luật terminal |
+| 1 | 0 | Cả hai nước đều để đối phương nhận 0 |
+| 2, 3 | 1 | Có thể để đối phương nhận 1 |
+| 4 | 0 | Chỉ tới 3 hoặc 2, đều có nhãn 1 |
+| 5 | 1 | Trừ 1 để đối phương nhận 4 |
+| 6 | 0 | Chỉ tới 5 hoặc 3, đều có nhãn 1 |
+| 7, 8, 9 | 1 | Lần lượt có thể để đối phương nhận 6, 4, 4 |
+| 10 | 0 | Chỉ tới 9 hoặc 5, đều có nhãn 1 |
+| 11, 12, 13 | 1 | Lần lượt có thể để đối phương nhận 10, 6, 6 |
+| 14 | 0 | Chỉ tới 13 hoặc 7, đều có nhãn 1 |
+| 15 | 1 | Trừ 1 để đối phương nhận 14 |
+| 16 | 0 | Chỉ tới 15 hoặc 8, đều có nhãn 1 |
+
+Vì vậy, để **máy nhận 14** là thế thắng của lớp; để **máy nhận 7** là thế thắng của máy. Đây là lý do hai nước mở đầu bên dưới có dấu utility trái ngược. Bảng là phép triển khai recurrence của nhóm, kiểm bằng [verify_examples.py](<../research_notes/Seminar Games 1 nhóm 10/verify_examples.py>).
 
 #### Hai nước mở đầu tại N = 15
 
@@ -601,7 +787,7 @@ Chẳng hạn, sau `15 → 14 → 13`, lớp đang có thế thắng. Nếu ti�
 
 #### Hoạt động “Lớp đấu với Minimax” — 3 đến 4 phút
 
-1. Tải trước `game.py` từ nguồn CS221 ở trên, chạy `python3 game.py` và chiếu terminal. Bản mã này khởi tạo sẵn `N = 15`, lớp đi trước và máy dùng Minimax; đã chạy lại được bằng Python 3.13.17.
+1. Tải trước `game.py` từ nguồn CS221 ở trên, chạy `python3 game.py` trên máy trình chiếu và giữ bản tải để chạy offline. Bản mã lưu trữ khởi tạo `N = 15`, lớp đi trước và máy dùng Minimax; bản nghiên cứu lưu log chạy trước đó. Nếu dùng bộ tài liệu hiện tại mà chưa tải mã gốc, có thể dùng chuỗi dự phòng bên dưới và mã kiểm chứng đi kèm.
 2. Lớp bỏ phiếu nhanh `-` hoặc `/` ở mỗi lượt của mình. Sau mỗi nước của lớp, đối chiếu `value` máy in ra với bảng hai nước mở đầu và trạng thái hiện tại.
 3. Giới hạn một ván. Nếu hết thời lượng, dừng sau một lượt máy, dùng giá trị vừa in để xác định bên nào có chiến lược bảo đảm thắng từ trạng thái đó, rồi chuyển sang nhận xét.
 4. Sau ván, đối chiếu các số 3, 5, 7, 15 với 14 và 16; dự đoán liệu người đi trước tại `N = 16` có giữ được chiến thắng hay không.
@@ -637,28 +823,184 @@ Game evaluation đánh giá một cặp policy; Expectimax tối đa hóa kỳ v
 
 ### 5.7. Bảng đối đầu và ba tính chất quan trọng
 
-Khi cố định một policy của agent và một policy của đối thủ, Game evaluation cho giá trị của cặp đó.
+#### Bước 1 — Xác định bốn policy và hàm cần tính
 
-Trong trò ba hộp, policy Minimax của agent chọn B; policy Expectimax tối ưu trước đối thủ chọn đều chọn C. Cho mỗi policy gặp hai đối thủ:
+Sau khi tìm policy bằng Minimax hoặc Expectimax, ta có thể **cố định chúng rồi cho đấu chéo**. Khi ấy, mỗi ô trong bảng được tính bằng Game evaluation. Ký hiệu:
 
-| Policy agent | Đối thủ chọn số nhỏ nhất | Đối thủ chọn đều |
+$$
+V(\alpha,\beta;s)=V^{\alpha,\beta}(s)
+=\mathbb E[U(s_T)\mid s,\alpha,\beta],\qquad
+V(\alpha,\beta)=V(\alpha,\beta;s_{\mathrm{start}}).
+$$
+
+Đối số thứ nhất luôn là policy **agent**, đối số thứ hai là policy **đối thủ**; mọi value đều theo góc nhìn agent. Đặt tên đúng như phần *Face off* của PDF:
+
+| Policy | Thuộc bên nào? | Cách xác định | Trong trò ba hộp |
+|---|---|---|---|
+| $\pi_{\max}$ | Agent | Lấy $\arg\max$ của value Minimax ở các con | Chọn B vì $\max(-50,1,-5)=1$ |
+| $\pi_{\min}$ | Đối thủ | Lấy $\arg\min$ của value Minimax ở các con | Chọn số nhỏ tại **mọi hộp**: A → −50, B → 1, C → −5 |
+| $\pi_7$ | Đối thủ | Một policy cụ thể được cho trước | Trong ví dụ này: chọn mỗi số với xác suất $1/2$ ở mọi hộp |
+| $\pi_E=\pi_{\mathrm{exptmax}(7)}$ | Agent | Expectimax tối ưu **trước đúng $\pi_7$** | Chọn C vì $\max(0,2,5)=5$ |
+
+Số 7 chỉ là nhãn của một policy đối thủ trong bài giảng, **không phải người chơi thứ bảy hay xác suất 7**. Trong mệnh đề tổng quát, $\pi_7$ có thể là policy bất kỳ đã cố định; chọn đều là cách cụ thể hóa của trò ba hộp. Các policy Minimax được trích ở mọi state theo mục 5.2. [CS221, trang 43–48](../docs/games1.pdf#page=43)
+
+Bảng cần tính trước hết là một bảng **bốn biểu thức**, chưa phải bốn số:
+
+| Policy agent \\ Policy đối thủ | $\pi_{\min}$ | $\pi_7$ |
+|---|---|---|
+| $\pi_{\max}$ | $V(\pi_{\max},\pi_{\min})$ | $V(\pi_{\max},\pi_7)$ |
+| $\pi_E$ | $V(\pi_E,\pi_{\min})$ | $V(\pi_E,\pi_7)$ |
+
+**Phải giữ policy của hàng khi đổi cột.** Chẳng hạn, ở ô $V(\pi_E,\pi_{\min})$, agent vẫn chơi policy đã tính trước $\pi_7$; nó không được tính lại một best response trước $\pi_{\min}$ rồi đổi từ C sang B.
+
+#### Bước 2 — Dùng Game evaluation tính từng ô
+
+Gọi $u_{h,-},u_{h,+}$ là hai số nhỏ/lớn trong hộp $h$. Vì game kết thúc ngay sau khi đối thủ chọn số, truy hồi Game evaluation rút gọn thành:
+
+$$
+V(\alpha,\beta)
+=\sum_{h\in\{A,B,C\}}\alpha(h\mid s_{\mathrm{start}})
+\left[\beta(-\mid h)u_{h,-}+\beta(+\mid h)u_{h,+}\right].
+$$
+
+Dấu $-$ và $+$ ở đây đặt tên cho hành động chọn số nhỏ/lớn. Policy agent trong mỗi hàng là tất định nên chỉ hộp được chọn có trọng số 1; hai hộp còn lại có trọng số 0.
+
+**Ô 1: $V(\pi_{\max},\pi_{\min})$.** Agent theo $\pi_{\max}$ nên chọn B. Tại B, đối thủ theo $\pi_{\min}$ chọn 1 với xác suất 1, chọn 3 với xác suất 0:
+
+$$
+V(\pi_{\max},\pi_{\min})
+=1\cdot\left[1\cdot1+0\cdot3\right]
+=\boxed{1}.
+$$
+
+Đây chính là $V_{\mathrm{minmax}}(s_{\mathrm{start}})$: hai bên đều tiếp tục theo policy Minimax.
+
+**Ô 2: $V(\pi_{\max},\pi_7)$.** Agent vẫn chọn B; chỉ đổi policy đối thủ sang chọn đều:
+
+$$
+V(\pi_{\max},\pi_7)
+=1\cdot\left[\tfrac12\cdot1+\tfrac12\cdot3\right]
+=\tfrac12+\tfrac32
+=\boxed{2}.
+$$
+
+Số 2 là value khi **policy Minimax gặp đối thủ chọn đều**. Nó không phải giá trị Minimax của game, vốn vẫn là 1.
+
+**Ô 3: $V(\pi_E,\pi_{\min})$.** Agent theo $\pi_E$ nên chọn C, vì policy ấy được tính từ giả định đối thủ chọn đều. Nhưng đối thủ thực tế trong cột này dùng $\pi_{\min}$, nên tại C chọn −5:
+
+$$
+V(\pi_E,\pi_{\min})
+=1\cdot\left[1\cdot(-5)+0\cdot15\right]
+=\boxed{-5}.
+$$
+
+Không được điền 5 vào ô này: 5 là kỳ vọng trước $\pi_7$, trong khi cột đang xét là $\pi_{\min}$.
+
+**Ô 4: $V(\pi_E,\pi_7)$.** Agent chọn C và gặp đúng đối thủ chọn đều mà nó đã dùng để tối ưu:
+
+$$
+V(\pi_E,\pi_7)
+=1\cdot\left[\tfrac12\cdot(-5)+\tfrac12\cdot15\right]
+=-\tfrac52+\tfrac{15}{2}
+=\boxed{5}.
+$$
+
+Đây là $V_{\mathrm{exptmax}}(s_{\mathrm{start}})$ trước mô hình $\pi_7$. Giá trị 5 là kỳ vọng; một ván cụ thể vẫn chỉ nhận −5 hoặc 15.
+
+Sau khi tính từng thành phần, bảng trở thành:
+
+| Policy agent \\ Policy đối thủ | $\pi_{\min}$: chọn số nhỏ nhất | $\pi_7$: chọn đều |
 |---|---:|---:|
-| Minimax: chọn B | **1** | **2** |
-| Expectimax theo mô hình chọn đều: chọn C | **−5** | **5** |
+| $\pi_{\max}$: chọn B | $V(\pi_{\max},\pi_{\min})=\mathbf1$ | $V(\pi_{\max},\pi_7)=\mathbf2$ |
+| $\pi_E$: chọn C | $V(\pi_E,\pi_{\min})=\mathbf{-5}$ | $V(\pi_E,\pi_7)=\mathbf5$ |
 
-Bảng này thể hiện ba tính chất trong tài liệu khóa học:
+Cách đọc này theo phần bảng đối đầu của [CS221, trang 47–56](../docs/games1.pdf#page=47), được giảng giải từng cặp policy trong [Games I 2025, 35:54–46:13](https://www.youtube.com/watch?v=SMOD_GiRzb8&t=2154s) và [Game Playing 1 năm 2019, 38:46–50:26](https://www.youtube.com/watch?v=3pU-Hrz_xy4&t=2326s).
 
-1. **Tốt nhất trước đối thủ Minimax.** Khi đối thủ giữ policy Minimax, agent không thể cải thiện giá trị bằng cách đổi sang một policy khác. Trong ví dụ, đối thủ chọn số nhỏ nhất ở mọi hộp, và B là lựa chọn tốt nhất với giá trị `1`.
-2. **Bảo đảm trước mọi đối thủ.** Nếu agent tiếp tục tuân theo policy Minimax ở mọi lượt, kết quả không thấp hơn giá trị Minimax, dù đối thủ có chơi tối ưu hay không. Với B, đối thủ có thể cho `1` hoặc `3`, đều không thấp hơn `1`.
-3. **Biết policy đối thủ thì có thể đạt kỳ vọng cao hơn.** Trước đúng policy đối thủ đã dùng để tính toán, Expectimax đạt kỳ vọng ít nhất bằng Minimax. Khi đối thủ chọn đều, C cho `5`, còn B cho `2`.
+#### Bước 3 — Phát biểu và kiểm tra ba tính chất
 
-Trên bảng, quan hệ giữa bốn giá trị là:
+**Tính chất 1: policy Minimax của agent tốt nhất trước đối thủ Minimax.**
+
+$$
+\boxed{
+V(\pi_{\max},\pi_{\min})\ge V(\pi,\pi_{\min})
+\qquad\forall\,\pi.
+}
+$$
+
+Ở đây $\pi$ là policy agent bất kỳ. Giữ đối thủ ở $\pi_{\min}$, không policy agent nào đạt value cao hơn $\pi_{\max}$. Trong ba hộp, đối thủ này trả $-50,1,-5$, nên agent chọn B đạt 1. Một policy agent ngẫu nhiên chỉ cho trung bình có trọng số của ba số ấy, cũng không vượt 1. Đặc biệt, thay $\pi=\pi_E$:
+
+$$
+V(\pi_E,\pi_{\min})\le V(\pi_{\max},\pi_{\min})
+\quad\Longrightarrow\quad -5\le1.
+$$
+
+Đây là phép so sánh **hai hàng trong cột $\pi_{\min}$**. [CS221, trang 49–50](../docs/games1.pdf#page=49)
+
+**Tính chất 2: policy Minimax giữ một mức sàn trước mọi đối thủ.**
+
+$$
+\boxed{
+V(\pi_{\max},\pi_{\min})\le V(\pi_{\max},\mu)
+\qquad\forall\,\mu.
+}
+$$
+
+Ở đây $\mu$ là policy đối thủ bất kỳ. Giữ agent ở $\pi_{\max}$, đối thủ không thể làm utility kỳ vọng thấp hơn mức đạt được bởi $\pi_{\min}$. Trong ví dụ, agent đã chọn B. Nếu $\mu$ chọn 1 với xác suất $q$ và chọn 3 với xác suất $1-q$, thì:
+
+$$
+V(\pi_{\max},\mu)=q\cdot1+(1-q)\cdot3=3-2q\ge1,
+\qquad 0\le q\le1.
+$$
+
+Đặc biệt, với $\mu=\pi_7$ và $q=1/2$:
+
+$$
+V(\pi_{\max},\pi_{\min})\le V(\pi_{\max},\pi_7)
+\quad\Longrightarrow\quad 1\le2.
+$$
+
+Đây là phép so sánh **hai cột trong hàng $\pi_{\max}$**. Đối thủ không cần thực sự chơi tối ưu để bảo đảm còn đúng; agent phải giữ policy Minimax. [CS221, trang 51–52](../docs/games1.pdf#page=51)
+
+**Tính chất 3: trước policy đối thủ đã biết, Expectimax đạt kỳ vọng không kém Minimax.**
+
+Theo định nghĩa của policy tối ưu trước $\pi_7$:
+
+$$
+V(\pi_E,\pi_7)=\max_\pi V(\pi,\pi_7)
+\quad\Longrightarrow\quad
+\boxed{V(\pi_{\max},\pi_7)\le V(\pi_E,\pi_7).}
+$$
+
+Policy Minimax cũng là một trong các policy agent được đem ra so sánh, nên không thể vượt policy tối ưu kỳ vọng trước **cùng $\pi_7$**. Thay các giá trị đã tính:
+
+$$
+2\le5.
+$$
+
+Đây là phép so sánh **hai hàng trong cột $\pi_7$**. Có thể xảy ra bằng nhau trong game khác; không được suy rằng Expectimax luôn tốt hơn nghiêm ngặt. Nếu đối thủ thực tế đổi policy, mệnh đề về cột $\pi_7$ không tự trở thành kết luận về cuộc đối đầu mới. [CS221, trang 53–54](../docs/games1.pdf#page=53)
+
+#### Bước 4 — Ghép các mệnh đề thành quan hệ bốn giá trị
+
+Từ ba tính chất trên:
+
+$$
+\boxed{
+\begin{aligned}
+V(\pi_E,\pi_{\min})
+&\le V(\pi_{\max},\pi_{\min})\\
+&\le V(\pi_{\max},\pi_7)\\
+&\le V(\pi_E,\pi_7).
+\end{aligned}
+}
+$$
+
+Thay đúng bốn thành phần tương ứng mới được:
 
 $$
 \boxed{-5\le1\le2\le5}.
 $$
 
-Minimax ưu tiên mức sàn; Expectimax ưu tiên kỳ vọng theo một mô hình cụ thể. Các tính chất không khẳng định một phương pháp luôn cho kết quả cao hơn phương pháp kia trong mọi cuộc đối đầu. [CS221, trang 47–56](../docs/games1.pdf#page=47)
+Mỗi dấu $\le$ giữ cố định một bên và thay policy bên còn lại theo điều kiện của tính chất tương ứng. Chuỗi này so sánh **các cuộc đối đầu xác định**, không phải bảng xếp hạng thuật toán trong mọi tình huống. [CS221, trang 55–56](../docs/games1.pdf#page=55)
 
 #### Vì sao Minimax bảo đảm được kết quả trước mọi đối thủ?
 
@@ -729,15 +1071,26 @@ Minimax lấy `max(0, 0, −1, 0) = 0`, nên **X0, X1 và X4 đều tối ưu**;
 
 Expectimax trước O chọn đều chọn **X4**. Sau X4, O có ba nước: O0 và O1 cho X thắng ngay bằng X2, còn O2 dẫn tới hòa. Do đó, giá trị là `(1 + 1 + 0)/3 = 2/3`. Sau X2, hai đáp trả không chặn của O cho X thắng, nhưng O4 dẫn tới thua, nên giá trị là `(1 + 1 − 1)/3 = 1/3`.
 
+Các giá trị trong bảng được tổng hợp tại node O ngay sau nước X như sau. Mỗi phần tử là **value tiếp diễn sau một phản ứng O**, không phải điểm chấm riêng cho ô vừa đặt:
+
+| Nước X đầu | Các phản ứng O theo thứ tự | Value của các cây con | Backup Minimax | Backup Expectimax |
+|---|---|---|---|---|
+| X0 | O1, O2, O4 | $0,0,0$ | $\min(0,0,0)=0$ | $(0+0+0)/3=0$ |
+| X1 | O0, O2, O4 | $0,0,0$ | $\min(0,0,0)=0$ | $(0+0+0)/3=0$ |
+| X2 | O0, O1, O4 | $1,1,-1$ | $\min(1,1,-1)=-1$ | $(1+1-1)/3=1/3$ |
+| X4 | O0, O1, O2 | $1,1,0$ | $\min(1,1,0)=0$ | $(1+1+0)/3=2/3$ |
+
+Riêng ở cây nhỏ Q, value của các con trong bảng trùng nhau dưới hai cách chơi tiếp diễn. Trong cây tổng quát, phải tính riêng các value ấy theo đúng Minimax hoặc Expectimax; không được mặc nhiên dùng chung.
+
 **Q cho thấy phải đánh giá cả phản ứng mà nước đi của mình tạo cơ hội cho đối thủ.** Một nước gây sức ép ngay trước mắt vẫn có thể dẫn tới thua.
 
-Ở Q, X4 đồng thời là nước tối ưu của Minimax và Expectimax. Vì thế, ví dụ này không cho hai tập nước tối ưu tách nhau; thế P tiếp theo sẽ thể hiện khác biệt đó.
+Ở Q, X4 đồng thời là nước tối ưu của Minimax và Expectimax. Vì thế, ví dụ này không cho hai tập nước tối ưu tách nhau; thế P trong mục mở rộng tiếp theo sẽ thể hiện khác biệt đó. Khi nói trực tiếp, có thể dừng ví dụ Tic-Tac-Toe ở Q rồi chuyển tới mục 5.10.
 
 Các giá trị do nhóm tính bằng [code tham chiếu](<../research_notes/Seminar Games 1 nhóm 10/verify_examples.py>). Cây đầy đủ 61 nút và thứ tự lời gọi được giữ ở [phần thế Q trong bản nghiên cứu](<Seminar Games 1 nhóm 10 - Bản nghiên cứu.md#56-thế-q-cho-thấy-một-nước-đe-dọa-có-thể-mở-đường-thua>).
 
-### 5.9. Thế P: cùng một thế cờ, hai lựa chọn khác nhau
+### 5.9. Thế P: cùng một thế cờ, hai lựa chọn khác nhau (mở rộng)
 
-Ví dụ sau áp dụng hai cách đánh giá vào một game có nhiều lượt. **Quy ước của ví dụ: O đi trước, X là agent và hiện đến lượt X.** Utility theo X là thắng `+1`, hòa `0`, thua `−1`.
+Ví dụ này dành cho phần đọc thêm hoặc vấn đáp: áp dụng hai cách đánh giá vào một game có nhiều lượt. **Quy ước của ví dụ: O đi trước, X là agent và hiện đến lượt X.** Utility theo X là thắng `+1`, hòa `0`, thua `−1`.
 
 Đánh số ô và thế cờ P:
 
@@ -770,6 +1123,21 @@ Kết quả:
 
 Các giá trị do code của nhóm tính trên toàn bộ cây con, không phải số liệu được trích từ slide khóa học. Đã kiểm lại bằng [verify_examples.py](<../research_notes/Seminar Games 1 nhóm 10/verify_examples.py>).
 
+#### Các giá trị sau nước đầu được tính thế nào?
+
+Sau mỗi nước X, O còn năm ô để chọn. Với Minimax, tính value Minimax của năm cây con rồi lấy $\min$; với Expectimax, tính value Expectimax của năm cây con rồi lấy trung bình vì O chọn đều. Hai bộ value con có thể khác nhau do X và O tiếp tục chơi theo hai giả định khác nhau:
+
+| Nước đầu | Thứ tự năm phản ứng O | Backup Minimax | Backup Expectimax |
+|---|---|---|---|
+| X0 | 1, 2, 4, 6, 8 | $\min(0,0,0,1,0)=0$ | $(\tfrac23+\tfrac23+\tfrac23+1+0)/5=3/5$ |
+| X1 | 0, 2, 4, 6, 8 | $\min(0,0,1,-1,0)=-1$ | $(0+0+1-\tfrac13+0)/5=2/15$ |
+| X2 | 0, 1, 4, 6, 8 | $\min(1,1,1,1,-1)=-1$ | $(1+1+1+1+\tfrac13)/5=13/15$ |
+| X4 | 0, 1, 2, 6, 8 | $\min(0,1,0,-1,0)=-1$ | $(\tfrac23+1+\tfrac23+\tfrac13+\tfrac23)/5=2/3$ |
+| X6 | 0, 1, 2, 4, 8 | $\min(1,0,0,0,0)=0$ | $(1+\tfrac23+0+0+\tfrac23)/5=7/15$ |
+| X8 | 0, 1, 2, 4, 6 | $\min(1,1,-1,1,1)=-1$ | $(1+1+\tfrac13+1+1)/5=13/15$ |
+
+Sau đó gốc X lấy $\max$ của sáu kết quả trong từng cột. Chẳng hạn, số $13/15$ sau X2 không đến từ một lá riêng lẻ: nó là backup của năm phản ứng O. Phần dưới lần tiếp nhánh O8 để giải thích số $1/3$ còn nằm trong phép tính ấy.
+
 #### Vì sao ô 2 hấp dẫn trước đối thủ chọn đều?
 
 Sau X2, X có hai quân ở cột phải và đe dọa thắng tại ô 8:
@@ -789,7 +1157,26 @@ O có năm ô để chọn: `0, 1, 4, 6, 8`. Chỉ **O8** ngăn được X thắ
 | O0, O1, O4 hoặc O6 | +1: X thắng ngay ở ô 8 |
 | O8 | 1/3 |
 
-Vì các nước O có xác suất bằng nhau:
+**Vì sao sau O8 lại là $1/3$?** Khi O chặn ô 8, X còn các nước 0, 1, 4, 6. Tính tiếp một tầng O cho:
+
+| X đáp lại sau X2 → O8 | Các phản ứng O còn lại | Value con dưới Expectimax | Value sau nước X |
+|---|---|---|---|
+| X0 | O1, O4, O6 | $-1,1,-1$ | $(-1+1-1)/3=-1/3$ |
+| X1 | O0, O4, O6 | $-1,1,-1$ | $(-1+1-1)/3=-1/3$ |
+| X4 | O0, O1, O6 | $1,1,-1$ | $(1+1-1)/3=1/3$ |
+| X6 | O0, O1, O4 | $1,1,-1$ | $(1+1-1)/3=1/3$ |
+
+Ở mỗi nhánh, sau phản ứng O chỉ còn nhiều nhất một lượt X rồi một lượt O; lấy $\max$ ở lượt X và xét kết cục cuối ván cho các value $\pm1$ trên. Vì thế X lấy:
+
+$$
+V_{\mathrm{exptmax}}(\text{sau X2, O8})
+=\max\left(-\tfrac13,-\tfrac13,\tfrac13,\tfrac13\right)
+=\frac13.
+$$
+
+Để thấy trực tiếp một nhánh tối ưu, chọn X6. Nếu O0 hoặc O1, X4 hoàn tất đường chéo 2–4–6 và thắng. Nếu O4, O tạo fork ở ô 0 và 1; X chỉ chặn được một, nên thua. Do đó nhánh X6 cho $(1+1-1)/3=1/3$. X4 cũng đạt cùng kỳ vọng, dù diễn biến khác. Minimax đánh giá cả bốn nước X sau O8 là −1 vì mỗi nước đều có phản bác ép thua.
+
+Quay lại node O ngay sau X2, năm nước O có xác suất bằng nhau nên:
 
 $$
 V_{\mathrm{exptmax}}(\text{sau X2})
@@ -818,6 +1205,17 @@ $$
 P(\text{thắng})=\frac{14}{15},\qquad
 P(\text{hòa})=0,\qquad
 P(\text{thua})=\frac{1}{15}.
+$$
+
+Các xác suất này cũng được tính theo từng nhánh. Trong năm phản ứng đầu của O, bốn phản ứng cho X thắng ngay. Phản ứng còn lại O8 có xác suất $1/5$; sau đó một nước X tối ưu kỳ vọng cho thắng với xác suất $2/3$ và thua với xác suất $1/3$ như bảng trên. Theo xác suất toàn phần:
+
+$$
+\begin{aligned}
+P(\text{thắng})&=\frac45\cdot1+\frac15\cdot\frac23
+=\frac{12}{15}+\frac2{15}=\frac{14}{15},\\
+P(\text{thua})&=\frac45\cdot0+\frac15\cdot\frac13
+=\frac1{15}.
+\end{aligned}
 $$
 
 Do đó:
@@ -888,6 +1286,20 @@ Minimax chọn B trên cả hai thang, vì giá trị thấp nhất của B vẫ
 
 **Minimax dựa vào thứ tự giá trị, còn Expectimax sử dụng cả độ lớn để lấy kỳ vọng.** Một phép biến đổi tăng nghiêm ngặt giữ thứ tự các kết cục có thể vẫn làm Expectimax đổi quyết định. Khi ấy ta đã thay cách đánh giá utility của những kết quả bất định, nên không thể xem mọi phép đổi thang là tương đương.
 
+Vậy phép đổi thang nào giữ thứ tự kỳ vọng? Với **biến đổi affine dương**:
+
+$$
+\widetilde U=aU+b,\qquad a>0,
+$$
+
+tính tuyến tính của kỳ vọng cho:
+
+$$
+\mathbb E[\widetilde U]=a\,\mathbb E[U]+b.
+$$
+
+Vì $a>0$, policy có kỳ vọng lớn hơn trước biến đổi vẫn lớn hơn sau biến đổi. Ví dụ chọn $\widetilde U=2U+10$, kỳ vọng A thành $2\cdot20+10=50$, còn B thành $2\cdot25+10=60$; Expectimax vẫn chọn B. Phép bình phương trên miền không âm là biến đổi tăng nhưng phi tuyến, nên không có bảo đảm này.
+
 Ví dụ được rút từ [phần phân tích utility của bản nghiên cứu](<Seminar Games 1 nhóm 10 - Bản nghiên cứu.md#vì-sao-được-lấy-trung-bình-cardinal-utility>).
 
 ### Bảng đối đầu trên thế P
@@ -901,7 +1313,14 @@ Giữ quy ước của P: O đi trước, X là agent, utility thắng/hòa/thua
 
 Trong bảng, khi có nhiều hành động cùng tốt nhất, policy tất định của mỗi bên chọn **ô có chỉ số nhỏ nhất tại mọi trạng thái thuộc lượt mình**. Quy tắc này xác định cụ thể các policy đang được đánh giá.
 
-Bảng đánh giá cách chơi từ đầu tới cuối, không chỉ nước đầu tiên. X theo Minimax giữ được ít nhất hòa trước mọi cách phản ứng; trước O chọn đều, policy này đạt kỳ vọng `3/5`. X theo Expectimax trước mô hình chọn đều đạt `13/15`, nhưng có thể bị O theo policy Minimax trong bảng đánh bại.
+Bảng đánh giá cách chơi từ đầu tới cuối, không chỉ nước đầu tiên. Đặt lại $\pi_{\max},\pi_{\min},\pi_7,\pi_E$ như mục 5.7, nhưng trên cây P. Với cách phá hòa vừa nêu, $\pi_{\max}$ chọn X0 còn $\pi_E$ chọn X2. Từng ô được đọc như sau:
+
+- $V(\pi_{\max},\pi_{\min})=0$: hai bên giữ policy Minimax nên nhận đúng value gốc P là 0.
+- $V(\pi_{\max},\pi_7)=(\tfrac23+\tfrac23+\tfrac23+1+0)/5=3/5$: sau X0, năm phản ứng O1, O2, O4, O6, O8 có các value tiếp diễn ấy khi **X tiếp tục giữ policy Minimax đã cố định** và O tiếp tục chọn đều.
+- $V(\pi_E,\pi_{\min})=-1$: policy $\pi_E$ chọn X2; $\pi_{\min}$ đáp O8. Sau đó $\pi_E$ chọn X4 khi phá hòa bằng chỉ số nhỏ nhất, và O6 thắng ngay hàng dưới. Như vậy cuộc đối đầu đi theo X2 → O8 → X4 → O6, cho utility −1.
+- $V(\pi_E,\pi_7)=(1+1+1+1+\tfrac13)/5=13/15$: đúng phép tính và policy Expectimax ở mục 5.9.
+
+Vì thế quan hệ bốn giá trị trên P là $-1\le0\le3/5\le13/15$. X theo Minimax giữ được ít nhất hòa trước mọi cách phản ứng; X theo Expectimax trước mô hình chọn đều có kỳ vọng cao hơn, nhưng policy đó có thể thua khi gặp đối thủ phản bác chính xác.
 
 Đổi cách phá hòa giữa các nước Minimax có thể làm kỳ vọng trước O chọn đều thay đổi, trong khi mức bảo đảm 0 vẫn giữ nguyên. Vì vậy, kết quả `3/5` gắn với quy tắc phá hòa vừa nêu. Các kết quả được kiểm bằng [code tham chiếu](<../research_notes/Seminar Games 1 nhóm 10/verify_examples.py>), và phân tích đầy đủ ở [phần thế P của bản nghiên cứu](<Seminar Games 1 nhóm 10 - Bản nghiên cứu.md#57-thế-p-khiến-hai-tập-nước-tốt-nhất-tách-hẳn-nhau>).
 
@@ -930,14 +1349,27 @@ Cây ở câu Minimax lấy từ [CS188 Lecture 7, trang 18](../docs/cs188-sp26-
 
 ## Tài liệu tham khảo
 
-| Tài liệu | Phần được sử dụng |
+Các nguồn công khai dưới đây dùng để mở trực tiếp khi chia sẻ tài liệu. Dẫn trang trong bài luôn theo **bản PDF đi kèm trong `docs/`**; transcript tiếng Việt dùng để đối chiếu cách giải thích, còn công thức được đối chiếu với PDF vì transcript là bản dịch máy.
+
+| Nguồn công khai / tài liệu | Bản đi kèm và phần được sử dụng |
 |---|---|
-| [CS221 — games1.pdf](../docs/games1.pdf) | Khung chính: mô hình, policy, Game evaluation, Expectimax, Minimax và ba tính chất; trang PDF 1–56 |
-| [CS188 — Lecture 7, Spring 2026](../docs/cs188-sp26-lec07.pdf) | Game tree, cách tính Minimax, giả mã và độ phức tạp; chủ yếu trang 6–20 |
-| [CS188 — Note 6, Fall 2023](../docs/cs188-fa23-note06.pdf) | Từ kế hoạch sang strategy, mô hình trò chơi, Minimax và DFS hậu tự; trang 1–5 |
-| [CS188 — Note 7, Fall 2023](../docs/cs188-fa23-note07.pdf) | Expectimax và nút kỳ vọng; trang 1–2 |
+| [Stanford CS221 — Games I, bản lưu trữ Spring 2024](https://stanford-cs221.github.io/spring2024-extra/modules/games/games1.pdf) | [games1.pdf](../docs/games1.pdf), 97 trang. Khung chính ở trang 1–56; bảng đối đầu trang 47–48, ba tính chất trang 49–54, quan hệ bốn value trang 55–56 |
+| [Stanford Online — Games I, CS221 Autumn 2025](https://www.youtube.com/watch?v=SMOD_GiRzb8) | [Transcript tiếng Việt, bài thứ nhất](../docs/transcript_Stanford_CS221_2_bai_giang_vi.md#stanford-cs221--autumn-2025--lecture-10-games-i). Đánh giá và mô phỏng: 11:05–20:30; Expectimax: 20:40–25:39; bảng đối đầu và bảo đảm: 35:54–46:13 |
+| [Stanford Online — Game Playing 1, CS221 Autumn 2019](https://www.youtube.com/watch?v=3pU-Hrz_xy4) | [Transcript tiếng Việt, bài thứ hai](../docs/transcript_Stanford_CS221_2_bai_giang_vi.md#game-playing-1--minimax-alpha-beta-pruning--stanford-cs221-ai-autumn-2019). Modeling: 04:02–12:13; Halving và demo: 12:18–15:32, 34:19–38:30; bảng đối đầu: 38:46–51:05 |
+| [UC Berkeley CS188 — State Spaces and Search Problems](https://inst.eecs.berkeley.edu/~cs188/textbook/search/state.html) | Cơ sở cho biểu diễn Search ở mục 1.1: state, action, transition, cost, start và goal; phân biệt graph với search tree |
+| [UC Berkeley CS188 — Lecture 7, Spring 2026](https://inst.eecs.berkeley.edu/~cs188/sp26/assets/lectures/cs188-sp26-lec07.pdf) | [Bản PDF](../docs/cs188-sp26-lec07.pdf). Game tree, cách tính Minimax, giả mã và độ phức tạp; chủ yếu trang 6–20 |
+| [UC Berkeley CS188 — Note 6, Fall 2023](https://inst.eecs.berkeley.edu/~cs188/fa23/assets/notes/cs188-fa23-note06.pdf) | [Bản PDF](../docs/cs188-fa23-note06.pdf). Từ kế hoạch sang strategy, mô hình trò chơi, Minimax và DFS hậu tự; trang 1–5 |
+| [UC Berkeley CS188 — Note 7, Fall 2023](https://inst.eecs.berkeley.edu/~cs188/fa23/assets/notes/cs188-fa23-note07.pdf) | [Bản PDF](../docs/cs188-fa23-note07.pdf). Expectimax và nút kỳ vọng; trang 1–2 |
 | [Danh sách nhóm CSAI](<../docs/Danh sách nhóm CSAI.xlsx>) | Năm mục được giao cho nhóm 10 và phạm vi của các nhóm tiếp theo |
 | [CS221 — `game.py`, bản lưu trữ cs221.1196](https://web.stanford.edu/class/archive/cs/cs221/cs221.1196/semilive/games1/game.py) | Mã demo Halving: lớp +1 đấu với máy Minimax −1, bắt đầu tại N = 15 |
-| [verify_examples.py](<../research_notes/Seminar Games 1 nhóm 10/verify_examples.py>) | Kiểm tra ba hộp, Halving, bảng đối đầu, giá trị từng nước ở P/Q và số đếm Tic-Tac-Toe |
+| [verify_examples.py](<../research_notes/Seminar Games 1 nhóm 10/verify_examples.py>) | Mã Python chỉ dùng thư viện chuẩn: kiểm tra ba hộp, Halving, bảng đối đầu, giá trị từng nước ở P/Q và số đếm Tic-Tac-Toe. [Output kiểm chứng](<../research_notes/Seminar Games 1 nhóm 10/verify_examples_output.txt>) được chạy lại khi chỉnh báo cáo |
+
+Để tái lập các bảng số, đứng tại thư mục gốc bộ tài liệu và chạy:
+
+```sh
+python3 "research_notes/Seminar Games 1 nhóm 10/verify_examples.py"
+```
+
+Script duyệt đầy đủ Tic-Tac-Toe từ bàn trống, dừng khi thắng hoặc đầy bàn; số node có tính các lần xuất hiện lặp của cùng state. Thời gian chạy trong log phụ thuộc máy. Log kiểm chứng này kiểm các kết quả toán học bằng mã tham chiếu; log demo tương tác của mã Stanford được lưu riêng trong Phụ lục A2 của bản nghiên cứu.
 
 [Bản nghiên cứu đầy đủ trước khi điều chỉnh](<Seminar Games 1 nhóm 10 - Bản nghiên cứu.md>) giữ các chứng minh, phép rút gọn MDP, phân tích chi tiết độ nhạy của Expectimax, log Halving Game, toàn bộ cây và trace thế Q, mã nguồn bổ sung và các nguồn mở rộng để tra cứu.
