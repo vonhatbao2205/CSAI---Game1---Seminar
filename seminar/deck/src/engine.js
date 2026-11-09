@@ -2,6 +2,12 @@
    auto-play, short mode. Games 1 uses the light theme only (white stage). */
 (function () {
   "use strict";
+  // The remote-control page sets window.DECK_DEFER and calls window.bootDeck() only on the presenting laptop.
+  if (window.DECK_DEFER) { window.bootDeck = boot; return; }
+  boot();
+  function boot() {
+  if (boot.done) return;
+  boot.done = true;
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const STORE = "games1-deck";
@@ -304,7 +310,7 @@
     else if (k === "Escape") { ov.classList.remove("show"); notes.classList.remove("show"); }
     else if (k === "n" || k === "N") toggleNotes();
     else if (k === "a" || k === "A") toggleAuto();
-    else if (k === "t" || k === "T") { shortMode = !shortMode; flash(shortMode ? "Bản rút gọn: bật" : "Bản rút gọn: tắt"); }
+    else if (k === "t" || k === "T") toggleShort();
     else if (k === "f" || k === "F") { if (document.fullscreenElement) document.exitFullscreen(); else { const p = document.documentElement.requestFullscreen(); if (p) p.catch(() => flash("Trình duyệt không cho toàn màn hình")); } }
     else if (k === "v" || k === "V" || k === "k" || k === "K") toggleVideo();
     else if (k === "r" || k === "R") replayVideo();
@@ -343,5 +349,13 @@
   fit();
   const h = fromHash();
   enter(h ? h[0] : 0, h ? h[1] : 0);
-  window.deck = { next, prev, goto, slides, say: sayLine, flash, setTheme, count: () => slides.length, cur: () => cur, step: () => step };
+  function toggleShort() { shortMode = !shortMode; flash(shortMode ? "Bản rút gọn: bật" : "Bản rút gọn: tắt"); }
+  window.deck = {
+    next, prev, goto, slides, say: sayLine, flash, setTheme, count: () => slides.length, cur: () => cur, step: () => step,
+    // used by the remote control
+    maxStep: (i) => slides[i]._max, short: () => shortMode, toggleShort, toggleOverview,
+    overviewOpen: () => ov.classList.contains("show"), closeOverlays: () => { ov.classList.remove("show"); notes.classList.remove("show"); },
+    video: curVideo, toggleVideo, replayVideo, seekBy, stepRate,
+  };
+  }
 })();

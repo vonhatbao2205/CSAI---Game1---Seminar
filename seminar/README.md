@@ -20,6 +20,8 @@ Hoặc mở thẳng `deck/dist/index.html` bằng Chrome, Edge, Brave hoặc Fir
 | F | toàn màn hình |
 | V (K), J, L, R, [ ] | video: dừng/phát, lùi/tới 5 giây, phát lại, đổi tốc độ |
 
+**Điều khiển bằng điện thoại:** artifact riêng https://claude.ai/artifact/XedVTFF8CEVoc4dKbzhZr8. Mở link trên laptop và chọn *Trình chiếu*, mở cùng link trên điện thoại và chọn *Điều khiển*; mỗi lần tải lại trang đều hỏi lại. Hai máy đăng nhập claude.ai bằng tài khoản có quyền sửa artifact (người chỉ có quyền xem không gửi được lệnh). Điện thoại có nút Tiếp/Lùi, đi tới slide, tổng quan, bản rút gọn, nút video, lời dẫn của π, ghi chú và đồng hồ so với `data-time`. Mã nguồn ở `deck/src/remote/`, build ra `deck/dist/remote.html`; đồng bộ qua capability `room` của Artifact.
+
 Số slide hiện ở góc phải dưới. Mỗi slide có lời dẫn của π ở cạnh dưới, nên người xem lại sau seminar vẫn theo được khi không có người trình bày. Kịch bản đầy đủ: `kich_ban.md`.
 
 ## Nội dung (64 slide)
@@ -30,16 +32,17 @@ Số slide hiện ở góc phải dưới. Mỗi slide có lời dẫn của π 
 | Overview | 4–8 | single-agent search, plan và policy, game ba hộp chơi được, ba giả định về đối thủ |
 | Modeling | 9–19 | sáu thành phần, Tic-Tac-Toe tương tác, game tree và state-space graph, 549.946 node và 5.478 state, policy, utility và value |
 | Game evaluation | 20–25 | recurrence, video Manim, đổi policy trực tiếp, Monte Carlo với bảng điểm |
-| Expectimax | 26–34 | recurrence, 2 video Manim, đồ thị độ nhạy theo p, mô hình sai, liên hệ MDP |
-| Minimax | 35–45 | recurrence, 2 video Manim, so sánh ba phương pháp, postorder DFS từng bước, Halving đấu với máy |
+| Expectimax | 26–33 | recurrence, 2 video Manim, đồ thị độ nhạy theo p, mô hình sai, điều kiện dùng Expectimax |
+| Minimax | 34–45 | recurrence, 2 video Manim, so sánh ba phương pháp, postorder DFS từng bước, Halving: cây Minimax N = 3 dẫn tới W(n), video tô bảng 0–16, đấu với máy |
 | Face-off | 46–58 | bảng face-off tương tác, đấu thử, ba tính chất, lower bound, thế Q với video fork, thế P, O(b^m) |
 | Tổng kết | 59–64 | so sánh phương pháp, các bước giải, câu hỏi kiểm tra, tài liệu tham khảo, hỏi đáp |
 
-Thời lượng dự kiến: 57 phút cho toàn bộ deck, 47 phút ở chế độ rút gọn. Các slide 4, 64 và 65 của bản 67 slide đã được bỏ; số hiện tại được đánh lại liên tục.
+Thời lượng dự kiến: 57 phút cho toàn bộ deck, 49 phút ở chế độ rút gọn. Các slide 4, 64 và 65 của bản 67 slide đã được bỏ; sau đó bỏ thêm slide Liên hệ MDP và thêm slide 42 (Từ Minimax sang W(n)), nên vẫn là 64 slide. Số hiện tại được đánh lại liên tục.
 
 ## Tập dượt phần 1 (slide 1–25)
 
 - `kich_ban_phan1_Bao.md`: lời nói từng câu cho slide 1–25, kèm chỗ bấm →, chỗ chỉ, chỗ viết bảng, ảnh bảng trắng và mốc thời gian (≈ 24 phút).
+- Ghi chú (phím N, và trên điện thoại) của slide 1–25 chính là kịch bản này. Sửa kịch bản rồi chạy `python3 tools/notes_from_script.py` để chép lại vào slide.
 - `video/out/trinh_bay_phan1.mp4`: video lớp học hoạt hình nói đúng kịch bản trên, để tập theo. Cách sửa và dựng lại: `video/README.md`.
 
 ## Công nghệ

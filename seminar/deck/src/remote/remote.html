@@ -1,0 +1,101 @@
+<!-- Remote-control layer: inserted before #viewport by build.mjs (dist/remote.html only). -->
+<div id="rc-chooser" class="rc rc-screen" hidden>
+  <div class="rc-choose">
+    <div class="rc-hello">
+      <svg id="rc-pi-hello" class="rc-pi-hello" aria-hidden="true"></svg>
+      <div class="rc-hello-text">
+        <p class="rc-kicker">Seminar Games 1 · nhóm 10</p>
+        <h1 class="rc-h1">Máy này dùng để làm gì?</h1>
+      </div>
+    </div>
+    <div class="rc-options">
+      <button id="rc-pick-present" class="rc-option" type="button">
+        <svg class="rc-opt-icon" viewBox="0 0 48 48" aria-hidden="true"><rect x="8" y="9" width="32" height="22" rx="2.5"/><path d="M3 36h42l-3.5 4.5h-35z"/></svg>
+        <span class="rc-opt-name">Trình chiếu</span>
+        <span class="rc-opt-desc">Chiếu deck trên laptop nối máy chiếu. Deck đi theo lệnh từ điện thoại, phím và chuột vẫn dùng được.</span>
+        <span class="rc-opt-tag" hidden>Hợp với máy này</span>
+      </button>
+      <button id="rc-pick-remote" class="rc-option" type="button">
+        <svg class="rc-opt-icon" viewBox="0 0 48 48" aria-hidden="true"><rect x="14" y="4" width="20" height="40" rx="3.5"/><path d="M21 38.5h6"/></svg>
+        <span class="rc-opt-name">Điều khiển</span>
+        <span class="rc-opt-desc">Nút Tiếp và Lùi to, lời dẫn của π, ghi chú của slide và đồng hồ so với thời lượng dự kiến.</span>
+        <span class="rc-opt-tag" hidden>Hợp với máy này</span>
+      </button>
+    </div>
+    <ol class="rc-howto">
+      <li>Mở link này trên laptop và chọn <b>Trình chiếu</b>.</li>
+      <li>Mở cùng link trên điện thoại và chọn <b>Điều khiển</b>.</li>
+      <li>Hai máy đăng nhập claude.ai bằng tài khoản sở hữu artifact này.</li>
+    </ol>
+    <div class="rc-conn"><i class="rc-dot" data-conn></i><span data-conn-text>Đang kết nối…</span><button type="button" class="rc-fix" hidden>Cho phép kết nối</button></div>
+  </div>
+</div>
+
+<div id="rc-ctl" class="rc rc-app" hidden>
+  <header class="rc-top">
+    <p class="rc-link"><i class="rc-dot" data-conn></i><span id="rc-link-text">Đang kết nối…</span></p>
+    <button id="rc-clock" class="rc-clock" type="button" aria-label="Đồng hồ trình bày, mở tùy chọn">
+      <span id="rc-elapsed" class="rc-elapsed">0:00</span>
+      <span id="rc-pace" class="rc-pace">chưa tính giờ</span>
+    </button>
+    <button id="rc-menu-btn" class="rc-icon-btn" type="button" aria-label="Tùy chọn">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+    </button>
+  </header>
+  <div id="rc-alert" class="rc-alert" hidden><span id="rc-alert-text"></span><button type="button" class="rc-fix" hidden>Cho phép kết nối</button></div>
+  <section class="rc-now" aria-live="polite">
+    <div id="rc-hud" class="rc-hud" aria-hidden="true"></div>
+    <div class="rc-nowrow">
+      <p class="rc-count"><span id="rc-n">–</span><span class="rc-total">/<span id="rc-total">64</span></span></p>
+      <div class="rc-nowtext">
+        <p id="rc-act" class="rc-act">Chờ laptop</p>
+        <h2 id="rc-title" class="rc-title">Chưa thấy laptop nào đang trình chiếu</h2>
+        <div id="rc-pips" class="rc-pips"></div>
+      </div>
+    </div>
+  </section>
+  <section class="rc-say">
+    <svg id="rc-pi" class="rc-pi" aria-hidden="true"></svg>
+    <p id="rc-say-text" class="rc-say-text">Mở link này trên laptop và chọn Trình chiếu. Khi laptop vào deck, slide hiện tại sẽ hiện ở đây.</p>
+  </section>
+  <section class="rc-notes">
+    <p class="rc-label">Ghi chú cho người trình bày</p>
+    <div id="rc-notes" class="rc-notes-body"></div>
+  </section>
+  <p id="rc-next" class="rc-next"></p>
+  <div id="rc-video" class="rc-video" hidden>
+    <button type="button" class="rc-vbtn" data-act="replay" aria-label="Phát lại video"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5V1.5L6.5 6 12 10.5V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"/></svg></button>
+    <button type="button" class="rc-vbtn rc-vtxt" data-act="seek" data-d="-5" aria-label="Lùi 5 giây">−5s</button>
+    <button type="button" class="rc-vbtn rc-vplay" data-act="play" aria-label="Phát hoặc dừng video"><svg viewBox="0 0 24 24" aria-hidden="true"><path id="rc-play-icon" d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button>
+    <button type="button" class="rc-vbtn rc-vtxt" data-act="seek" data-d="5" aria-label="Tới 5 giây">+5s</button>
+    <button type="button" class="rc-vbtn rc-vtxt" data-act="rate" data-d="1" aria-label="Đổi tốc độ video" id="rc-rate">1×</button>
+    <span id="rc-vtime" class="rc-vtime">0:00 / 0:00</span>
+  </div>
+  <div class="rc-tools">
+    <button type="button" class="rc-chip" id="rc-goto-btn">Đi tới slide</button>
+    <button type="button" class="rc-chip" data-act="overview" id="rc-ov-btn" aria-pressed="false">Tổng quan</button>
+    <button type="button" class="rc-chip" data-act="short" id="rc-short-btn" aria-pressed="false">Bản rút gọn</button>
+  </div>
+  <nav class="rc-pad" aria-label="Chuyển slide">
+    <button type="button" class="rc-prev" data-act="prev"><span aria-hidden="true">‹</span> Lùi</button>
+    <button type="button" class="rc-next-btn" data-act="next">Tiếp <span aria-hidden="true">›</span></button>
+  </nav>
+</div>
+
+<div id="rc-goto" class="rc rc-sheet" hidden role="dialog" aria-modal="true" aria-labelledby="rc-goto-title">
+  <div class="rc-sheet-head"><h2 id="rc-goto-title" class="rc-sheet-title">Đi tới slide</h2><button type="button" class="rc-chip" data-close>Đóng</button></div>
+  <div id="rc-goto-list" class="rc-goto-list"></div>
+</div>
+
+<div id="rc-menu" class="rc rc-sheet rc-sheet-short" hidden role="dialog" aria-modal="true" aria-labelledby="rc-menu-title">
+  <div class="rc-sheet-head"><h2 id="rc-menu-title" class="rc-sheet-title">Tùy chọn</h2><button type="button" class="rc-chip" data-close>Đóng</button></div>
+  <div class="rc-menu-list">
+    <button type="button" class="rc-menu-item" id="rc-clock-reset"><b>Bắt đầu lại đồng hồ</b><span>Đồng hồ về 0:00 và chạy lại từ lệnh kế tiếp.</span></button>
+    <button type="button" class="rc-menu-item" id="rc-target-btn" hidden><b>Đổi laptop nhận lệnh</b><span id="rc-target-desc"></span></button>
+    <button type="button" class="rc-menu-item" data-switch><b>Đổi vai trò của máy này</b><span>Quay lại màn hình chọn Trình chiếu hoặc Điều khiển.</span></button>
+  </div>
+</div>
+
+<p id="rc-toast" class="rc-toast" role="status" hidden></p>
+<div id="rc-badge" class="rc-badge" role="status" hidden><i id="rc-badge-dot" class="rc-dot"></i><span id="rc-badge-text"></span><button type="button" class="rc-fix" hidden>Cho phép kết nối</button></div>
+<button id="rc-switch" class="rc-switch" type="button" hidden>Đổi vai trò</button>

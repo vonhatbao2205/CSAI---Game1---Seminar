@@ -96,4 +96,15 @@ const cdn = ["https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js",
   "https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js",
   "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"].map((u) => `<script src="${u}"></script>`).join("\n");
 writeFileSync(join(DIST, "artifact.html"), style + content.replace(`<script>${vendor}</script>`, cdn));
+// remote.html: the remote-control artifact. Same deck, started only on the device that picks "Trình chiếu";
+// a phone that picks "Điều khiển" shows buttons instead and never loads the videos.
+// (Function replacements: the inlined code contains "$" sequences that a replacement string would expand.)
+const rcHtml = read(join(SRC, "remote/remote.html")), rcCss = read(join(SRC, "remote/remote.css")), rcJs = read(join(SRC, "remote/remote.js"));
+const remoteBody = rcHtml + "\n" + content
+  .replace('<div id="viewport">', () => '<div id="viewport" hidden>')
+  .replace(/preload="auto"/g, () => 'preload="none"')
+  .replace(/ poster="/g, () => ' data-poster="')
+  .replace(`<script>${vendor}</script>`, () => cdn)
+  .replace(`<script>${own}</script>`, () => `<script>window.DECK_DEFER = true;</script>\n<script>${own}</script>\n<script>${rcJs}</script>`);
+writeFileSync(join(DIST, "remote.html"), `<title>Điều khiển Seminar Games 1</title>\n<style>${fonts}${katexCss}${css}${rcCss}</style>\n` + remoteBody);
 console.log(`dist/index.html ${(page.length / 1048576).toFixed(2)} MB, ${mathCount} formulas, ${(slides.match(/<section /g) || []).length} slides`);

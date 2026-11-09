@@ -140,9 +140,43 @@
   <div class="notes"><p>CS221, trang 19 và 45. Demo dùng game.py của CS221 (bản lưu trữ cs221.1196). Giá trị vô hạn chỉ dùng để phân biệt thắng và thua; thay bằng +1 và −1 thì các nước tối ưu không đổi.</p></div>
 </section>
 
-<section class="s video" data-act="5" data-title="Video: state thắng và state thua" data-time="49">
+<section class="s" data-act="5" data-title="Từ Minimax sang W(n)" data-time="60">
+  <div class="eyebrow"><b>Minimax</b> · Halving</div>
+  <h2>W(n) vẫn là Minimax, viết theo góc nhìn bên đến lượt</h2>
+  <div class="body col" style="gap:22px;padding-top:6px">
+    <div style="display:flex;gap:64px;align-items:flex-start">
+      <div class="stack" style="flex:none;align-items:center;gap:4px">
+        <p class="small">Cây Minimax với N = 3, value theo góc nhìn lớp</p>
+        <div data-w="halvingTree"></div>
+      </div>
+      <div class="grow stack" style="gap:16px;padding-top:30px">
+        <table class="t big cells tight rise" data-at="2">
+          <tr><th style="width:80px">n</th><th>Lớp đến lượt ở n</th><th>Máy đến lượt ở n</th><th style="width:130px" data-at="3">W(n)</th></tr>
+          <tr><td class="mono">0</td><td class="num win">+∞</td><td class="num loss">−∞</td><td class="mono h" data-at="3">1</td></tr>
+          <tr><td class="mono">1</td><td class="num loss">−∞</td><td class="num win">+∞</td><td class="mono h" data-at="3">0</td></tr>
+          <tr><td class="mono">2</td><td class="num win">+∞</td><td class="num loss">−∞</td><td class="mono h" data-at="3">1</td></tr>
+          <tr><td class="mono">3</td><td class="num win">+∞</td><td class="num loss">−∞</td><td class="mono h" data-at="3">1</td></tr>
+        </table>
+        <p class="small rise" data-at="2">+∞: lớp thắng, −∞: máy thắng. Ở mỗi n, hai cột luôn ngược dấu.</p>
+        <p class="txt rise" data-at="3">Gộp hai cột thành <b>W(n)</b>: bằng 1 nếu bên đến lượt ở n thắng, bằng 0 nếu bên đó thua.</p>
+      </div>
+    </div>
+    <div class="stack rise" data-at="4" style="gap:8px">
+      <p class="txt"><b class="c-max">max</b> ở lượt lớp và <b class="c-min">min</b> ở lượt máy là cùng một quy tắc: bên đến lượt thắng khi có một nước đẩy đối phương vào state thua.</p>
+      <p class="txt"><b>1 − W</b> là đổi sang góc nhìn của mình: đối phương nhận state có W = 0 thì mình thắng.</p>
+    </div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Chạy Minimax với N = 3. Leaf (Máy, 0) có utility −∞, leaf (Lớp, 0) có +∞.</div>
+  <div class="say" data-step="1" data-mood="think">(Lớp, 1) = −∞, (Máy, 2) = −∞, (Máy, 1) = +∞. Root lấy max được +∞, nên lớp chia đôi.</div>
+  <div class="say" data-step="2" data-mood="talk">Lập bảng cho cả hai trường hợp: lớp đến lượt hoặc máy đến lượt. Hai cột luôn ngược dấu.</div>
+  <div class="say" data-step="3" data-mood="happy">Vì vậy chỉ cần một cột W(n), tính theo góc nhìn bên đến lượt.</div>
+  <div class="say" data-step="4" data-mood="think">max của lớp và min của máy là cùng một quy tắc. Video sau dùng quy tắc này để tô bảng tới 16.</div>
+  <div class="notes"><p>Cây dùng đúng recurrence của Minimax, với state và utility như slide trước; value tính theo góc nhìn lớp. Tại (Lớp, 1), cả − và / đều đưa máy tới 0, nên value là −∞. Tại (Máy, 2), cả hai nước đều đưa lớp tới 1, nên min là −∞. Tại (Máy, 1), cả hai nước đều đưa lớp tới 0, nên value là +∞. Root lấy max(−∞, +∞) = +∞ và chọn /. Hai nước dẫn tới cùng một state được vẽ chung một edge.</p><p>Hai ô không có trong cây: (Lớp, 2) = max(+∞, +∞) = +∞ vì cả hai nước đều tới (Máy, 1); (Máy, 3) = min(V(Lớp, 2), V(Lớp, 1)) = min(+∞, −∞) = −∞. Luật chơi giống nhau cho hai bên, nên V(Máy, n) = −V(Lớp, n) và chỉ cần lưu một số cho mỗi n. Đặt W(n) = 1 khi bên đến lượt ở n thắng. Nước a của mình thắng khi đối phương nhận state có W = 0, tức 1 − W = 1; có một nước như vậy là đủ, nên lấy max. Video sau viết thành W(n) = max{1 − W(n − 1), 1 − W(⌊n/2⌋)}.</p></div>
+</section>
+
+<section class="s video" data-act="5" data-title="Video: state thắng và state thua" data-time="64">
   <video src="media/M06_Halving.mp4" poster="media/posters/M06_Halving.jpg" preload="auto"></video>
-  <div class="notes"><p>Video manim: W(n) = 1 nếu player đến lượt tại n có strategy thắng. W(0) = 1; với n &gt; 0, W(n) = max{1 − W(n − 1), 1 − W(⌊n/2⌋)}. Tính từ 0 tới 16, các state thua là 1, 4, 6, 10, 14, 16.</p><p>Vì vậy để máy nhận 14 thì lớp có strategy thắng, còn để máy nhận 7 thì máy có strategy thắng. Bảng được kiểm bằng verify_examples.py.</p></div>
+  <div class="notes"><p>Video manim: tô bảng 0 tới 16 trước, chỉ dùng quy tắc "bên đến lượt thắng khi có một nước đẩy đối phương vào state thua". W(0) = 1 vì bên đến lượt ở 0 đã nhận số 0. Các state thua là 1, 4, 6, 10, 14, 16.</p><p>Sau khi tô xong mới viết quy tắc thành công thức: W(n) = max{1 − W(n − 1), 1 − W(⌊n/2⌋)}, với 1 − W là đổi sang góc nhìn của mình. Cuối video tô đậm nước 15 → 14: để máy nhận 14 thì lớp có strategy thắng, còn để máy nhận 7 thì máy có strategy thắng. Bảng được kiểm bằng verify_examples.py.</p></div>
 </section>
 
 <section class="s" data-act="5" data-title="Lớp đấu với Minimax" data-time="180" data-opt>
@@ -165,7 +199,8 @@
         <tr class="pick"><td class="mono h">−</td><td class="mono">(−1, 14)</td><td class="num win">+∞</td><td>lớp có strategy thắng</td></tr>
         <tr><td class="mono h">/</td><td class="mono">(−1, 7)</td><td class="num loss">−∞</td><td>máy có strategy thắng</td></tr>
       </table>
-      <p class="txt rise" data-at="1">Sau 15 → 14 → 13, lớp phải chọn / để về 6. Nếu chọn − để về 12, lớp mất strategy thắng và máy có thể thắng.</p>
+      <p class="lead rise" data-at="1"><b>Quy tắc:</b> lượt nào cũng đưa đối phương vào state thua.</p>
+      <p class="txt rise" data-at="1">Sau 15 → 14 → 13, lớp phải chọn / để máy nhận 6, một state thua. Nếu chọn −, máy nhận 12. Đây là <b>state thắng của máy</b>: máy chia đôi để lớp nhận 6, và lớp mất strategy thắng.</p>
     </div>
     <div class="side stack rise" data-at="2" style="width:620px;gap:16px">
       <p class="col-title">Các state thua của bên đến lượt</p>
@@ -174,7 +209,7 @@
     </div>
   </div>
   <div class="say" data-step="0" data-mood="talk">Ở 15, chỉ nước trừ 1 giữ được strategy thắng.</div>
-  <div class="say" data-step="1" data-mood="worried">Lớp chỉ chắc thắng nếu tiếp tục chơi đúng ở mọi lượt sau.</div>
+  <div class="say" data-step="1" data-mood="worried">Lượt nào lớp cũng phải đưa máy vào state thua. Để máy nhận 12 là trao cho máy một state thắng.</div>
   <div class="say" data-step="2" data-mood="think">Minimax biết một state thắng hay thua ngay khi ván chưa kết thúc.</div>
-  <div class="notes"><p>Với N = 14, hai action đưa đối phương tới 13 hoặc 7, đều là state thắng của bên nhận lượt. Với N = 16, hai action đưa tới 15 hoặc 8, cũng đều thắng. Vì vậy 14 và 16 là state thua của bên đến lượt khi hai bên chơi tối ưu.</p><p>Kết quả tính bằng phần Halving trong verify_examples.py.</p></div>
+  <div class="notes"><p>Quy tắc giữ strategy thắng: ở mỗi lượt, chọn nước đưa đối phương vào một ô đỏ. Từ 13, nước / cho máy nhận 6 (ô đỏ); nước − cho máy nhận 12 (ô xanh). Tại 12 máy có hai nước: − đưa lớp tới 11 (lớp thắng), / đưa lớp tới 6 (lớp thua), nên máy chọn / và giữ strategy thắng.</p><p>Với N = 14, hai action đưa đối phương tới 13 hoặc 7, đều là state thắng của bên nhận lượt. Với N = 16, hai action đưa tới 15 hoặc 8, cũng đều thắng. Vì vậy 14 và 16 là state thua của bên đến lượt khi hai bên chơi tối ưu.</p><p>Kết quả tính bằng phần Halving trong verify_examples.py.</p></div>
 </section>

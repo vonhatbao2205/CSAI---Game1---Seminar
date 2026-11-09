@@ -46,16 +46,19 @@
   <div class="eyebrow"><b>Face-off</b> · ba tính chất</div>
   <h2>Ba tính chất đọc từ bảng face-off</h2>
   <div class="body col" style="gap:50px">
-    <div class="cols3 aligned-columns" style="column-gap:70px">
+    <div class="cols3 aligned-columns" style="column-gap:64px;grid-template-columns:1.1fr 1.1fr 0.8fr">
       <div class="rise" data-at="0">
         <p class="col-title">① Tối ưu trước π<sub>min</sub></p>
         <div class="formula" style="font-size:29px">$$V(\pi_{\max},\pi_{\min})\ge V(\pi,\pi_{\min})\ \ \forall\pi$$</div>
-        <p class="txt">Cột π<sub>min</sub>: −5 ≤ 1.</p>
+        <div class="stack" style="gap:12px"><p class="txt">Cột π<sub>min</sub>: π<sub>E</sub> được −5 ≤ 1.</p>
+        <p class="txt" style="font-size:28px">Agent chọn hộp kiểu gì, kể cả trộn ngẫu nhiên, cũng chỉ được trung bình của −50, 1, −5, nên value&nbsp;≤&nbsp;1.</p></div>
       </div>
       <div class="rise" data-at="1">
         <p class="col-title">② Lower bound trước mọi đối thủ</p>
         <div class="formula" style="font-size:29px">$$V(\pi_{\max},\pi_{\min})\le V(\pi_{\max},\mu)\ \ \forall\mu$$</div>
-        <p class="txt">Hàng π<sub>max</sub>: 1 ≤ 2.</p>
+        <div class="stack" style="gap:12px"><p class="txt">Hàng π<sub>max</sub>: 1 ≤ 2.</p>
+        <p class="txt" style="font-size:28px">Đối thủ chọn số 1 với xác suất q thì agent được</p>
+        <div class="formula" style="font-size:28px">$$q\cdot 1+(1-q)\cdot 3=3-2q\ge 1$$</div></div>
       </div>
       <div class="rise" data-at="2">
         <p class="col-title">③ Tối ưu trước π<sub>7</sub></p>
@@ -63,13 +66,16 @@
         <p class="txt">Cột π<sub>7</sub>: 2 ≤ 5.</p>
       </div>
     </div>
-    <p class="txt rise" data-at="3" style="text-align:center">Tính chất ② đúng cả khi đối thủ chơi không tối ưu, miễn agent giữ π<sub>max</sub>. Ở tính chất ③ có thể xảy ra dấu bằng.</p>
+    <div class="rise stack" data-at="3" style="gap:12px;align-items:center;text-align:center">
+      <p class="lead" style="text-wrap:balance"><b>① + ②:</b> một mình agent đổi policy thì không lợi hơn; một mình đối thủ đổi policy thì agent không thiệt hơn.</p>
+      <p class="txt">② đúng cả khi đối thủ chơi không tối ưu, miễn agent giữ π<sub>max</sub>. Ở ③ có thể xảy ra dấu bằng.</p>
+    </div>
   </div>
-  <div class="say" data-step="0" data-mood="talk">Giữ đối thủ là π_min thì không policy nào của agent vượt π_max.</div>
+  <div class="say" data-step="0" data-mood="talk">Giữ đối thủ là π_min thì mọi hộp chỉ còn số nhỏ. Không policy nào của agent vượt π_max.</div>
   <div class="say" data-step="1" data-mood="happy">Giữ agent là π_max thì không đối thủ nào kéo kết quả xuống dưới 1.</div>
   <div class="say" data-step="2" data-mood="talk">Giữ đối thủ là π₇ thì policy tối ưu cho π₇ không thể kém π_max.</div>
-  <div class="say" data-step="3" data-mood="think">Mỗi tính chất cố định một bên và chỉ thay bên còn lại.</div>
-  <div class="notes"><p>CS221, trang 49-54. Với tính chất ②, nếu μ chọn 1 với xác suất q thì V(π_max, μ) = q·1 + (1 − q)·3 = 3 − 2q ≥ 1. Tính chất ③ đúng theo định nghĩa V(π_E, π₇) = max_π V(π, π₇). Khi đối thủ thật đổi policy, tính chất ③ không còn áp dụng cho cặp policy mới.</p></div>
+  <div class="say" data-step="3" data-mood="think">Gộp ① và ②: một mình agent đổi thì không lợi hơn, một mình đối thủ đổi thì agent không thiệt hơn.</div>
+  <div class="notes"><p>CS221, trang 49-54. Với tính chất ①, khi đối thủ là π_min thì hộp A, B, C có value −50, 1, −5. Một policy bất kỳ của agent chọn A, B, C với xác suất a, b, c (a + b + c = 1), nên value là −50a + b − 5c ≤ 1. Với tính chất ②, nếu μ chọn 1 với xác suất q thì V(π_max, μ) = q·1 + (1 − q)·3 = 3 − 2q ≥ 1, dấu bằng khi q = 1. Tính chất ③ đúng theo định nghĩa V(π_E, π₇) = max_π V(π, π₇). Khi đối thủ thật đổi policy, tính chất ③ không còn áp dụng cho cặp policy mới.</p><p>Câu tóm ① + ② là cách đọc khác của hai bất đẳng thức: cặp (π_max, π_min) là điểm mà không bên nào có lợi khi đơn phương đổi policy.</p></div>
 </section>
 
 <section class="s" data-act="6" data-title="Chuỗi bốn value" data-time="40">

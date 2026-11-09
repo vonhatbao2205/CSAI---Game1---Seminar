@@ -388,4 +388,45 @@
     newGame(15);
     return { enter() { newGame(start); }, leave() { tok++; busy = false; } };
   };
+
+  // ------------------------------------------------------------------ S42: the Minimax tree for N = 3 behind W(n)
+  // values come from minimax on (player, n) itself, not from Wn; two actions with the same successor share one edge
+  const mmH = (() => {
+    const memo = new Map();
+    const f = (p, n) => {
+      if (n === 0) return p * Infinity;   // terminal (p, 0): the player to move received 0 and wins
+      const k = p + ":" + n;
+      if (!memo.has(k)) { const vs = [n - 1, Math.floor(n / 2)].map((m) => f(-p, m)); memo.set(k, p === 1 ? Math.max(...vs) : Math.min(...vs)); }
+      return memo.get(k);
+    };
+    return f;
+  })();
+  G.halvingMinimax = mmH;
+  W.halvingTree = (el) => {
+    const node = (id, p, n, kids) => ({ id, p, n, k: n === 0 ? "term" : p === 1 ? "max" : "min", v: n === 0 ? mmH(p, 0) : "?", kids });
+    const both = "− hoặc /";
+    const spec = node("r", 1, 3, [
+      { a: "−", n: node("m2", -1, 2, [{ a: both, n: node("l1", 1, 1, [{ a: both, n: node("m0", -1, 0) }]) }]) },
+      { a: "/", n: node("m1", -1, 1, [{ a: both, n: node("l0", 1, 0) }]) },
+    ]);
+    const t = G.drawTree(el, spec, { w: 660, h: 470, r: 40, lr: 34, fs: 26, padX: 160, padT: 48, padB: 38 });
+    // state name to the right of each node
+    t.all.forEach((n) => {
+      const N = t.nodes[n.id], dx = n.k === "term" ? 34 : 40 * 1.15;
+      N.g.appendChild(G.sv("text", { class: "sn", x: dx + 14, y: 9 }, `(${n.p === 1 ? "Lớp" : "Máy"}, ${n.n})`));
+    });
+    const order = ["l1", "m2", "m1", "r"];   // postorder: a node gets its value after all its children
+    let timers = [];
+    const cancel = () => { timers.forEach(clearTimeout); timers = []; };
+    function show(st, animate) {
+      cancel(); t.reset();
+      order.forEach((id) => t.v(id, "?"));
+      if (st < 1) return;
+      order.forEach((id, i) => {
+        const n = t.nodes[id].n, put = () => { t.v(id, mmH(n.p, n.n), animate); if (id === "r") t.e("m1", "bold"); };
+        if (animate) timers.push(setTimeout(put, 380 * i)); else put();
+      });
+    }
+    return { step(st, prev) { show(st, st === 1 && prev === 0); }, leave: cancel };
+  };
 })();

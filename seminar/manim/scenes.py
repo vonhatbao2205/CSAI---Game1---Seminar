@@ -695,15 +695,18 @@ class M05_DeepTree(Base):
 
 # ================================================================== M06 Halving: winning and losing positions
 class M06_Halving(Base):
-    heading = "Halving · ai nhận lượt thì thắng hay thua?"
+    heading = "Halving · bên đến lượt thắng hay thua?"
 
     def construct(self):
         N = 16
         W = [1]
         for n in range(1, N + 1):
             W.append(max(1 - W[n - 1], 1 - W[n // 2]))
-        f = M(r"W(n)=\max\{\,1-W(n-1),\ 1-W(\lfloor n/2\rfloor)\,\}", 40, INK).move_to([0.6, 2.55, 0])
-        sub = T("W(n) = 1: người nhận lượt ở n có thể bảo đảm thắng", 26, MUTED).next_to(f, DOWN, buff=0.18)
+        # the rule in words first; the formula only comes after the strip is coloured
+        rule = T("Bên đến lượt thắng khi có một nước đẩy đối phương vào state thua", 30, INK).move_to([0.3, 2.55, 0])
+        if rule.get_width() > 10.4:
+            rule.set_width(10.4)
+        sub = T("Tô từ 0 lên 16: mỗi ô chỉ cần nhìn hai ô n − 1 và ⌊n/2⌋", 26, MUTED).next_to(rule, DOWN, buff=0.2)
         size, gap = 0.62, 0.1
         cells = VGroup()
         for n in range(N + 1):
@@ -714,8 +717,8 @@ class M06_Halving(Base):
         labs = VGroup(*[VGroup() for _ in range(N + 1)])
         p1 = Player("human", "max", "LỚP", height=1.0).move_to([-5.9, 2.15, 0])
         p2 = Player("robot", "min", "MÁY", height=1.0, side="R").move_to([5.95, 2.15, 0])
-        self.play(FadeIn(f), FadeIn(sub), LaggedStart(*[FadeIn(c, shift=0.1 * UP) for c in cells], lag_ratio=0.03), FadeIn(p1), FadeIn(p2), run_time=1.3)
-        self.say("Người nhận số 0 thắng: W(0) = 1. Tính dần từ trái sang phải.", "talk")
+        self.play(FadeIn(rule), FadeIn(sub), LaggedStart(*[FadeIn(c, shift=0.1 * UP) for c in cells], lag_ratio=0.03), FadeIn(p1), FadeIn(p2), run_time=1.3)
+        self.say("Bên đến lượt ở 0 đã nhận số 0, nên thắng. Tô dần từ trái sang phải.", "talk")
 
         def mark(n, animate=True):
             col, fill = (WIN, WIN_BG) if W[n] else (LOSS, LOSS_BG)
@@ -724,9 +727,9 @@ class M06_Halving(Base):
             return [cells[n][0].animate.set_fill(fill, 1).set_stroke(col, 3.5), FadeIn(t, shift=0.05 * UP)]
 
         self.play(*mark(0), run_time=0.5)
-        expl = {1: "n = 1: cả hai nước đều trao số 0 cho đối phương. Thua.",
-                2: "n = 2: trừ 1 để đối phương nhận 1, một thế thua. Thắng.",
-                4: "n = 4: chỉ tới 3 hoặc 2, đều là thế thắng của đối phương. Thua.",
+        expl = {1: "n = 1: cả hai nước đều đưa số 0 cho đối phương. Thua.",
+                2: "n = 2: trừ 1 để đối phương nhận 1, một state thua. Thắng.",
+                4: "n = 4: chỉ tới 3 hoặc 2, đều là state thắng của đối phương. Thua.",
                 5: "n = 5: trừ 1 để đối phương nhận 4. Thắng.",
                 6: "n = 6: tới 5 hoặc 3, đều thắng cho đối phương. Thua."}
         for n in range(1, N + 1):
@@ -748,12 +751,34 @@ class M06_Halving(Base):
             elif slow:
                 self.wait(0.4)
             self.play(FadeOut(arcs), run_time=0.25 if slow else 0.12)
-        self.say("Các thế thua: 1, 4, 6, 10, 14, 16.", "surprised")
-        a1 = ArcBetweenPoints(cells[15].get_top() + UP * 0.02, cells[14].get_top() + UP * 0.02, angle=TAU / 3).set_stroke(WIN, 7)
+        self.say("Các state thua: 1, 4, 6, 10, 14, 16.", "surprised")
+
+        # only now write the rule as a formula
+        f = M(r"W(n)=\max\{\,1-W(n-1),\ 1-W(\lfloor n/2\rfloor)\,\}", 40, INK).move_to([0.3, -1.4, 0])
+        n1 = T("1 − W: đổi value của đối phương sang góc nhìn của mình", 26, MUTED)
+        n2 = T("max: chỉ cần một nước đẩy đối phương vào state thua", 26, MUTED)
+        notes = VGroup(n1, n2).arrange(DOWN, buff=0.14).next_to(f, DOWN, buff=0.26)
+        self.play(FadeIn(f, shift=0.12 * UP), run_time=0.8)
+        self.say("Tô xong bảng rồi mới viết quy tắc thành công thức. W = 1 là thắng, W = 0 là thua.", "talk")
+        self.play(FadeIn(n1, shift=0.08 * UP), run_time=0.5)
+        self.say("1 − W đổi value của đối phương sang góc nhìn của mình.", "think")
+        self.play(FadeIn(n2, shift=0.08 * UP), run_time=0.5)
+        self.say("Lấy max vì chỉ cần một nước đẩy đối phương vào state thua.", "talk")
+
+        # the move to remember: 15 → 14, in bold
+        rest = [i for i in range(N + 1) if i not in (14, 15)]
+        self.play(*[cells[i].animate.set_opacity(0.28) for i in rest], *[labs[i].animate.set_opacity(0.28) for i in rest],
+                  VGroup(f, notes).animate.set_opacity(0.45), run_time=0.6)
+        a1 = ArcBetweenPoints(cells[15].get_top() + UP * 0.1, cells[14].get_top() + UP * 0.1, angle=TAU / 2.6).set_stroke(WIN, 11)
+        a1.add_tip(width=0.34, length=0.3)
+        mv = T("15 → 14", 34, WIN, font=MONO, weight="BOLD").next_to(a1, UP, buff=0.14).shift(0.45 * LEFT)
         s1 = p1.sign("-1")
-        self.play(cells[15][0].animate.set_stroke(CUR, 7), ShowCreation(a1), FadeIn(s1, shift=0.15 * UP), p1.frame("raiseR", "happy"), run_time=0.6)
-        self.say("Ở 15, lớp trừ 1 để máy nhận 14, một state thua cho bên đến lượt.", "happy")
-        self.say("Để bảo đảm thắng, lớp tiếp tục giữ policy ở mọi lượt sau.", "worried")
+        self.play(cells[15].animate.scale(1.14), cells[15][0].animate.set_stroke(CUR, 9),
+                  cells[14].animate.scale(1.14), cells[14][0].animate.set_stroke(LOSS, 9),
+                  ShowCreation(a1), FadeIn(mv, shift=0.1 * UP), FadeIn(s1, shift=0.15 * UP), p1.frame("raiseR", "happy"), run_time=0.8)
+        self.play(p2.frame("idle", "sad"), run_time=0.3)
+        self.say("Ở 15, lớp trừ 1 để máy nhận 14, một state thua của bên đến lượt.", "happy")
+        self.say("Để bảo đảm thắng, lượt nào lớp cũng phải đưa máy vào state thua.", "worried")
         self.done()
 
 

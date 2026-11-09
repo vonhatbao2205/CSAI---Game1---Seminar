@@ -21,7 +21,8 @@ for (const [, cls, attrs, body] of secs) {
   const says = [...body.matchAll(/<div class="say"[^>]*>([\s\S]*?)<\/div>/g)].map((m) => strip(m[1]));
   if (says.length) out += "\n" + says.map((s) => `- Pi: ${s}`).join("\n") + "\n";
   const notes = /<div class="notes">([\s\S]*?)<\/div>/.exec(body);
-  if (notes) out += "\n" + [...notes[1].matchAll(/<p>([\s\S]*?)<\/p>/g)].map((m) => strip(m[1])).join("\n\n") + "\n";
+  if (notes) out += "\n" + [...notes[1].matchAll(/<p[^>]*>([\s\S]*?)<\/p>|<pre[^>]*>([\s\S]*?)<\/pre>/g)]
+    .map((m) => (m[2] !== undefined ? "```text\n" + m[2].replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&") + "\n```" : strip(m[1]))).join("\n\n") + "\n";
 }
 out = out.replace("\n\n## ", `\n\nTổng thời gian khoảng ${Math.round(total / 60)} phút; bản rút gọn (phím T) khoảng ${Math.round(short / 60)} phút.\n\n## `);
 writeFileSync(join(HERE, "../kich_ban.md"), out);

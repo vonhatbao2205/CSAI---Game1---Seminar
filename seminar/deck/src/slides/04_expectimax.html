@@ -123,27 +123,3 @@
   <div class="say" data-step="3" data-mood="talk">Lựa chọn tối ưu luôn gắn với một mô hình cụ thể về đối thủ.</div>
   <div class="notes"><p>Các ví dụ trong bài dùng utility hữu hạn. Ví dụ đổi thang: A cho 0 hoặc 40, B cho 20 hoặc 30, mỗi kết quả xác suất ½. Với U, Expectimax chọn B (25 so với 20); với U², Expectimax chọn A (800 so với 650). Minimax chọn B ở cả hai thang. Phép biến đổi aU + b với a &gt; 0 giữ nguyên lựa chọn.</p></div>
 </section>
-
-<section class="s" data-act="4" data-title="Liên hệ MDP" data-time="55" data-opt>
-  <div class="eyebrow"><b>Expectimax</b> · MDP</div>
-  <h2>Với μ cố định, có thể gộp hai lượt thành một transition</h2>
-  <div class="body col" style="gap:34px">
-    <div class="flow rise" data-at="0" style="width:1300px;margin:0 auto">
-      <div class="fx"><b class="c-max">s</b><span>lượt agent</span></div>
-      <div class="fa act"><span>a</span>→</div>
-      <div class="fx"><b class="c-chance">u = Succ(s, a)</b><span>lượt đối thủ, theo μ</span></div>
-      <div class="fa act"><span>b</span>→</div>
-      <div class="fx"><b class="c-max">s′</b><span>lượt agent tiếp theo</span></div>
-    </div>
-    <div class="cols2">
-      <div class="rise" data-at="1"><div class="formula" style="font-size:32px">$$P_\mu(s'\mid s,a)=\sum_{b}\mu(b\mid u)\,\mathbf 1[Succ(u,b)=s']$$</div></div>
-      <div class="rise" data-at="2"><div class="formula" style="font-size:32px">$$V^{*,\mu}(s)=\max_a\sum_{s'}P_\mu(s'\mid s,a)\,V^{*,\mu}(s')$$</div></div>
-    </div>
-    <p class="txt rise" data-at="3" style="text-align:center">Điều kiện: μ cố định và đã biết, state đủ thông tin. Expectimax dùng mô hình có sẵn để planning; reinforcement learning học từ tương tác khi chưa biết đầy đủ mô hình.</p>
-  </div>
-  <div class="say" data-step="0" data-mood="talk">Từ lượt agent, qua một nước của đối thủ, lại tới lượt agent.</div>
-  <div class="say" data-step="1" data-mood="think">Vì μ cố định, nước của đối thủ trở thành xác suất transition.</div>
-  <div class="say" data-step="2" data-mood="happy">Phương trình thu được là Expectimax viết dưới dạng MDP.</div>
-  <div class="say" data-step="3" data-mood="talk">Cách gộp này chỉ đúng khi đối thủ giữ nguyên policy.</div>
-  <div class="notes"><p>Nếu nhiều action b cùng dẫn tới một s′, xác suất của chúng được cộng lại. Nếu u đã là terminal state ngay sau nước của agent, bỏ lượt đối thủ và đặt P_μ(u | s, a) = 1. Reward trung gian bằng 0, không chiết khấu, utility ở terminal state.</p><p>Ví dụ chọn C trong game ba hộp: P_μ(C₋₅ | s₀, C) = P_μ(C₁₅ | s₀, C) = 1/2, tổng ứng với C là 5. Công thức gộp lượt do nhóm triển khai từ CS221, trang 22 và 27-34.</p></div>
-</section>

@@ -243,6 +243,17 @@ svg.gest2 .arm-l { animation: arm-l 1.15s ease-in-out .08s; }
 #notesbox h3 { margin-bottom: 14px; color: var(--pi); }
 #notesbox p { margin: 0 0 16px; }
 #notesbox .time { color: var(--muted); font: 500 24px var(--mono); }
+/* spoken script (slides 1-25): timing line, timestamps and the cues of kich_ban_phan1_Bao.md */
+#notesbox .nt-meta { color: var(--muted); font: 500 24px var(--mono); }
+#notesbox .nt-time { font: 600 22px var(--mono); color: var(--muted); margin-right: 4px; }
+#notesbox .nt-cue { font: 600 24px var(--sans); padding: 1px 8px; border-radius: 6px; white-space: nowrap; }
+#notesbox .nt-key { color: var(--on-accent); background: var(--max); }
+#notesbox .nt-point { color: var(--max); background: var(--max-bg); white-space: normal; }
+#notesbox .nt-board { color: var(--cur); background: var(--cur-bg); white-space: normal; }
+#notesbox .nt-act, #notesbox i.nt-act { color: var(--muted); }
+#notesbox .nt-vt { font: 500 22px var(--mono); color: var(--chance); }
+#notesbox .nt-label { font: 600 24px var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-top: 24px; }
+#notesbox .nt-pre { font: 500 24px/1.35 var(--mono); background: var(--panel); border-radius: 10px; padding: 16px 20px; overflow-x: auto; margin: 0 0 16px; }
 #ovgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
 .ovitem { background: var(--panel); border: 2px solid var(--hair); border-radius: 12px; padding: 14px 18px; cursor: pointer; min-height: 112px; }
 .ovitem:hover, .ovitem.cur { border-color: var(--pi); }
@@ -436,6 +447,7 @@ svg.gt .tn .v { font: 600 27px var(--mono); fill: var(--ink); text-anchor: middl
 svg.gt .tn.term .v { font-weight: 500; }
 svg.gt .tn .tag { font: 600 21px var(--sans); fill: var(--muted); text-anchor: middle; letter-spacing: .04em; }
 svg.gt .tn .nm { font: 600 26px var(--sans); fill: var(--ink2); text-anchor: middle; }
+svg.gt .tn .sn { font: 500 24px var(--sans); fill: var(--ink2); text-anchor: start; }   /* state name beside a node (Halving tree) */
 svg.gt .tn .op { font: 600 22px var(--mono); text-anchor: middle; paint-order: stroke; stroke: var(--bg); stroke-width: 7px; stroke-linejoin: round; }
 svg.gt .tn.max .op { fill: var(--max); } svg.gt .tn.min .op { fill: var(--min); } svg.gt .tn.chance .op { fill: var(--chance); } svg.gt .tn.eval .op { fill: var(--eval); }
 svg.gt .tn.cur .sh { stroke: var(--cur); stroke-width: 7; fill: var(--cur-bg); }
@@ -843,7 +855,7 @@ ul.plain li .glyph { margin-right: 14px; }
       <div class="hero-legend"><span><i style="background:#2b8a3e"></i>X thắng</span><span><i style="background:#9aa3ad"></i>hòa</span><span><i style="background:#d6336c"></i>O thắng</span></div>
     </div>
   </div>
-  <div class="notes"><p>Giới thiệu nhóm 10 và chủ đề Games 1, gồm năm phần: Overview, Modeling, Game evaluation, Expectimax và Minimax.</p><p>Hình bên phải là game tree của Tic-Tac-Toe từ bàn trống, năm ply đầu (18.730 node). Màu của mỗi node là Minimax value theo X: xanh lá là X thắng, xám là hòa, hồng là O thắng khi hai bên chơi tối ưu. Kéo chuột để xoay cây.</p><p>Phím tắt: → đi tiếp, A tự chạy, O tổng quan, N ghi chú, T bản rút gọn, F toàn màn hình.</p></div>
+  <div class="notes"><p class="nt-meta">00:00 → 01:07 · 1 phút 7 giây · 1 bước</p><p><span class="nt-time">00:01</span> <i class="nt-act">(nhìn lớp)</i> <i class="nt-act">(mở hai tay về phía lớp)</i> Em chào thầy và các bạn. Em là Võ Nhất Bảo, nhóm 10. <b class="nt-cue nt-point">[chỉ: tên đề tài và thành viên]</b> Hôm nay nhóm em, gồm em và bạn Phạm Lê Huy Hoàng, trình bày chủ đề Games 1: mô hình hóa trò chơi, Game evaluation, Expectimax và Minimax. <i class="nt-act">(nhìn lớp)</i> Game là một trong những bài toán lâu đời nhất của AI: năm 1997, máy Deep Blue thắng nhà vô địch cờ vua Kasparov; năm 2016, AlphaGo thắng Lee Sedol ở cờ vây. Ý tưởng nền tảng phía sau các hệ thống đó chính là những gì nhóm mình sẽ trình bày hôm nay</p></div>
 </section>
 
 <section class="s" data-act="0" data-title="Câu hỏi của buổi trình bày" data-time="45">
@@ -855,7 +867,7 @@ ul.plain li .glyph { margin-right: 14px; }
   <div class="say" data-step="0" data-mood="happy">Agent là robot bên trái. Đối thủ đội mũ len, đứng bên phải.</div>
   <div class="say" data-step="1" data-mood="think">Agent chỉ chọn ở lượt của mình, nhưng kết quả còn phụ thuộc các lượt sau.</div>
   <div class="say" data-step="2" data-mood="talk">Các lượt đó do đối thủ chọn, nên agent phải tính trước cách đối thủ phản ứng.</div>
-  <div class="notes"><p>Câu hỏi của cả buổi: tại một state, agent nên chọn action nào khi một phần diễn biến tiếp theo do đối thủ quyết định.</p><p>Quy ước màu dùng trong slide và video: xanh dương cho agent (MAX), hồng cho đối thủ (MIN), tím cho chance node, xanh ngọc cho Game evaluation, cam cho node đang tính, xanh lá cho action được chọn.</p></div>
+  <div class="notes"><p class="nt-meta">01:07 → 01:54 · 47 giây · 3 bước (bấm → 3 lần, kể cả lần vào slide)</p><p><span class="nt-time">01:07</span> <b class="nt-cue nt-key">[→]</b> Trước khi vào nội dung, em muốn đặt ra một câu hỏi cho cả buổi. <b class="nt-cue nt-point">[chỉ: agent (robot bên trái)]</b> Bên trái là agent; các bạn cứ hiểu agent là mình, người đang cần ra quyết định. <b class="nt-cue nt-point">[chỉ: đối thủ (đội mũ len)]</b> Bên phải là đối thủ, bạn đội mũ len.</p><p><span class="nt-time">01:21</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: chuỗi lượt: agent → đối thủ → agent → terminal]</b> Agent chỉ được chọn ở lượt của mình. Sau lượt agent là lượt đối thủ, rồi lại tới agent, cứ thế cho tới khi ván kết thúc. Nếu các bạn đã học MDP thì sẽ thấy điểm khác: trong MDP, môi trường có ngẫu nhiên nhưng không cố tình chơi khó mình; còn trong game, đối thủ có mục tiêu ngược với mình.</p><p><span class="nt-time">01:42</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: câu hỏi ở giữa]</b> Vậy câu hỏi là: tại một state, agent nên chọn action nào, khi một phần diễn biến tiếp theo lại do đối thủ quyết định? <i class="nt-act">(nhìn lớp)</i> Cả buổi hôm nay xoay quanh đúng câu hỏi này.</p></div>
 </section>
 
 <section class="s" data-act="0" data-title="Lộ trình" data-time="40">
@@ -877,7 +889,7 @@ ul.plain li .glyph { margin-right: 14px; }
   <div class="say" data-step="3" data-mood="talk">Phần bốn tìm policy tốt nhất khi biết đối thủ chơi theo xác suất nào.</div>
   <div class="say" data-step="4" data-mood="talk">Phần năm tìm policy tốt nhất cho worst case.</div>
   <div class="say" data-step="5" data-mood="happy">Game ba hộp đi suốt buổi; Tic-Tac-Toe và Halving minh họa thêm.</div>
-  <div class="notes"><p>Mạch nội dung theo Stanford CS221 Games I (games1.pdf, trang 1-56). Ví dụ và cách cài đặt bổ sung từ UC Berkeley CS188.</p><p>Evaluation function, depth-limited search, alpha-beta pruning và Expectiminimax thuộc Games 2 của nhóm 11.</p></div>
+  <div class="notes"><p class="nt-meta">01:54 → 02:37 · 43 giây · 6 bước (bấm → 6 lần, kể cả lần vào slide)</p><p><span class="nt-time">01:54</span> <b class="nt-cue nt-key">[→]</b> Để trả lời câu hỏi đó, nhóm em chia nội dung thành năm phần. <b class="nt-cue nt-point">[chỉ: phần 1 · Overview]</b> Phần một, Overview: vì sao có đối thủ thì lời giải phải là một policy, chứ không còn là một plan.</p><p><span class="nt-time">02:06</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: phần 2 · Modeling]</b> Phần hai, Modeling: mô tả một game bằng sáu thành phần.</p><p><span class="nt-time">02:11</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: phần 3 · Game evaluation]</b> Phần ba, Game evaluation: khi đã biết cả hai bên chơi thế nào, thì tính value ra sao. Ba phần này là phần của em.</p><p><span class="nt-time">02:21</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: phần 4 · Expectimax]</b> Phần bốn là Expectimax, <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: phần 5 · Minimax]</b> và phần năm là Minimax, hai cách tìm policy tốt nhất, bạn Hoàng sẽ trình bày.</p><p><span class="nt-time">02:29</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: dòng ví dụ chính]</b> Suốt buổi, tụi em dùng một ví dụ chính là game ba hộp; Tic-Tac-Toe và Halving để minh họa thêm.</p></div>
 </section>
 
 <section class="s" data-act="1" data-title="Single-agent search" data-time="60">
@@ -900,7 +912,7 @@ ul.plain li .glyph { margin-right: 14px; }
   <div class="say" data-step="0" data-mood="talk">Mô hình cho biết start, goal, các action hợp lệ, transition và cost từng bước.</div>
   <div class="say" data-step="1" data-mood="think">Path ít edge nhất chỉ có 2 bước, nhưng tốn 9 + 9 = 18.</div>
   <div class="say" data-step="2" data-mood="happy">Path 3 bước chỉ tốn 3. Agent tự chọn mọi bước, nên tìm xong path là đi được ngay.</div>
-  <div class="notes"><p>Một lời giải hợp lệ là path ρ = (s₀, a₀, s₁, …, s_k) đi theo transition và có s_k ∈ G. Path tối ưu là ρ* ∈ argmin C(ρ), với C(ρ) là tổng cost các bước. Path ít bước nhất chưa chắc là path rẻ nhất.</p><p>Nguồn: CS188, State Spaces and Search Problems.</p></div>
+  <div class="notes"><p class="nt-meta">02:37 → 03:29 · 52 giây · 3 bước (bấm → 3 lần, kể cả lần vào slide)</p><p><span class="nt-time">02:37</span> <b class="nt-cue nt-key">[→]</b> OK, mình bắt đầu từ thứ các bạn đã quen: bài toán search một agent. <b class="nt-cue nt-point">[chỉ: mô hình search (S, s₀, A, T, G, c)]</b> Một bài toán search cho mình tập state, start state, các action hợp lệ và transition, tập goal, và cost của từng bước. Nhiệm vụ là tìm một path từ start tới goal.</p><p><span class="nt-time">02:54</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: path qua u: 2 edge, cost 18]</b> Ví dụ trên hình, path đi qua u chỉ có hai bước, nhìn thì ngắn, nhưng tốn chín cộng chín là mười tám.</p><p><span class="nt-time">03:02</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: path qua a, b: 3 edge, cost 3]</b> Còn path đi qua a và b dài ba bước, nhưng chỉ tốn ba. Ít bước nhất chưa chắc là rẻ nhất. <i class="nt-act">(nhìn lớp)</i> Nhưng điểm em muốn các bạn để ý là: trong search, agent tự chọn mọi bước. Tìm xong path thì cứ thế đi theo, không ai cản cả. Giống như mở bản đồ tìm đường từ nhà tới trường: mình chọn đường, còn con đường thì không tự đổi để chơi khó mình. <i class="nt-act">(mở hai tay về phía lớp)</i> Vậy nếu có người khác chen vào giữa thì sao?</p></div>
 </section>
 
 <section class="s" data-act="1" data-title="Plan và policy" data-time="60">
@@ -916,7 +928,7 @@ ul.plain li .glyph { margin-right: 14px; }
   <div class="say" data-step="0" data-mood="talk">Agent lập plan X0, O4, X2. Nhưng O4 là nước của đối thủ.</div>
   <div class="say" data-step="1" data-mood="worried">Nếu O chọn ô 1 hoặc ô 8, plan không còn dùng được.</div>
   <div class="say" data-step="2" data-mood="happy">Policy có sẵn một nước đáp cho mỗi phản ứng của O. Đây là adversarial search.</div>
-  <div class="notes"><p>Trong single-agent search, agent tìm một chuỗi action rồi thực hiện. Trong game, agent chỉ chọn ở lượt của mình; các lượt còn lại do đối thủ chọn. Một chuỗi nước dẫn tới thắng chỉ là một trong nhiều diễn biến có thể xảy ra.</p><p>Chất lượng của một policy phụ thuộc cả cách agent chơi lẫn cách đối thủ phản ứng (CS188 Note 6, trang 1-2). Các nước đáp trên hình chỉ để minh họa rằng mỗi nhánh đều có một nước đáp; chúng chưa chắc tối ưu.</p></div>
+  <div class="notes"><p class="nt-meta">03:29 → 04:22 · 53 giây · 3 bước (bấm → 3 lần, kể cả lần vào slide)</p><p><span class="nt-time">03:29</span> <b class="nt-cue nt-key">[→]</b> Mình thử với Tic-Tac-Toe. <b class="nt-cue nt-point">[chỉ: bàn cờ X0]</b> Giả sử X là agent, và X lập sẵn một plan: mình đi ô 0, <b class="nt-cue nt-point">[chỉ: nước O4 của đối thủ]</b> đối thủ đi ô 4, <b class="nt-cue nt-point">[chỉ: nước X2]</b> rồi mình đi ô 2. Nghe hợp lý đúng không? <b class="nt-cue nt-point">[chỉ: nước O4 của đối thủ]</b> Nhưng có một vấn đề: nước O4 đâu phải do mình chọn.</p><p><span class="nt-time">03:47</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: O đi ô 1 hoặc ô 8]</b> Nếu O đi ô 1, hoặc ô 8, thì plan này hết dùng được. <b class="nt-cue nt-point">[chỉ: khung Plan]</b> Plan chỉ là một chuỗi nước cố định; nó không nói X phải làm gì khi O đi khác.</p><p><span class="nt-time">03:57</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: khung Policy]</b> Cái mình cần là một policy: một quy tắc cho biết ở mỗi state mà agent có thể gặp, agent sẽ chọn action nào. <i class="nt-act">(nhìn lớp)</i> O đi ô 4 thì mình đáp thế này, O đi ô 1 thì mình đáp thế kia. Nói cách khác, policy giống một cái cây các phản ứng, chứ không còn là một đường thẳng. Search khi có đối thủ như vậy gọi là adversarial search, tức là search đối kháng.</p></div>
 </section>
 
 <section class="s" data-act="1" data-title="Game ba hộp" data-time="70">
@@ -930,7 +942,11 @@ ul.plain li .glyph { margin-right: 14px; }
   <div class="say" data-step="1" data-mood="worried">Agent chọn A, đối thủ chọn số nhỏ, nên agent nhận −50.</div>
   <div class="say" data-step="2" data-mood="think">Agent chọn B, đối thủ vẫn chọn số nhỏ, nên agent nhận 1.</div>
   <div class="say" data-step="3" data-mood="surprised">Nếu đối thủ chọn số lớn, hộp A cho 50. Hộp tốt nhất phụ thuộc vào đối thủ.</div>
-  <div class="notes"><p>Ví dụ ba hộp lấy từ CS221, trang 5-6. Có thể mời người nghe chọn hộp và đổi cách chọn của đối thủ bằng các nút bên dưới. Đồng xu góc trái là tổng utility của agent; vì zero-sum nên góc phải là số đối.</p></div>
+  <div class="notes"><p class="nt-meta">04:22 → 06:29 · 2 phút 7 giây · 4 bước (bấm → 4 lần, kể cả lần vào slide)</p><p><span class="nt-time">04:22</span> <b class="nt-cue nt-key">[→]</b> OK, giờ mình chơi một trò chơi nhỏ. Trò này lấy từ bài giảng CS221 của Stanford, và nó sẽ đi theo mình suốt buổi hôm nay. <b class="nt-cue nt-point">[chỉ: ba hộp A, B, C]</b> Có ba hộp A, B, C. Hộp A có hai số, âm 50 và 50; hộp B có 1 và 3; hộp C có âm 5 và 15. <i class="nt-act">(nhìn lớp)</i> Luật chơi như sau: các bạn là agent, các bạn chọn một hộp. Sau đó em, là đối thủ, chọn một số trong hộp đó. Số em chọn là điểm của các bạn, và các bạn muốn điểm càng cao càng tốt.</p><p><span class="nt-time">04:58</span> <i class="nt-act">(giơ tay lên)</i> Em hỏi nhanh nha. Bạn nào chọn hộp A, giơ tay giúp em. <i class="nt-act">(dừng ~2.2 giây, chờ lớp trả lời)</i> OK, vài bạn. <i class="nt-act">(giơ tay lên)</i> Bạn nào chọn B? <i class="nt-act">(dừng ~2.2 giây, chờ lớp trả lời)</i> <i class="nt-act">(giơ tay lên)</i> Còn hộp C? <i class="nt-act">(dừng ~2.2 giây, chờ lớp trả lời)</i> <i class="nt-act">(mở hai tay về phía lớp)</i> À, đa số chọn C. Có vẻ các bạn không tin em lắm, nhưng cũng chưa tới mức nghĩ em sẽ chơi xấu. Chút nữa mình xem ai đúng.</p><p><span class="nt-time">05:26</span> Em vẽ trò này lên bảng. <b class="nt-cue nt-board">[✍ vẽ tam giác hướng lên ở trên cùng (lượt agent)]</b> Trên cùng là lượt của agent, em vẽ một tam giác hướng lên. <b class="nt-cue nt-board">[✍ vẽ ba nhánh A, B, C]</b> Agent có ba action là A, B, C. <b class="nt-cue nt-board">[✍ vẽ ba hình tròn (lượt đối thủ)]</b> Đi xuống mỗi nhánh là tới lượt đối thủ, em vẽ hình tròn. <b class="nt-cue nt-board">[✍ vẽ sáu nhánh và sáu ô kết cục −50, 50, 1, 3, −5, 15]</b> Đối thủ chọn một trong hai số, và cuối cùng là sáu kết cục: âm 50, 50, 1, 3, âm 5, 15. Mỗi đường đi từ trên xuống dưới là một ván có thể xảy ra. <i class="nt-act">(nhìn lớp)</i> Cái hình này gọi là game tree: root là trạng thái bắt đầu, mỗi edge là một action, và mỗi leaf là một kết cục có điểm.</p><p><span class="nt-time">06:02</span> <i class="nt-act">(nhìn màn chiếu)</i> Giờ mình chơi thử trên slide.</p><p><span class="nt-time">06:05</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: hộp A]</b> Agent chọn hộp A, đối thủ chọn số nhỏ, agent nhận âm 50.</p><p><span class="nt-time">06:11</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: hộp B]</b> Ván sau agent chọn B, đối thủ vẫn chọn số nhỏ, agent nhận 1.</p><p><span class="nt-time">06:17</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: nút “Chọn số lớn”]</b> Nhưng nếu đối thủ đổi tính, chọn số lớn, <b class="nt-cue nt-point">[chỉ: hộp A]</b> thì hộp A lại cho tới 50. <i class="nt-act">(nhìn lớp)</i> Vậy hộp nào tốt nhất? Câu trả lời là: còn tùy đối thủ chơi kiểu gì.</p><p class="nt-label">Bảng sau slide 6</p><pre class="nt-pre">              ▲            agent
+           A/ |B \C
+           ○   ○    ○      đối thủ
+          / \ / \  / \
+      [−50][50][1][3][−5][15]   kết cục</pre></div>
 </section>
 
 <section class="s" data-act="1" data-title="Ba giả định về đối thủ" data-time="70">
@@ -943,7 +959,14 @@ ul.plain li .glyph { margin-right: 14px; }
   <div class="say" data-step="1" data-mood="talk">Nếu đối thủ chọn số lớn, hộp A có value 50 và là lựa chọn tốt nhất.</div>
   <div class="say" data-step="2" data-mood="talk">Nếu đối thủ chọn mỗi số với xác suất ½, value là 0, 2, 5 và agent chọn C.</div>
   <div class="say" data-step="3" data-mood="surprised">Nếu đối thủ chọn số nhỏ, value là −50, 1, −5 và agent chọn B.</div>
-  <div class="notes"><p>Leaf 50 ở hộp A chưa đủ để kết luận A tốt, vì agent không quyết định việc đi tới leaf đó (CS221, trang 5-6).</p><p>Ba dòng của bảng ứng với ba câu hỏi mà Game evaluation, Expectimax và Minimax trả lời ở các phần sau.</p></div>
+  <div class="notes"><p class="nt-meta">06:29 → 07:41 · 1 phút 12 giây · 4 bước (bấm → 4 lần, kể cả lần vào slide)</p><p><span class="nt-time">06:29</span> <b class="nt-cue nt-key">[→]</b> Mình làm rõ chữ “tùy” này. <b class="nt-cue nt-point">[chỉ: sáu leaf]</b> Sáu kết quả ở dưới không bao giờ đổi. Cái thay đổi là value của từng hộp, vì nó phụ thuộc đối thủ chọn số thế nào. Có ba giả định, em ghi luôn lên bảng.</p><p><span class="nt-time">06:43</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: dòng “Số lớn”]</b> Giả định thứ nhất: đối thủ tốt bụng, luôn chọn số lớn. <b class="nt-cue nt-board">[✍ ghi dòng “lớn: 50 | 3 | 15 → A”]</b> Khi đó A có value 50, B là 3, C là 15. Agent chọn A.</p><p><span class="nt-time">06:55</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: dòng “Xác suất ½”]</b> Giả định thứ hai: đối thủ tung đồng xu, mỗi số xác suất một nửa. <b class="nt-cue nt-board">[✍ ghi dòng “đều: 0 | 2 | 5 → C”]</b> Value là trung bình: A bằng 0, B bằng 2, C bằng 5. Agent chọn C. Những bạn vừa chọn C chắc là đang nghĩ theo cách này.</p><p><span class="nt-time">07:10</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: dòng “Số nhỏ”]</b> Giả định thứ ba: đối thủ chơi xấu, luôn chọn số nhỏ nhất. <b class="nt-cue nt-board">[✍ ghi dòng “nhỏ: −50 | 1 | −5 → B”]</b> A còn âm 50, B là 1, C là âm 5. Agent chọn B. <i class="nt-act">(nhìn lớp)</i> <i class="nt-act">(mở hai tay về phía lớp)</i> Các bạn thấy không, cùng một cái cây, cùng sáu con số, mà ba giả định cho ra ba đáp án khác nhau. Hộp A có số 50 rất hấp dẫn, nhưng agent không quyết định được việc đi tới số 50 đó. <b class="nt-cue nt-point">[chỉ lên bảng: ba dòng giả định trên bảng]</b> Ba dòng này chính là ba câu hỏi mà Game evaluation, Expectimax và Minimax sẽ trả lời.</p><p class="nt-label">Bảng sau slide 7</p><pre class="nt-pre">              ▲            agent
+           A/ |B \C
+           ○   ○    ○      đối thủ
+          / \ / \  / \
+      [−50][50][1][3][−5][15]   kết cục
+   lớn:    50    3    15     → A
+   đều:     0    2     5     → C
+   nhỏ:   −50    1    −5     → B</pre></div>
 </section>
 
 <section class="s" data-act="1" data-title="Game khác search ở đâu" data-time="45">
@@ -965,7 +988,7 @@ ul.plain li .glyph { margin-right: 14px; }
   <div class="say" data-step="0" data-mood="talk">Utility nằm ở cuối ván. Muốn tính value ở state hiện tại, cần xét các terminal state có thể tới.</div>
   <div class="say" data-step="1" data-mood="talk">Mỗi node có một player chọn action, và cách tính value tùy vào player đó.</div>
   <div class="say" data-step="2" data-mood="happy">Bốn hình dạng node này dùng cho mọi cây trong buổi.</div>
-  <div class="notes"><p>CS221, trang 17-18. Tam giác hướng lên là node MAX của agent, tam giác hướng xuống là node MIN của đối thủ, hình tròn là chance node, hình vuông là terminal state mang utility.</p></div>
+  <div class="notes"><p class="nt-meta">07:41 → 08:40 · 58 giây · 3 bước (bấm → 3 lần, kể cả lần vào slide)</p><p><span class="nt-time">07:41</span> <b class="nt-cue nt-key">[→]</b> Từ ví dụ này, mình rút ra hai điểm làm game khác search. <b class="nt-cue nt-point">[chỉ: ý 1: utility nằm ở terminal state]</b> Thứ nhất, utility nằm ở cuối ván. Đang chơi giữa chừng thì chưa có điểm; phải tới terminal state mới biết thắng, hòa hay thua. Nên một nước nhìn có lợi trước mắt vẫn có thể dẫn tới thua.</p><p><span class="nt-time">07:59</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: ý 2: mỗi node thuộc về một player]</b> Thứ hai, mỗi node thuộc về một player. Ở node của đối thủ, agent không được chọn, và cách tính value tại node phụ thuộc vào ai đang có lượt.</p><p><span class="nt-time">08:09</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: bốn hình node]</b> Từ giờ mình thống nhất bốn hình: tam giác hướng lên là lượt agent, gọi là node MAX; tam giác hướng xuống là lượt đối thủ, node MIN; hình tròn là chance node; và hình vuông là terminal state. <b class="nt-cue nt-point">[chỉ lên bảng: ba hình tròn trên bảng]</b> Trên bảng em đang vẽ hình tròn ở lượt đối thủ, vì mình chưa giả định đối thủ chơi kiểu nào. <i class="nt-act">(nhìn lớp)</i> Tóm lại phần Overview: khi có đối thủ, lời giải là một policy; và muốn biết một nước tốt hay không, mình phải biết, hoặc phải giả định, đối thủ sẽ phản ứng ra sao.</p></div>
 </section>
 
 <section class="s" data-act="2" data-title="Loại game đang xét" data-time="50">
@@ -993,7 +1016,7 @@ ul.plain li .glyph { margin-right: 14px; }
   <div class="say" data-step="0" data-mood="talk">Có hai player, và tổng utility của hai bên luôn bằng 0.</div>
   <div class="say" data-step="1" data-mood="talk">Hai bên đi lần lượt, thấy toàn bộ state, không có yếu tố ngẫu nhiên, và cây hữu hạn.</div>
   <div class="say" data-step="2" data-mood="think">Zero-sum vẫn có hòa; khi hòa, cả hai bên nhận 0.</div>
-  <div class="notes"><p>CS221, trang 13-14. Các cây giải trong bài đều hữu hạn, nên phép tính từ terminal state về root luôn kết thúc.</p></div>
+  <div class="notes"><p class="nt-meta">08:40 → 09:27 · 47 giây · 3 bước (bấm → 3 lần, kể cả lần vào slide)</p><p><span class="nt-time">08:40</span> <b class="nt-cue nt-key">[→]</b> Qua phần hai, Modeling. Trước hết mình giới hạn loại game đang xét. <b class="nt-cue nt-point">[chỉ: hai player, zero-sum]</b> Có hai player là agent và đối thủ. Game là zero-sum: utility của đối thủ luôn bằng âm utility của agent, cộng lại bằng 0.</p><p><span class="nt-time">08:56</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: turn-taking, fully observable, deterministic, hữu hạn]</b> Hai bên đi lần lượt, cả hai thấy toàn bộ state, biết state và action thì biết state kế tiếp, và mọi nhánh đều kết thúc. <i class="nt-act">(nhìn lớp)</i> Tic-Tac-Toe hay cờ vua là loại này. Poker thì không, vì mình không thấy bài của đối thủ. Cờ cá ngựa cũng không, vì có xúc xắc; game có yếu tố ngẫu nhiên thuộc phần Games 2.</p><p><span class="nt-time">09:16</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: bảng zero-sum có hòa]</b> Một hiểu lầm hay gặp: zero-sum không có nghĩa là bắt buộc phải có người thắng. Vẫn có hòa, và khi hòa thì cả hai bên cùng nhận 0.</p></div>
 </section>
 
 <section class="s" data-act="2" data-title="Sáu thành phần của mô hình" data-time="55">
@@ -1019,7 +1042,7 @@ ul.plain li .glyph { margin-right: 14px; }
   <div class="say" data-step="0" data-mood="talk">Bốn thành phần đầu giống search: start state, action, transition và điều kiện dừng.</div>
   <div class="say" data-step="1" data-mood="think">Utility chấm terminal state theo góc nhìn agent. Thua cũng là terminal state.</div>
   <div class="say" data-step="2" data-mood="happy">Player(s) cho biết ai đang chọn. Đối thủ đi vào mô hình qua thành phần này.</div>
-  <div class="notes"><p>CS221, trang 13-18. So với single-agent search, Player(s) xác định ai điều khiển bước tiếp theo, còn Utility(s) dùng để so sánh các terminal state.</p></div>
+  <div class="notes"><p class="nt-meta">09:27 → 10:34 · 1 phút 7 giây · 3 bước (bấm → 3 lần, kể cả lần vào slide)</p><p><span class="nt-time">09:27</span> <b class="nt-cue nt-key">[→]</b> Một game như vậy được mô tả bằng sáu thành phần. <b class="nt-cue nt-point">[chỉ: bốn thành phần đầu]</b> Bốn thành phần đầu nghe rất quen: s start là state ban đầu; Actions của s là các action hợp lệ; Succ của s, a là state nhận được sau khi làm action a; và IsEnd kiểm tra ván đã kết thúc chưa. Bốn cái này gần như y hệt bài toán search.</p><p><span class="nt-time">09:47</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: Utility(s)]</b> Thành phần thứ năm là Utility: điểm của terminal state, tính theo góc nhìn agent. Các bạn để ý: trong search, tới goal là tốt. Còn trong game, tới terminal state chưa chắc đã tốt, vì thua cũng là một terminal state.</p><p><span class="nt-time">10:03</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: Player(s)]</b> Thành phần thứ sáu là Player của s, cho biết tại state này ai đang được chọn. Đối thủ đi vào mô hình chính là qua thành phần này. <i class="nt-act">(nhìn bảng)</i> <b class="nt-cue nt-point">[chỉ lên bảng: cây ba hộp trên bảng]</b> Thử ráp vào game ba hộp trên bảng: s start là root; Actions ở root là A, B, C; Succ của root với action A là node A; IsEnd đúng ở sáu leaf; Utility là con số ghi ở leaf; còn Player ở root là agent, ở ba node giữa là đối thủ. Sáu thành phần là đủ để mô tả trọn trò chơi này.</p></div>
 </section>
 
 <section class="s" data-act="2" data-title="Từ search sang game" data-time="45" data-opt>
@@ -1039,7 +1062,7 @@ ul.plain li .glyph { margin-right: 14px; }
   <div class="say" data-step="1" data-mood="think">Goal test trở thành IsEnd, và terminal state có thể là thua.</div>
   <div class="say" data-step="2" data-mood="talk">Không còn cộng cost dọc path; Utility chấm terminal state.</div>
   <div class="say" data-step="3" data-mood="surprised">Khác biệt lớn nhất là một số bước do đối thủ chọn.</div>
-  <div class="notes"><p>Biết các bước hợp lệ vẫn chưa đủ để chọn nước. Agent còn cần một cách đánh giá các phản ứng có thể có của đối thủ; ba phần sau đưa ra ba cách như vậy.</p></div>
+  <div class="notes"><p class="nt-meta">10:34 → 11:05 · 31 giây · 4 bước (bấm → 4 lần, kể cả lần vào slide) · <i>có thể lướt nếu trễ giờ</i></p><p><span class="nt-time">10:34</span> <b class="nt-cue nt-key">[→]</b> Slide này đặt hai mô hình cạnh nhau. <b class="nt-cue nt-point">[chỉ: start state, transition]</b> Start state và transition vẫn giữ nguyên.</p><p><span class="nt-time">10:41</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: goal test → IsEnd]</b> Goal test trở thành IsEnd, và terminal state có thể là thua.</p><p><span class="nt-time">10:46</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: cost → Utility]</b> Không còn cộng cost dọc đường nữa, mà chấm điểm ở terminal state.</p><p><span class="nt-time">10:51</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: agent chọn mọi bước → Player(s)]</b> Và khác biệt lớn nhất: có những bước do đối thủ chọn. <i class="nt-act">(nhìn lớp)</i> Nên chỉ biết bước nào hợp lệ là chưa đủ. Agent cần thêm một cách đánh giá phản ứng của đối thủ, và đó là việc của ba phần sau.</p></div>
 </section>
 
 <section class="s" data-act="2" data-title="Mô hình hóa Tic-Tac-Toe" data-time="75">
@@ -1051,7 +1074,7 @@ ul.plain li .glyph { margin-right: 14px; }
   <div class="say" data-step="0" data-mood="talk">X là agent và đi trước. Các ô tô xanh là Actions(s). Bấm một ô để đi.</div>
   <div class="say" data-step="1" data-mood="think">Rê chuột lên ô trống để xem Succ(s, a): đặt quân rồi đổi lượt.</div>
   <div class="say" data-step="2" data-mood="surprised">X đã thắng dù còn ô trống. Phải kiểm tra IsEnd trước khi sinh action.</div>
-  <div class="notes"><p>State: bàn cờ 3×3 và player đến lượt. s_start: bàn trống, X đến lượt. Actions(s): các ô trống nếu ván chưa kết thúc. Succ(s, a): đặt quân của player đến lượt vào ô a rồi đổi lượt. IsEnd(s): một bên có ba quân thẳng hàng hoặc bàn đã đầy. Utility(s): +1 nếu X thắng, 0 nếu hòa, −1 nếu O thắng. Player(s): X hoặc O.</p><p>Quy ước X đi trước chỉ dùng cho ví dụ từ bàn trống; thế P và thế Q ở phần sau cho O đi trước. Game tree Tic-Tac-Toe có trong CS188 Lecture 7, trang 14.</p></div>
+  <div class="notes"><p class="nt-meta">11:05 → 11:57 · 52 giây · 3 bước (bấm → 3 lần, kể cả lần vào slide)</p><p><span class="nt-time">11:05</span> <b class="nt-cue nt-key">[→]</b> Áp dụng vào Tic-Tac-Toe. <b class="nt-cue nt-point">[chỉ: bàn cờ]</b> State gồm bàn cờ ba nhân ba và player đến lượt. Start state là bàn trống, X đến lượt. Ở đây em chọn X làm agent, đi trước. <b class="nt-cue nt-point">[chỉ: dòng Actions(s)]</b> Actions của s là các ô còn trống, ở đây là cả chín ô.</p><p><span class="nt-time">11:23</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: bàn cờ]</b> Sau khi X đi ô 0 và O đi ô 4, <b class="nt-cue nt-point">[chỉ: dòng Succ(s, a)]</b> Succ của s, a nghĩa là đặt quân của người đang tới lượt vào ô a, rồi đổi lượt. Bây giờ lại tới X, và còn bảy ô hợp lệ.</p><p><span class="nt-time">11:35</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: bàn cờ]</b> Còn đây là một tình huống cần cẩn thận. X đã có ba quân ở hàng trên cùng, X thắng rồi, <b class="nt-cue nt-point">[chỉ: dòng IsEnd(s)]</b> dù bàn vẫn còn ô trống. Nếu thuật toán cứ sinh action từ các ô trống là sai. Phải kiểm tra IsEnd trước. <b class="nt-cue nt-point">[chỉ: dòng Utility(s)]</b> Utility ở đây là cộng 1 nếu X thắng, 0 nếu hòa, và trừ 1 nếu O thắng.</p></div>
 </section>
 
 <section class="s" data-act="2" data-title="Hai điều cần kiểm tra" data-time="45">
@@ -1069,7 +1092,7 @@ ul.plain li .glyph { margin-right: 14px; }
   </div>
   <div class="say" data-step="0" data-mood="think">Cùng một bàn cờ, X đến lượt và O đến lượt là hai state khác nhau.</div>
   <div class="say" data-step="1" data-mood="worried">Cả năm ô trống đều hợp lệ, nhưng bốn ô dẫn tới thua ngay.</div>
-  <div class="notes"><p>Nếu luật hoặc mô hình đối thủ phụ thuộc vào lịch sử, phần lịch sử cần thiết cũng phải nằm trong state.</p><p>Bàn minh họa theo quy ước X đi trước: X ở ô 4 và 8, O ở ô 0 và 1, X đến lượt. O đe dọa hoàn tất hàng 0-1-2.</p></div>
+  <div class="notes"><p class="nt-meta">11:57 → 12:44 · 47 giây · 2 bước (bấm → 2 lần, kể cả lần vào slide)</p><p><span class="nt-time">11:57</span> <b class="nt-cue nt-key">[→]</b> Khi mô hình hóa, có hai điều em muốn nhấn mạnh. <b class="nt-cue nt-point">[chỉ: ý 1: state phải đủ để áp dụng luật]</b> Thứ nhất, state phải đủ thông tin để áp dụng luật. Cùng một bàn cờ, nhưng X tới lượt và O tới lượt là hai state khác nhau, vì người đi tiếp khác nhau. Ở Tic-Tac-Toe thì đếm số quân là suy ra được ai đến lượt, nhưng nhiều game khác không suy ra được, nên ghi rõ lượt đi vào state cho chắc.</p><p><span class="nt-time">12:20</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: bàn cờ X đến lượt]</b> Thứ hai, các bạn nhìn bàn này: X đến lượt, O đang có hai quân ở hàng trên. X nên đi ô nào? <i class="nt-act">(dừng ~1.8 giây, chờ lớp trả lời)</i> <b class="nt-cue nt-point">[chỉ: ô 2]</b> Đúng rồi, ô 2, phải chặn. <b class="nt-cue nt-point">[chỉ: bàn cờ X đến lượt]</b> Cả năm ô trống đều hợp lệ, nhưng bốn ô tô đỏ dẫn tới thua ngay. <b class="nt-cue nt-point">[chỉ: ý 2: action hợp lệ chưa chắc là action tốt]</b> Nên Actions của s chỉ kiểm tra luật thôi; còn nước nào tốt là việc của thuật toán search.</p></div>
 </section>
 
 <section class="s" data-act="2" data-title="Game tree và state-space graph" data-time="60">
@@ -1080,7 +1103,7 @@ ul.plain li .glyph { margin-right: 14px; }
   </div>
   <div class="say" data-step="0" data-mood="talk">X0, O4, X2 và X2, O4, X0 là hai lịch sử khác nhau. Trên game tree chúng là hai node.</div>
   <div class="say" data-step="1" data-mood="surprised">Bàn cờ và lượt giống hệt nhau, nên trong state-space graph chúng là một node.</div>
-  <div class="notes"><p>Trên game tree, mỗi node là một state trong một lịch sử chơi, mỗi edge là một action hợp lệ, mỗi leaf là terminal state mang utility, và mỗi path từ root tới leaf là một ván. Trên state-space graph, mỗi state khác nhau là một node (CS221, trang 11-12).</p><p>Từ state chung đó, các action hợp lệ và phần còn lại của ván giống nhau, nên có thể dùng lại value.</p></div>
+  <div class="notes"><p class="nt-meta">12:44 → 13:25 · 41 giây · 2 bước (bấm → 2 lần, kể cả lần vào slide)</p><p><span class="nt-time">12:44</span> <b class="nt-cue nt-key">[→]</b> Tiếp theo là hai cách vẽ một game. <b class="nt-cue nt-point">[chỉ: lịch sử 1: X0, O4, X2]</b> Lịch sử thứ nhất: X đi 0, O đi 4, X đi 2. <b class="nt-cue nt-point">[chỉ: lịch sử 2: X2, O4, X0]</b> Lịch sử thứ hai: X đi 2, O đi 4, X đi 0. Hai thứ tự khác nhau, nhưng bàn cờ cuối cùng giống hệt nhau, và đều tới lượt O. <b class="nt-cue nt-point">[chỉ: game tree: hai node]</b> Trên game tree, mỗi node là một state trong một lịch sử chơi, nên đây là hai node khác nhau.</p><p><span class="nt-time">13:08</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: state chung (một node)]</b> Còn trên state-space graph, mỗi state chỉ là một node, nên hai đường này gặp nhau ở cùng một node. <i class="nt-act">(nhìn lớp)</i> Ý nghĩa là gì? Từ state chung đó, phần còn lại của ván giống hệt nhau. Tính value một lần là dùng lại được cho cả hai.</p></div>
 </section>
 
 <section class="s" data-act="2" data-title="So sánh tree và graph" data-time="45" data-opt>
@@ -1098,7 +1121,7 @@ ul.plain li .glyph { margin-right: 14px; }
   </div>
   <div class="say" data-step="0" data-mood="talk">Game tree giữ lại lịch sử, còn state-space graph gộp các state giống nhau.</div>
   <div class="say" data-step="2" data-mood="think">Vì vậy trên tree, cùng một state có thể bị tính lại nhiều lần.</div>
-  <div class="notes"><p>Các thuật toán trong bài được trình bày trên tree để thấy rõ từng lựa chọn và phản ứng. Gộp state bớt được phần tính lặp, nhưng không giải quyết được trường hợp số state vẫn quá lớn.</p></div>
+  <div class="notes"><p class="nt-meta">13:25 → 14:02 · 37 giây · 3 bước (bấm → 3 lần, kể cả lần vào slide) · <i>có thể lướt nếu trễ giờ</i></p><p><span class="nt-time">13:25</span> <b class="nt-cue nt-key">[→]</b> Tóm lại sự khác nhau. <b class="nt-cue nt-point">[chỉ: một node · hai lịch sử]</b> Game tree giữ lại lịch sử, nên hai lịch sử là hai node.</p><p><span class="nt-time">13:32</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: số parent · chu trình]</b> Mỗi node chỉ có đúng một parent, và không có chu trình.</p><p><span class="nt-time">13:36</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: khi tính value]</b> Hệ quả là trên tree, cùng một state có thể bị tính đi tính lại, còn trên graph thì lưu lại và dùng lại được. <i class="nt-act">(nhìn lớp)</i> Trong bài này, các thuật toán vẫn trình bày trên tree, vì nhìn từng lựa chọn và phản ứng sẽ rõ hơn.</p><p><span class="nt-time">13:51</span> <i class="nt-act">(slide 15 vẫn đang chiếu)</i> Trước khi qua slide sau, em đố các bạn: bàn Tic-Tac-Toe chỉ có chín ô, vậy game tree đầy đủ từ bàn trống có khoảng bao nhiêu node? <i class="nt-act">(dừng ~2.5 giây, chờ lớp trả lời)</i></p></div>
 </section>
 
 <section class="s" data-act="2" data-title="549.946 node, 5.478 state" data-time="50">
@@ -1120,7 +1143,7 @@ ul.plain li .glyph { margin-right: 14px; }
   <div class="say" data-step="0" data-mood="surprised">Bàn cờ chỉ có 9 ô nhưng game tree có gần 550 nghìn node.</div>
   <div class="say" data-step="1" data-mood="think">Số state khác nhau chỉ hơn 5 nghìn, nên rất nhiều node lặp lại cùng một state.</div>
   <div class="say" data-step="2" data-mood="talk">Root màu xám: chơi tối ưu thì hòa. Có thể kéo để xoay cây.</div>
-  <div class="notes"><p>Số liệu do nhóm tính bằng verify_examples.py: duyệt toàn cây từ bàn trống, dừng khi có người thắng hoặc bàn đầy. Kết quả là 549.946 lần thăm node (tính cả state lặp), 5.478 state khác nhau, Minimax value ở root bằng 0.</p><p>Muốn dùng lại value, state phải đủ thông tin: cùng bàn cờ nhưng khác lượt là hai state. Cây 3D xếp các con thành vòng dưới parent (cone tree); năm tầng đầu có 1 + 9 + 72 + 504 + 3.024 + 15.120 = 18.730 node.</p></div>
+  <div class="notes"><p class="nt-meta">14:02 → 14:52 · 50 giây · 3 bước (bấm → 3 lần, kể cả lần vào slide)</p><p><span class="nt-time">14:02</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: 549.946 node]</b> Câu trả lời là 549.946 node, gần năm trăm năm mươi nghìn. <b class="nt-cue nt-point">[chỉ: 5.478 state]</b> Trong khi số state khác nhau, tính cả lượt đi, chỉ có 5.478.</p><p><span class="nt-time">14:14</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: đoạn giải thích]</b> Tức là game tree lớn gấp khoảng một trăm lần số state, vì rất nhiều node lặp lại cùng một state, đúng như ví dụ vừa rồi. Hai con số này nhóm em tự đếm bằng code.</p><p><span class="nt-time">14:25</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: root màu xám]</b> Thêm một chi tiết: root có màu xám, nghĩa là nếu cả hai bên chơi tối ưu thì Tic-Tac-Toe luôn hòa. Bạn nào từng chơi chắc cũng thấy vậy. <i class="nt-act">(nhìn lớp)</i> Còn với cờ vua, theo ước tính nổi tiếng của Shannon, số ván cờ khác nhau, tức là số đường đi từ root tới leaf, vào cỡ mười mũ một trăm hai mươi. Không máy nào duyệt hết được; đó là lý do Games 2 cần tới evaluation function và alpha-beta pruning.</p></div>
 </section>
 
 <section class="s" data-act="2" data-title="Policy" data-time="55">
@@ -1136,7 +1159,7 @@ ul.plain li .glyph { margin-right: 14px; }
   <div class="say" data-step="0" data-mood="talk">Policy quy định cách chơi ở mọi state thuộc lượt mình, kể cả state chưa gặp.</div>
   <div class="say" data-step="1" data-mood="talk">Deterministic policy chọn đúng một action, tức gán xác suất 1 cho action đó.</div>
   <div class="say" data-step="2" data-mood="think">Stochastic policy gán xác suất cho từng action. Từ đây π là policy của agent, μ của đối thủ.</div>
-  <div class="notes"><p>CS221, trang 21-22. Policy của X trong Tic-Tac-Toe phải nói X đáp thế nào sau mọi nước của O. Path X0 → O4 → X2 chỉ là một lịch sử chơi và không cho biết X làm gì khi O chọn ô 1.</p><p>Khi cài đặt, có thể tính lại nước đi từ state thực tế ở mỗi lượt thay vì lưu sẵn toàn bộ policy. Ký hiệu π(a | s), μ(a | s) tương ứng với π_agent(s, a), π_opp(s, a) trong slide CS221.</p></div>
+  <div class="notes"><p class="nt-meta">14:52 → 15:49 · 57 giây · 3 bước (bấm → 3 lần, kể cả lần vào slide)</p><p><span class="nt-time">14:52</span> <b class="nt-cue nt-key">[→]</b> Quay lại khái niệm policy, giờ mình nói chính xác hơn. <b class="nt-cue nt-point">[chỉ: root với π(root) = A]</b> Policy của một player cho biết tại mỗi state thuộc lượt của player đó, player chọn action nào, kể cả những state chưa từng gặp.</p><p><span class="nt-time">15:05</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: deterministic policy]</b> Loại đơn giản nhất là deterministic policy: mỗi state chọn đúng một action. <b class="nt-cue nt-point">[chỉ: edge A, xác suất 1]</b> Ví dụ agent luôn chọn hộp A. Viết dưới dạng xác suất thì A có xác suất 1, B và C xác suất 0.</p><p><span class="nt-time">15:19</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: stochastic policy]</b> Tổng quát hơn là stochastic policy: gán cho mỗi action một xác suất, các xác suất không âm và cộng lại bằng 1. <b class="nt-cue nt-point">[chỉ: các xác suất ½]</b> Ví dụ đối thủ chọn mỗi số với xác suất một nửa. <i class="nt-act">(nhìn lớp)</i> Tại sao lại cần policy ngẫu nhiên? Các bạn nghĩ tới oẳn tù tì: nếu mình luôn ra kéo, đối thủ sẽ luôn ra búa. Có những lúc chơi ngẫu nhiên mới là cách chơi tốt. Từ giờ em dùng π cho policy của agent, và μ cho policy của đối thủ.</p></div>
 </section>
 
 <section class="s" data-act="2" data-title="Utility và value" data-time="60">
@@ -1156,7 +1179,9 @@ ul.plain li .glyph { margin-right: 14px; }
   <div class="say" data-step="1" data-mood="talk">Value của một cặp policy là expected utility khi hai bên chơi đúng theo policy đó.</div>
   <div class="say" data-step="2" data-mood="think">Giữ μ cố định và cho agent tối ưu, ta được value tối ưu trước μ.</div>
   <div class="say" data-step="3" data-mood="happy">Không giả định μ, agent tối đa value trong worst case. Ba phần sau tính từng value.</div>
-  <div class="notes"><p>s_T là terminal state đạt được và utility hữu hạn. Với game hữu hạn, fully observable, hai value tối ưu được tính bằng recurrence của Expectimax và Minimax. Tên trong slide CS221: V_eval = V^{π,μ}, V_exptmax = V^{*,μ}, V_minmax = V_mm.</p><p>CS221, trang 25-34; CS188 Note 6, trang 2-3.</p></div>
+  <div class="notes"><p class="nt-meta">15:49 → 16:58 · 1 phút 10 giây · 4 bước (bấm → 4 lần, kể cả lần vào slide)</p><p><span class="nt-time">15:49</span> <b class="nt-cue nt-key">[→]</b> Có policy rồi, mình phân biệt hai chữ hay bị dùng lẫn: utility và value. <b class="nt-cue nt-point">[chỉ: dòng U(s)]</b> Utility chỉ có ở terminal state; nó chấm điểm một kết cục đã xảy ra, thắng cộng 1, thua trừ 1. <b class="nt-cue nt-board">[✍ ghi “U(s): điểm của kết cục (terminal)”]</b> Em ghi lên bảng: U của s là điểm của kết cục.</p><p><span class="nt-time">16:06</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: dòng V^{π,μ}(s)]</b> Còn value thì đánh giá mọi state, kể cả state đang ở giữa ván. Value của cặp policy π, μ là expected utility, tức là utility trung bình nếu hai bên cứ chơi đúng theo hai policy đó tới hết ván. <b class="nt-cue nt-board">[✍ ghi “V(s): trung bình từ s, theo π và μ”]</b> V của s là trung bình tính từ s, theo π và μ.</p><p><span class="nt-time">16:24</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: dòng V^{*,μ}(s)]</b> Nếu giữ μ của đối thủ cố định, rồi cho agent chọn policy tốt nhất, mình được value tối ưu trước μ.</p><p><span class="nt-time">16:32</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: dòng V_mm(s)]</b> Còn nếu không giả định gì về μ, agent tối đa value trong trường hợp xấu nhất. <b class="nt-cue nt-point">[chỉ: dòng tổng kết]</b> Ba dòng cuối lần lượt là Game evaluation, Expectimax và Minimax. Hôm nay em trình bày dòng thứ nhất. <i class="nt-act">(nhìn lớp)</i> Một cách dễ nhớ: utility giống điểm thi cuối kỳ, có khi thi xong mới biết. Còn value giống điểm mình kỳ vọng khi đang học giữa kỳ, và nó phụ thuộc cả việc mình học thế nào lẫn đề ra thế nào.</p><p class="nt-label">Bảng sau slide 18</p><pre class="nt-pre">   (cây + ba dòng giữ nguyên)
+   U(s): điểm của kết cục (terminal)
+   V(s): trung bình từ s, theo π và μ</pre></div>
 </section>
 
 <section class="s" data-act="2" data-title="Cùng leaf, ba value" data-time="45">
@@ -1172,7 +1197,7 @@ ul.plain li .glyph { margin-right: 14px; }
   <div class="say" data-step="0" data-mood="talk">Agent cố định chọn A, nên root bằng trung bình của −50 và 50, tức 0.</div>
   <div class="say" data-step="1" data-mood="talk">Agent được chọn khi đối thủ chọn đều: max của 0, 2, 5 là 5.</div>
   <div class="say" data-step="2" data-mood="happy">Đối thủ chọn số bất lợi nhất: max của −50, 1, −5 là 1.</div>
-  <div class="notes"><p>Các leaf −50, 50, 1, 3, −5, 15 giữ nguyên. Root nhận ba value khác nhau vì giả định về cách hai bên chơi khác nhau. Ba phần sau trình bày từng phép tính.</p></div>
+  <div class="notes"><p class="nt-meta">16:58 → 17:46 · 48 giây · 3 bước (bấm → 3 lần, kể cả lần vào slide)</p><p><span class="nt-time">16:58</span> <b class="nt-cue nt-key">[→]</b> Nhìn lại game ba hộp: cùng sáu leaf, nhưng ba câu hỏi cho ba value khác nhau ở root. <b class="nt-cue nt-point">[chỉ: cây Game evaluation (value 0)]</b> Game evaluation: agent cố định chọn A, đối thủ chọn đều, root là trung bình của âm 50 và 50, tức là 0.</p><p><span class="nt-time">17:14</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: cây Expectimax (value 5)]</b> Expectimax: đối thủ vẫn chọn đều, nhưng agent được tự chọn, nên lấy max của 0, 2, 5, được 5.</p><p><span class="nt-time">17:23</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: cây Minimax (value 1)]</b> Minimax: đối thủ chọn số bất lợi nhất, max của âm 50, 1, âm 5 là 1. <i class="nt-act">(nhìn lớp)</i> Ba con số 0, 5, 1 chỉ có nghĩa khi đi kèm giả định của nó. Đó cũng là kết thúc phần Modeling: mình đã có sáu thành phần, có policy, và phân biệt được utility với value. Bây giờ mình đi vào con số đầu tiên.</p></div>
 </section>
 
 <section class="s" data-act="3" data-title="Game evaluation" data-time="50">
@@ -1192,7 +1217,7 @@ ul.plain li .glyph { margin-right: 14px; }
   <div class="say" data-step="0" data-mood="talk">Agent chơi theo π, đối thủ chơi theo μ, và cả hai đã cố định.</div>
   <div class="say" data-step="1" data-mood="think">Evaluation ở đây nghĩa là đo. Thuật toán chưa tìm policy mới.</div>
   <div class="say" data-step="2" data-mood="talk">Kết quả là trung bình theo xác suất; một ván thật có thể ra số khác.</div>
-  <div class="notes"><p>CS221, trang 25-28. Game evaluation tính V^{π,μ}(s) cho một cặp policy đã cố định.</p></div>
+  <div class="notes"><p class="nt-meta">17:46 → 18:42 · 56 giây · 3 bước (bấm → 3 lần, kể cả lần vào slide)</p><p><span class="nt-time">17:46</span> <b class="nt-cue nt-key">[→]</b> Phần ba: Game evaluation. <b class="nt-cue nt-point">[chỉ: agent cầm π]</b> Agent chơi theo π, <b class="nt-cue nt-point">[chỉ: đối thủ cầm μ]</b> đối thủ chơi theo μ, và cả hai policy đều được cho trước. <b class="nt-cue nt-point">[chỉ: V = ?]</b> Câu hỏi duy nhất là: V bằng bao nhiêu? <b class="nt-cue nt-point">[chỉ: V^{π,μ}(s) = E[U(s_T) | s, π, μ]]</b> Viết ra thì V của s là expected utility của terminal state, khi xuất phát từ s và hai bên chơi theo π và μ.</p><p><span class="nt-time">18:07</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: ý 1: hai policy cố định]</b> Hai policy này cố định trong suốt phép tính. Chữ evaluation ở đây nghĩa là đo: mình chỉ đo xem cặp cách chơi này cho kết quả bao nhiêu; thuật toán không đi tìm policy mới.</p><p><span class="nt-time">18:19</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: ý 2, 3: expected utility]</b> Và kết quả là expected utility, tức là trung bình có trọng số theo xác suất. Một ván cụ thể ngoài đời có thể ra số khác. <i class="nt-act">(nhìn lớp)</i> Các bạn có thể thắc mắc: ngoài đời làm sao biết hết policy của đối thủ? Thường là không biết. Nhưng Game evaluation là viên gạch đầu tiên: muốn so sánh hay tối ưu thì trước hết phải đo được.</p></div>
 </section>
 
 <section class="s" data-act="3" data-title="Recurrence của Game evaluation" data-time="60">
@@ -1212,12 +1237,21 @@ ul.plain li .glyph { margin-right: 14px; }
   <div class="say" data-step="0" data-mood="talk">Tại terminal state, value bằng utility. Tại node khác, lấy trung bình value các con.</div>
   <div class="say" data-step="1" data-mood="think">Hai con có value v₁, v₂ và xác suất q, 1 − q thì value là q·v₁ + (1 − q)·v₂.</div>
   <div class="say" data-step="2" data-mood="happy">Lượt agent và lượt đối thủ tính giống nhau, chỉ khác bảng xác suất.</div>
-  <div class="notes"><p>CS221, trang 27-28. Mỗi action xảy ra với xác suất cho trước, nên value của node là trung bình value của các nhánh. Chỉ tại terminal state mới dùng utility trực tiếp.</p></div>
+  <div class="notes"><p class="nt-meta">18:42 → 20:18 · 1 phút 36 giây · 3 bước (bấm → 3 lần, kể cả lần vào slide)</p><p><span class="nt-time">18:42</span> <b class="nt-cue nt-key">[→]</b> Vậy tính V thế nào? Mình định nghĩa một recurrence, tức là một công thức đệ quy. <b class="nt-cue nt-point">[chỉ: trường hợp terminal: Utility(s)]</b> Trường hợp cơ sở: nếu s là terminal state thì value chính là utility. <b class="nt-cue nt-point">[chỉ: hai dòng tổng theo π và μ]</b> Còn nếu chưa kết thúc, mình lấy tổng theo các action: xác suất chọn action đó, nhân với value của state con. Lượt agent thì xác suất lấy từ π, lượt đối thủ thì lấy từ μ. <b class="nt-cue nt-board">[🧽 xóa bảng: vùng giữa, vùng dưới]</b> <b class="nt-cue nt-board">[✍ ghi recurrence: V(s) = U(s) nếu IsEnd(s); V(s) = Σ P(a|s)·V(Succ(s,a)); P = π hoặc μ]</b> Em viết gọn lên bảng: V của s bằng U của s nếu s là terminal; còn không thì V của s bằng tổng theo a, xác suất của a nhân V của Succ s a.</p><p><span class="nt-time">19:19</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: ví dụ hai con v₁, v₂]</b> Ví dụ một node có hai con, value là v₁ và v₂, được chọn với xác suất q và 1 trừ q. Value của node là q nhân v₁, cộng 1 trừ q nhân v₂. Các bạn để ý: phải dùng value của cả subtree con, không phải utility, vì một action chưa chắc đã kết thúc ván.</p><p><span class="nt-time">19:39</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: không có max hay min]</b> Và công thức này không có max, cũng không có min. Lượt agent hay lượt đối thủ đều tính giống nhau, chỉ khác bảng xác suất. Thật ra đây chính là kỳ vọng mà mình đã học trong xác suất thống kê, chỉ là tính đệ quy từ leaf đi lên. <i class="nt-act">(nhìn bảng)</i> Mình tính thử trên cây ở bảng. <b class="nt-cue nt-board">[✍ ghi “A: ½·(−50) + ½·50 = 0”, điền 0 vào node A]</b> Hộp A: một nửa nhân âm 50, cộng một nửa nhân 50, bằng 0. <b class="nt-cue nt-board">[✍ điền 2 vào node B]</b> Hộp B: trung bình của 1 và 3 là 2. <b class="nt-cue nt-board">[✍ điền 5 vào node C]</b> Hộp C: trung bình của âm 5 và 15 là 5. <b class="nt-cue nt-board">[✍ tô đậm nhánh A, ghi “root = 1·0 + 0·2 + 0·5 = 0” và “= 0” cạnh root]</b> Còn root: agent luôn chọn A, nên bằng 1 nhân 0, cộng 0 nhân 2, cộng 0 nhân 5, bằng 0.</p><p class="nt-label">Bảng sau slide 21</p><pre class="nt-pre">              ▲ = 0        agent
+          A// |B \C
+          (0) (2)  (5)     đối thủ
+          / \ / \  / \
+      [−50][50][1][3][−5][15]   kết cục
+   V(s) = U(s)    nếu IsEnd(s)
+   V(s) = Σₐ P(a|s) · V(Succ(s, a))
+   P = π (lượt agent),  μ (lượt đối thủ)
+   A: ½·(−50) + ½·50 = 0
+   root = 1·0 + 0·2 + 0·5 = 0</pre><p>(nhánh A tô đậm màu xanh: π chọn A với xác suất 1)</p></div>
 </section>
 
 <section class="s video" data-act="3" data-title="Video: Game evaluation trên ba hộp" data-time="36">
   <video src="media/M01_GameEval.mp4" poster="media/posters/M01_GameEval.jpg" preload="auto"></video>
-  <div class="notes"><p>Video manim: từ utility ở leaf, mỗi hộp lấy trung bình và được 0, 2, 5. Root lấy trung bình theo policy agent chọn A: 1·0 + 0·2 + 0·5 = 0. Sau đó policy agent đổi sang chọn đều ba hộp: (0 + 2 + 5)/3 = 7/3.</p><p>C có value cao hơn, nhưng Game evaluation vẫn trả 0 vì đang đánh giá policy chọn A. Đổi policy thì value đổi; phép đánh giá không tự tìm policy mới (CS221, trang 25).</p></div>
+  <div class="notes"><p class="nt-meta">20:18 → 21:02 · 44 giây · 1 bước (bấm → 1 lần, kể cả lần vào slide)</p><p><span class="nt-time">20:18</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-act">[video tự chạy, nói theo]</b> Đây là video nhóm em làm bằng thư viện manim, chạy lại đúng phép tính đó. <span class="nt-vt">⏱ giây 1.8 của video</span> Hai policy đã biết: agent luôn chọn A, đối thủ chọn đều. <span class="nt-vt">⏱ giây 7.6 của video</span> Đầu tiên, mỗi hộp lấy trung bình hai leaf, với trọng số theo μ, được 0, 2 và 5. <span class="nt-vt">⏱ giây 17 của video</span> Sau đó root lấy trung bình theo π. Chỉ hộp A có trọng số 1, nên root bằng 0. <span class="nt-vt">⏱ giây 21.1 của video</span> C có tới 5, cao hơn hẳn, nhưng Game evaluation vẫn trả 0, vì policy đang được đánh giá là chọn A. <span class="nt-vt">⏱ giây 25.2 của video</span> Giờ đổi policy của agent thành chọn đều ba hộp. <span class="nt-vt">⏱ giây 28.6 của video</span> Root thành 0 cộng 2 cộng 5, chia 3, bằng 7/3. Đổi policy thì value đổi theo.</p></div>
 </section>
 
 <section class="s" data-act="3" data-title="Thử đổi policy" data-time="60">
@@ -1228,7 +1262,8 @@ ul.plain li .glyph { margin-right: 14px; }
   </div>
   <div class="say" data-step="0" data-mood="talk">Agent luôn chọn A, đối thủ chọn đều, nên root bằng 0. Độ dày edge thể hiện xác suất.</div>
   <div class="say" data-step="1" data-mood="think">Agent chọn đều ba hộp thì root bằng (0 + 2 + 5)/3 = 7/3. Kéo thanh trượt để đổi μ.</div>
-  <div class="notes"><p>Thanh trượt q là xác suất đối thủ chọn số nhỏ, dùng chung cho cả ba hộp: V(A) = 50 − 100q, V(B) = 3 − 2q, V(C) = 15 − 20q. Mọi node đều tính bằng tổng có trọng số.</p></div>
+  <div class="notes"><p class="nt-meta">21:02 → 21:55 · 53 giây · 2 bước (bấm → 2 lần, kể cả lần vào slide)</p><p><span class="nt-time">21:02</span> <b class="nt-cue nt-key">[→]</b> Slide này là phiên bản tương tác của cây vừa rồi. <b class="nt-cue nt-point">[chỉ: cây tương tác]</b> Agent luôn chọn A, đối thủ chọn đều, root bằng 0. Độ dày của edge thể hiện xác suất. <i class="nt-act">(nhìn lớp)</i> Em hỏi các bạn: nếu agent chọn đều cả ba hộp thì root bằng bao nhiêu? <i class="nt-act">(dừng ~2.5 giây, chờ lớp trả lời)</i></p><p><span class="nt-time">21:21</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: dòng tính root]</b> Đúng rồi: 0 cộng 2 cộng 5, chia 3, bằng bảy phần ba. <b class="nt-cue nt-board">[✍ ghi “(π đều: 7/3)” cạnh root]</b> Em ghi thêm lên bảng: π chọn đều thì root bằng bảy phần ba. <b class="nt-cue nt-point">[chỉ: thanh trượt q]</b> Giờ em kéo thanh trượt này. q là xác suất đối thủ chọn số nhỏ. <b class="nt-cue nt-act">[kéo thanh trượt q lên gần 1]</b> Kéo q lên gần 1, đối thủ gần như luôn chọn số nhỏ, value của cả ba hộp đều giảm, <b class="nt-cue nt-point">[chỉ: root]</b> root xuống âm; khi q bằng 1 thì root bằng âm 18. <b class="nt-cue nt-point">[chỉ: thanh trượt q]</b> <b class="nt-cue nt-act">[kéo q về 0]</b> Kéo q về 0 thì ngược lại, root tăng lên. <b class="nt-cue nt-act">[thả q về 0,5]</b> <i class="nt-act">(nhìn lớp)</i> Mỗi lần đổi μ, mọi node được tính lại bằng đúng một kiểu tổng có trọng số.</p><p class="nt-label">Bảng sau slide 23</p><pre class="nt-pre">              ▲ = 0  (π đều: 7/3)
+   … phần còn lại giữ nguyên</pre></div>
 </section>
 
 <section class="s" data-act="3" data-title="Recurrence và simulation" data-time="60">
@@ -1240,7 +1275,9 @@ ul.plain li .glyph { margin-right: 14px; }
   <div class="say" data-step="0" data-mood="talk">Simulation cho hai policy chơi nhiều ván rồi lấy trung bình utility.</div>
   <div class="say" data-step="1" data-mood="think">Mỗi ván chọn A chỉ ra −50 hoặc 50, nên trung bình của vài ván dao động mạnh.</div>
   <div class="say" data-step="2" data-mood="happy">Trung bình mẫu dao động quanh 0 và hội tụ về 0 khi số ván tăng.</div>
-  <div class="notes"><p>Trung bình mẫu V̂ₙ = (1/n) Σ U(s_T⁽ⁱ⁾). Recurrence trên cây hữu hạn cho expected utility chính xác; simulation lấy mẫu action theo hai policy, chơi tới terminal state rồi lấy trung bình. Với số ván hữu hạn, trung bình mẫu có thể khác 0.</p><p>Giảng viên CS221 so sánh rollout với recurrence trong Games I 2025, đoạn 13:26 đến 19:51.</p></div>
+  <div class="notes"><p class="nt-meta">21:55 → 22:57 · 1 phút 2 giây · 3 bước (bấm → 3 lần, kể cả lần vào slide)</p><p><span class="nt-time">21:55</span> <b class="nt-cue nt-key">[→]</b> Có một cách khác để ra con số này, mà không cần công thức: cứ chơi thử. <b class="nt-cue nt-point">[chỉ: bảng simulation]</b> Đây là simulation: agent luôn chọn A, đối thủ chọn đều, cho hai bên chơi nhiều ván rồi lấy trung bình utility.</p><p><span class="nt-time">22:09</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: kết quả từng ván]</b> Chơi mười ván đầu: mỗi ván chỉ ra âm 50 hoặc 50, nên trung bình nhảy lung tung. <b class="nt-cue nt-point">[chỉ: trung bình mẫu]</b> Mới mười ván thì trung bình có thể lệch khỏi 0 khá xa.</p><p><span class="nt-time">22:19</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: đồ thị trung bình theo số ván]</b> Chơi tiếp lên một nghìn ván, đường trung bình dao động quanh 0 và dần dần hội tụ về 0. <b class="nt-cue nt-board">[🧽 xóa bảng: vùng dưới]</b> <b class="nt-cue nt-board">[✍ ghi “V̂ₙ = (1/n)·Σ U(ván i) → 0”]</b> Công thức là V mũ n bằng 1 trên n, nhân tổng utility của n ván. Đây là ước lượng Monte Carlo. <i class="nt-act">(nhìn lớp)</i> Vậy recurrence cho kết quả chính xác, nhưng phải duyệt cả cây, mà cây có thể rất lớn. Simulation chỉ cho ước lượng, nhưng dễ làm, và chơi càng nhiều ván thì ước lượng càng sát. Vậy sao không luôn dùng simulation? Vì ở các phần sau, công thức có thêm max và min, và lấy trung bình mẫu thì không ước lượng max dễ như ước lượng một kỳ vọng.</p><p class="nt-label">Bảng sau slide 24</p><pre class="nt-pre">   (xóa hai dòng tính ở dưới, ghi:)
+   V̂ₙ = (1/n) · Σ U(ván i)
+   n lớn  ⇒  V̂ₙ → 0 (= V)</pre></div>
 </section>
 
 <section class="s" data-act="3" data-title="Game evaluation dùng để làm gì" data-time="45" data-opt>
@@ -1258,7 +1295,7 @@ ul.plain li .glyph { margin-right: 14px; }
   <div class="say" data-step="1" data-mood="talk">Trong MDP, bước này có tên là policy evaluation.</div>
   <div class="say" data-step="2" data-mood="worried">Evaluation function là một khái niệm khác: hàm ước lượng value, thuộc Games 2.</div>
   <div class="say" data-step="3" data-mood="happy">Bảng face-off ở phần sau dùng lại phép tính này.</div>
-  <div class="notes"><p>CS221, trang 27 và 47-48; evaluation function ở trang 75.</p></div>
+  <div class="notes"><p class="nt-meta">22:57 → 23:58 · 1 phút 1 giây · 4 bước (bấm → 4 lần, kể cả lần vào slide) · <i>có thể lướt nếu trễ giờ</i></p><p><span class="nt-time">22:57</span> <b class="nt-cue nt-key">[→]</b> Cuối cùng, Game evaluation dùng để làm gì? <b class="nt-cue nt-point">[chỉ: so sánh policy]</b> Thứ nhất, để so sánh policy: giữ policy của agent rồi đổi đối thủ, hoặc giữ đối thủ rồi đổi agent, xem value thay đổi ra sao.</p><p><span class="nt-time">23:11</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: policy evaluation]</b> Thứ hai, nếu các bạn đã học MDP, thì bước này chính là policy evaluation: cho trước policy, tính value.</p><p><span class="nt-time">23:20</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: evaluation function]</b> Và một lưu ý: Game evaluation khác evaluation function. Evaluation function là hàm ước lượng value khi chưa search tới terminal state; phần đó thuộc Games 2 của nhóm 11.</p><p><span class="nt-time">23:33</span> <b class="nt-cue nt-key">[→]</b> <b class="nt-cue nt-point">[chỉ: dòng face-off]</b> Bảng face-off ở phần Minimax sẽ dùng lại đúng phép tính này. <i class="nt-act">(nhìn lớp)</i> <i class="nt-act">(mở hai tay về phía lớp)</i> Tóm lại phần của em: có đối thủ thì mình cần policy chứ không phải plan; một game được mô tả bằng sáu thành phần; và khi biết cả hai policy, value được tính bằng trung bình có trọng số, đi từ leaf lên root. Nhưng agent đâu chỉ muốn đo; agent muốn chọn policy tốt nhất. Đó là Expectimax.</p><p><span class="nt-time">23:58</span> <b class="nt-cue nt-key">[→ sang slide 26 · Expectimax]</b> Em xin mời bạn Hoàng trình bày tiếp. Em cảm ơn thầy và các bạn.</p></div>
 </section>
 
 <section class="s" data-act="4" data-title="Expectimax" data-time="50">
@@ -1385,30 +1422,6 @@ ul.plain li .glyph { margin-right: 14px; }
   <div class="say" data-step="2" data-mood="worried">Expected utility bằng xác suất thắng trừ xác suất thua, nên nó khác tỉ lệ thắng.</div>
   <div class="say" data-step="3" data-mood="talk">Lựa chọn tối ưu luôn gắn với một mô hình cụ thể về đối thủ.</div>
   <div class="notes"><p>Các ví dụ trong bài dùng utility hữu hạn. Ví dụ đổi thang: A cho 0 hoặc 40, B cho 20 hoặc 30, mỗi kết quả xác suất ½. Với U, Expectimax chọn B (25 so với 20); với U², Expectimax chọn A (800 so với 650). Minimax chọn B ở cả hai thang. Phép biến đổi aU + b với a &gt; 0 giữ nguyên lựa chọn.</p></div>
-</section>
-
-<section class="s" data-act="4" data-title="Liên hệ MDP" data-time="55" data-opt>
-  <div class="eyebrow"><b>Expectimax</b> · MDP</div>
-  <h2>Với μ cố định, có thể gộp hai lượt thành một transition</h2>
-  <div class="body col" style="gap:34px">
-    <div class="flow rise" data-at="0" style="width:1300px;margin:0 auto">
-      <div class="fx"><b class="c-max">s</b><span>lượt agent</span></div>
-      <div class="fa act"><span>a</span>→</div>
-      <div class="fx"><b class="c-chance">u = Succ(s, a)</b><span>lượt đối thủ, theo μ</span></div>
-      <div class="fa act"><span>b</span>→</div>
-      <div class="fx"><b class="c-max">s′</b><span>lượt agent tiếp theo</span></div>
-    </div>
-    <div class="cols2">
-      <div class="rise" data-at="1"><div class="formula" style="font-size:32px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.088em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">μ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8019em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∣</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">s</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">a</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.3521em;vertical-align:-1.3021em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.05em;"><span style="top:-1.8479em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">b</span></span></span></span><span style="top:-3.05em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.3021em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">μ</span><span class="mopen">(</span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∣</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">u</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathbf">1</span><span class="mopen">[</span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal">u</span><span class="mord mathnormal">cc</span><span class="mopen">(</span><span class="mord mathnormal">u</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">b</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.0519em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8019em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mclose">]</span></span></span></span></span></div></div>
-      <div class="rise" data-at="2"><div class="formula" style="font-size:32px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7387em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∗</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight">μ</span></span></span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.344em;vertical-align:-1.294em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.4306em;"><span style="top:-2.4em;margin-left:0em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">a</span></span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span><span class="mop">max</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.7em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.05em;"><span style="top:-1.856em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight">s</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6828em;"><span style="top:-2.786em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span></span></span></span><span style="top:-3.05em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.294em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">μ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8019em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∣</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.0519em;vertical-align:-0.25em;"></span><span class="mord mathnormal">s</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">a</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7387em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∗</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight">μ</span></span></span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8019em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></span></div></div>
-    </div>
-    <p class="txt rise" data-at="3" style="text-align:center">Điều kiện: μ cố định và đã biết, state đủ thông tin. Expectimax dùng mô hình có sẵn để planning; reinforcement learning học từ tương tác khi chưa biết đầy đủ mô hình.</p>
-  </div>
-  <div class="say" data-step="0" data-mood="talk">Từ lượt agent, qua một nước của đối thủ, lại tới lượt agent.</div>
-  <div class="say" data-step="1" data-mood="think">Vì μ cố định, nước của đối thủ trở thành xác suất transition.</div>
-  <div class="say" data-step="2" data-mood="happy">Phương trình thu được là Expectimax viết dưới dạng MDP.</div>
-  <div class="say" data-step="3" data-mood="talk">Cách gộp này chỉ đúng khi đối thủ giữ nguyên policy.</div>
-  <div class="notes"><p>Nếu nhiều action b cùng dẫn tới một s′, xác suất của chúng được cộng lại. Nếu u đã là terminal state ngay sau nước của agent, bỏ lượt đối thủ và đặt P_μ(u | s, a) = 1. Reward trung gian bằng 0, không chiết khấu, utility ở terminal state.</p><p>Ví dụ chọn C trong game ba hộp: P_μ(C₋₅ | s₀, C) = P_μ(C₁₅ | s₀, C) = 1/2, tổng ứng với C là 5. Công thức gộp lượt do nhóm triển khai từ CS221, trang 22 và 27-34.</p></div>
 </section>
 
 <section class="s" data-act="5" data-title="Minimax" data-time="50">
@@ -1559,9 +1572,43 @@ ul.plain li .glyph { margin-right: 14px; }
   <div class="notes"><p>CS221, trang 19 và 45. Demo dùng game.py của CS221 (bản lưu trữ cs221.1196). Giá trị vô hạn chỉ dùng để phân biệt thắng và thua; thay bằng +1 và −1 thì các nước tối ưu không đổi.</p></div>
 </section>
 
-<section class="s video" data-act="5" data-title="Video: state thắng và state thua" data-time="49">
+<section class="s" data-act="5" data-title="Từ Minimax sang W(n)" data-time="60">
+  <div class="eyebrow"><b>Minimax</b> · Halving</div>
+  <h2>W(n) vẫn là Minimax, viết theo góc nhìn bên đến lượt</h2>
+  <div class="body col" style="gap:22px;padding-top:6px">
+    <div style="display:flex;gap:64px;align-items:flex-start">
+      <div class="stack" style="flex:none;align-items:center;gap:4px">
+        <p class="small">Cây Minimax với N = 3, value theo góc nhìn lớp</p>
+        <div data-w="halvingTree"></div>
+      </div>
+      <div class="grow stack" style="gap:16px;padding-top:30px">
+        <table class="t big cells tight rise" data-at="2">
+          <tr><th style="width:80px">n</th><th>Lớp đến lượt ở n</th><th>Máy đến lượt ở n</th><th style="width:130px" data-at="3">W(n)</th></tr>
+          <tr><td class="mono">0</td><td class="num win">+∞</td><td class="num loss">−∞</td><td class="mono h" data-at="3">1</td></tr>
+          <tr><td class="mono">1</td><td class="num loss">−∞</td><td class="num win">+∞</td><td class="mono h" data-at="3">0</td></tr>
+          <tr><td class="mono">2</td><td class="num win">+∞</td><td class="num loss">−∞</td><td class="mono h" data-at="3">1</td></tr>
+          <tr><td class="mono">3</td><td class="num win">+∞</td><td class="num loss">−∞</td><td class="mono h" data-at="3">1</td></tr>
+        </table>
+        <p class="small rise" data-at="2">+∞: lớp thắng, −∞: máy thắng. Ở mỗi n, hai cột luôn ngược dấu.</p>
+        <p class="txt rise" data-at="3">Gộp hai cột thành <b>W(n)</b>: bằng 1 nếu bên đến lượt ở n thắng, bằng 0 nếu bên đó thua.</p>
+      </div>
+    </div>
+    <div class="stack rise" data-at="4" style="gap:8px">
+      <p class="txt"><b class="c-max">max</b> ở lượt lớp và <b class="c-min">min</b> ở lượt máy là cùng một quy tắc: bên đến lượt thắng khi có một nước đẩy đối phương vào state thua.</p>
+      <p class="txt"><b>1 − W</b> là đổi sang góc nhìn của mình: đối phương nhận state có W = 0 thì mình thắng.</p>
+    </div>
+  </div>
+  <div class="say" data-step="0" data-mood="talk">Chạy Minimax với N = 3. Leaf (Máy, 0) có utility −∞, leaf (Lớp, 0) có +∞.</div>
+  <div class="say" data-step="1" data-mood="think">(Lớp, 1) = −∞, (Máy, 2) = −∞, (Máy, 1) = +∞. Root lấy max được +∞, nên lớp chia đôi.</div>
+  <div class="say" data-step="2" data-mood="talk">Lập bảng cho cả hai trường hợp: lớp đến lượt hoặc máy đến lượt. Hai cột luôn ngược dấu.</div>
+  <div class="say" data-step="3" data-mood="happy">Vì vậy chỉ cần một cột W(n), tính theo góc nhìn bên đến lượt.</div>
+  <div class="say" data-step="4" data-mood="think">max của lớp và min của máy là cùng một quy tắc. Video sau dùng quy tắc này để tô bảng tới 16.</div>
+  <div class="notes"><p>Cây dùng đúng recurrence của Minimax, với state và utility như slide trước; value tính theo góc nhìn lớp. Tại (Lớp, 1), cả − và / đều đưa máy tới 0, nên value là −∞. Tại (Máy, 2), cả hai nước đều đưa lớp tới 1, nên min là −∞. Tại (Máy, 1), cả hai nước đều đưa lớp tới 0, nên value là +∞. Root lấy max(−∞, +∞) = +∞ và chọn /. Hai nước dẫn tới cùng một state được vẽ chung một edge.</p><p>Hai ô không có trong cây: (Lớp, 2) = max(+∞, +∞) = +∞ vì cả hai nước đều tới (Máy, 1); (Máy, 3) = min(V(Lớp, 2), V(Lớp, 1)) = min(+∞, −∞) = −∞. Luật chơi giống nhau cho hai bên, nên V(Máy, n) = −V(Lớp, n) và chỉ cần lưu một số cho mỗi n. Đặt W(n) = 1 khi bên đến lượt ở n thắng. Nước a của mình thắng khi đối phương nhận state có W = 0, tức 1 − W = 1; có một nước như vậy là đủ, nên lấy max. Video sau viết thành W(n) = max{1 − W(n − 1), 1 − W(⌊n/2⌋)}.</p></div>
+</section>
+
+<section class="s video" data-act="5" data-title="Video: state thắng và state thua" data-time="64">
   <video src="media/M06_Halving.mp4" poster="media/posters/M06_Halving.jpg" preload="auto"></video>
-  <div class="notes"><p>Video manim: W(n) = 1 nếu player đến lượt tại n có strategy thắng. W(0) = 1; với n &gt; 0, W(n) = max{1 − W(n − 1), 1 − W(⌊n/2⌋)}. Tính từ 0 tới 16, các state thua là 1, 4, 6, 10, 14, 16.</p><p>Vì vậy để máy nhận 14 thì lớp có strategy thắng, còn để máy nhận 7 thì máy có strategy thắng. Bảng được kiểm bằng verify_examples.py.</p></div>
+  <div class="notes"><p>Video manim: tô bảng 0 tới 16 trước, chỉ dùng quy tắc "bên đến lượt thắng khi có một nước đẩy đối phương vào state thua". W(0) = 1 vì bên đến lượt ở 0 đã nhận số 0. Các state thua là 1, 4, 6, 10, 14, 16.</p><p>Sau khi tô xong mới viết quy tắc thành công thức: W(n) = max{1 − W(n − 1), 1 − W(⌊n/2⌋)}, với 1 − W là đổi sang góc nhìn của mình. Cuối video tô đậm nước 15 → 14: để máy nhận 14 thì lớp có strategy thắng, còn để máy nhận 7 thì máy có strategy thắng. Bảng được kiểm bằng verify_examples.py.</p></div>
 </section>
 
 <section class="s" data-act="5" data-title="Lớp đấu với Minimax" data-time="180" data-opt>
@@ -1584,7 +1631,8 @@ ul.plain li .glyph { margin-right: 14px; }
         <tr class="pick"><td class="mono h">−</td><td class="mono">(−1, 14)</td><td class="num win">+∞</td><td>lớp có strategy thắng</td></tr>
         <tr><td class="mono h">/</td><td class="mono">(−1, 7)</td><td class="num loss">−∞</td><td>máy có strategy thắng</td></tr>
       </table>
-      <p class="txt rise" data-at="1">Sau 15 → 14 → 13, lớp phải chọn / để về 6. Nếu chọn − để về 12, lớp mất strategy thắng và máy có thể thắng.</p>
+      <p class="lead rise" data-at="1"><b>Quy tắc:</b> lượt nào cũng đưa đối phương vào state thua.</p>
+      <p class="txt rise" data-at="1">Sau 15 → 14 → 13, lớp phải chọn / để máy nhận 6, một state thua. Nếu chọn −, máy nhận 12. Đây là <b>state thắng của máy</b>: máy chia đôi để lớp nhận 6, và lớp mất strategy thắng.</p>
     </div>
     <div class="side stack rise" data-at="2" style="width:620px;gap:16px">
       <p class="col-title">Các state thua của bên đến lượt</p>
@@ -1593,9 +1641,9 @@ ul.plain li .glyph { margin-right: 14px; }
     </div>
   </div>
   <div class="say" data-step="0" data-mood="talk">Ở 15, chỉ nước trừ 1 giữ được strategy thắng.</div>
-  <div class="say" data-step="1" data-mood="worried">Lớp chỉ chắc thắng nếu tiếp tục chơi đúng ở mọi lượt sau.</div>
+  <div class="say" data-step="1" data-mood="worried">Lượt nào lớp cũng phải đưa máy vào state thua. Để máy nhận 12 là trao cho máy một state thắng.</div>
   <div class="say" data-step="2" data-mood="think">Minimax biết một state thắng hay thua ngay khi ván chưa kết thúc.</div>
-  <div class="notes"><p>Với N = 14, hai action đưa đối phương tới 13 hoặc 7, đều là state thắng của bên nhận lượt. Với N = 16, hai action đưa tới 15 hoặc 8, cũng đều thắng. Vì vậy 14 và 16 là state thua của bên đến lượt khi hai bên chơi tối ưu.</p><p>Kết quả tính bằng phần Halving trong verify_examples.py.</p></div>
+  <div class="notes"><p>Quy tắc giữ strategy thắng: ở mỗi lượt, chọn nước đưa đối phương vào một ô đỏ. Từ 13, nước / cho máy nhận 6 (ô đỏ); nước − cho máy nhận 12 (ô xanh). Tại 12 máy có hai nước: − đưa lớp tới 11 (lớp thắng), / đưa lớp tới 6 (lớp thua), nên máy chọn / và giữ strategy thắng.</p><p>Với N = 14, hai action đưa đối phương tới 13 hoặc 7, đều là state thắng của bên nhận lượt. Với N = 16, hai action đưa tới 15 hoặc 8, cũng đều thắng. Vì vậy 14 và 16 là state thua của bên đến lượt khi hai bên chơi tối ưu.</p><p>Kết quả tính bằng phần Halving trong verify_examples.py.</p></div>
 </section>
 
 <section class="s" data-act="6" data-title="Bốn policy" data-time="55">
@@ -1646,16 +1694,19 @@ ul.plain li .glyph { margin-right: 14px; }
   <div class="eyebrow"><b>Face-off</b> · ba tính chất</div>
   <h2>Ba tính chất đọc từ bảng face-off</h2>
   <div class="body col" style="gap:50px">
-    <div class="cols3 aligned-columns" style="column-gap:70px">
+    <div class="cols3 aligned-columns" style="column-gap:64px;grid-template-columns:1.1fr 1.1fr 0.8fr">
       <div class="rise" data-at="0">
         <p class="col-title">① Tối ưu trước π<sub>min</sub></p>
         <div class="formula" style="font-size:29px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mop mtight"><span class="mtight">m</span><span class="mtight">a</span><span class="mtight">x</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3175em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mop mtight"><span class="mtight">m</span><span class="mtight">i</span><span class="mtight">n</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≥</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3175em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mop mtight"><span class="mtight">m</span><span class="mtight">i</span><span class="mtight">n</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace"> </span><span class="mspace"> </span><span class="mord">∀</span><span class="mord mathnormal" style="margin-right:0.03588em;">π</span></span></span></span></span></div>
-        <p class="txt">Cột π<sub>min</sub>: −5 ≤ 1.</p>
+        <div class="stack" style="gap:12px"><p class="txt">Cột π<sub>min</sub>: π<sub>E</sub> được −5 ≤ 1.</p>
+        <p class="txt" style="font-size:28px">Agent chọn hộp kiểu gì, kể cả trộn ngẫu nhiên, cũng chỉ được trung bình của −50, 1, −5, nên value&nbsp;≤&nbsp;1.</p></div>
       </div>
       <div class="rise" data-at="1">
         <p class="col-title">② Lower bound trước mọi đối thủ</p>
         <div class="formula" style="font-size:29px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mop mtight"><span class="mtight">m</span><span class="mtight">a</span><span class="mtight">x</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3175em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mop mtight"><span class="mtight">m</span><span class="mtight">i</span><span class="mtight">n</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mop mtight"><span class="mtight">m</span><span class="mtight">a</span><span class="mtight">x</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">μ</span><span class="mclose">)</span><span class="mspace"> </span><span class="mspace"> </span><span class="mord">∀</span><span class="mord mathnormal">μ</span></span></span></span></span></div>
-        <p class="txt">Hàng π<sub>max</sub>: 1 ≤ 2.</p>
+        <div class="stack" style="gap:12px"><p class="txt">Hàng π<sub>max</sub>: 1 ≤ 2.</p>
+        <p class="txt" style="font-size:28px">Đối thủ chọn số 1 với xác suất q thì agent được</p>
+        <div class="formula" style="font-size:28px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6389em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">q</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">q</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">3</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">3</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">2</span><span class="mord mathnormal" style="margin-right:0.03588em;">q</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≥</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span></span></div></div>
       </div>
       <div class="rise" data-at="2">
         <p class="col-title">③ Tối ưu trước π<sub>7</sub></p>
@@ -1663,13 +1714,16 @@ ul.plain li .glyph { margin-right: 14px; }
         <p class="txt">Cột π<sub>7</sub>: 2 ≤ 5.</p>
       </div>
     </div>
-    <p class="txt rise" data-at="3" style="text-align:center">Tính chất ② đúng cả khi đối thủ chơi không tối ưu, miễn agent giữ π<sub>max</sub>. Ở tính chất ③ có thể xảy ra dấu bằng.</p>
+    <div class="rise stack" data-at="3" style="gap:12px;align-items:center;text-align:center">
+      <p class="lead" style="text-wrap:balance"><b>① + ②:</b> một mình agent đổi policy thì không lợi hơn; một mình đối thủ đổi policy thì agent không thiệt hơn.</p>
+      <p class="txt">② đúng cả khi đối thủ chơi không tối ưu, miễn agent giữ π<sub>max</sub>. Ở ③ có thể xảy ra dấu bằng.</p>
+    </div>
   </div>
-  <div class="say" data-step="0" data-mood="talk">Giữ đối thủ là π_min thì không policy nào của agent vượt π_max.</div>
+  <div class="say" data-step="0" data-mood="talk">Giữ đối thủ là π_min thì mọi hộp chỉ còn số nhỏ. Không policy nào của agent vượt π_max.</div>
   <div class="say" data-step="1" data-mood="happy">Giữ agent là π_max thì không đối thủ nào kéo kết quả xuống dưới 1.</div>
   <div class="say" data-step="2" data-mood="talk">Giữ đối thủ là π₇ thì policy tối ưu cho π₇ không thể kém π_max.</div>
-  <div class="say" data-step="3" data-mood="think">Mỗi tính chất cố định một bên và chỉ thay bên còn lại.</div>
-  <div class="notes"><p>CS221, trang 49-54. Với tính chất ②, nếu μ chọn 1 với xác suất q thì V(π_max, μ) = q·1 + (1 − q)·3 = 3 − 2q ≥ 1. Tính chất ③ đúng theo định nghĩa V(π_E, π₇) = max_π V(π, π₇). Khi đối thủ thật đổi policy, tính chất ③ không còn áp dụng cho cặp policy mới.</p></div>
+  <div class="say" data-step="3" data-mood="think">Gộp ① và ②: một mình agent đổi thì không lợi hơn, một mình đối thủ đổi thì agent không thiệt hơn.</div>
+  <div class="notes"><p>CS221, trang 49-54. Với tính chất ①, khi đối thủ là π_min thì hộp A, B, C có value −50, 1, −5. Một policy bất kỳ của agent chọn A, B, C với xác suất a, b, c (a + b + c = 1), nên value là −50a + b − 5c ≤ 1. Với tính chất ②, nếu μ chọn 1 với xác suất q thì V(π_max, μ) = q·1 + (1 − q)·3 = 3 − 2q ≥ 1, dấu bằng khi q = 1. Tính chất ③ đúng theo định nghĩa V(π_E, π₇) = max_π V(π, π₇). Khi đối thủ thật đổi policy, tính chất ③ không còn áp dụng cho cặp policy mới.</p><p>Câu tóm ① + ② là cách đọc khác của hai bất đẳng thức: cặp (π_max, π_min) là điểm mà không bên nào có lợi khi đơn phương đổi policy.</p></div>
 </section>
 
 <section class="s" data-act="6" data-title="Chuỗi bốn value" data-time="40">
@@ -3472,6 +3526,47 @@ ul.plain li .glyph { margin-right: 14px; }
     newGame(15);
     return { enter() { newGame(start); }, leave() { tok++; busy = false; } };
   };
+
+  // ------------------------------------------------------------------ S42: the Minimax tree for N = 3 behind W(n)
+  // values come from minimax on (player, n) itself, not from Wn; two actions with the same successor share one edge
+  const mmH = (() => {
+    const memo = new Map();
+    const f = (p, n) => {
+      if (n === 0) return p * Infinity;   // terminal (p, 0): the player to move received 0 and wins
+      const k = p + ":" + n;
+      if (!memo.has(k)) { const vs = [n - 1, Math.floor(n / 2)].map((m) => f(-p, m)); memo.set(k, p === 1 ? Math.max(...vs) : Math.min(...vs)); }
+      return memo.get(k);
+    };
+    return f;
+  })();
+  G.halvingMinimax = mmH;
+  W.halvingTree = (el) => {
+    const node = (id, p, n, kids) => ({ id, p, n, k: n === 0 ? "term" : p === 1 ? "max" : "min", v: n === 0 ? mmH(p, 0) : "?", kids });
+    const both = "− hoặc /";
+    const spec = node("r", 1, 3, [
+      { a: "−", n: node("m2", -1, 2, [{ a: both, n: node("l1", 1, 1, [{ a: both, n: node("m0", -1, 0) }]) }]) },
+      { a: "/", n: node("m1", -1, 1, [{ a: both, n: node("l0", 1, 0) }]) },
+    ]);
+    const t = G.drawTree(el, spec, { w: 660, h: 470, r: 40, lr: 34, fs: 26, padX: 160, padT: 48, padB: 38 });
+    // state name to the right of each node
+    t.all.forEach((n) => {
+      const N = t.nodes[n.id], dx = n.k === "term" ? 34 : 40 * 1.15;
+      N.g.appendChild(G.sv("text", { class: "sn", x: dx + 14, y: 9 }, `(${n.p === 1 ? "Lớp" : "Máy"}, ${n.n})`));
+    });
+    const order = ["l1", "m2", "m1", "r"];   // postorder: a node gets its value after all its children
+    let timers = [];
+    const cancel = () => { timers.forEach(clearTimeout); timers = []; };
+    function show(st, animate) {
+      cancel(); t.reset();
+      order.forEach((id) => t.v(id, "?"));
+      if (st < 1) return;
+      order.forEach((id, i) => {
+        const n = t.nodes[id].n, put = () => { t.v(id, mmH(n.p, n.n), animate); if (id === "r") t.e("m1", "bold"); };
+        if (animate) timers.push(setTimeout(put, 380 * i)); else put();
+      });
+    }
+    return { step(st, prev) { show(st, st === 1 && prev === 0); }, leave: cancel };
+  };
 })();
 
 /* Three.js cone tree of tic-tac-toe from the empty board (X first). Each sphere is a node of the game tree,
@@ -3587,6 +3682,12 @@ ul.plain li .glyph { margin-right: 14px; }
    auto-play, short mode. Games 1 uses the light theme only (white stage). */
 (function () {
   "use strict";
+  // The remote-control page sets window.DECK_DEFER and calls window.bootDeck() only on the presenting laptop.
+  if (window.DECK_DEFER) { window.bootDeck = boot; return; }
+  boot();
+  function boot() {
+  if (boot.done) return;
+  boot.done = true;
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const STORE = "games1-deck";
@@ -3889,7 +3990,7 @@ ul.plain li .glyph { margin-right: 14px; }
     else if (k === "Escape") { ov.classList.remove("show"); notes.classList.remove("show"); }
     else if (k === "n" || k === "N") toggleNotes();
     else if (k === "a" || k === "A") toggleAuto();
-    else if (k === "t" || k === "T") { shortMode = !shortMode; flash(shortMode ? "Bản rút gọn: bật" : "Bản rút gọn: tắt"); }
+    else if (k === "t" || k === "T") toggleShort();
     else if (k === "f" || k === "F") { if (document.fullscreenElement) document.exitFullscreen(); else { const p = document.documentElement.requestFullscreen(); if (p) p.catch(() => flash("Trình duyệt không cho toàn màn hình")); } }
     else if (k === "v" || k === "V" || k === "k" || k === "K") toggleVideo();
     else if (k === "r" || k === "R") replayVideo();
@@ -3928,6 +4029,14 @@ ul.plain li .glyph { margin-right: 14px; }
   fit();
   const h = fromHash();
   enter(h ? h[0] : 0, h ? h[1] : 0);
-  window.deck = { next, prev, goto, slides, say: sayLine, flash, setTheme, count: () => slides.length, cur: () => cur, step: () => step };
+  function toggleShort() { shortMode = !shortMode; flash(shortMode ? "Bản rút gọn: bật" : "Bản rút gọn: tắt"); }
+  window.deck = {
+    next, prev, goto, slides, say: sayLine, flash, setTheme, count: () => slides.length, cur: () => cur, step: () => step,
+    // used by the remote control
+    maxStep: (i) => slides[i]._max, short: () => shortMode, toggleShort, toggleOverview,
+    overviewOpen: () => ov.classList.contains("show"), closeOverlays: () => { ov.classList.remove("show"); notes.classList.remove("show"); },
+    video: curVideo, toggleVideo, replayVideo, seekBy, stepRate,
+  };
+  }
 })();
 </script>
